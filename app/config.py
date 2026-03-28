@@ -11,7 +11,7 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'clave-temporal-super-secreta-2026')
 
     # Base de datos SQLite temporal (fácil para desarrollo)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///trazabilidad.db'
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
     # Desactivamos esta opción para evitar warnings
     SQLALCHEMY_TRACK_MODIFICATIONS = False
