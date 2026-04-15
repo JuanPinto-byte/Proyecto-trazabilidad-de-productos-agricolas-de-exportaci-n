@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+<body>
+
+<div class="main-container">
+
+    <!-- IZQUIERDA -->
+    <div class="left fade-in">
+        <h1>Trazabilidad</h1>
+        <p>Crea tu cuenta y comienza a gestionar productos agrícolas fácilmente.</p>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="register-container slide-up">
+
+        <h2>Crear cuenta</h2>
+
+        <form method="POST" action="/register">
+
+            <div class="row">
+                <input type="text" name="nombre" placeholder="Nombres" required>
+                <input type="text" name="apellido" placeholder="Apellidos" required>
+            </div>
+
+            <!-- 🔥 NUEVO -->
+            <input type="text" name="username" placeholder="Nombre de usuario" required>
+
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+
+            <input type="password" name="password" placeholder="Contraseña" required>
+
+            <button type="submit">Registrarse</button>
+
+        </form>
+
+        <a href="/" class="back-login">Ya tengo una cuenta</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

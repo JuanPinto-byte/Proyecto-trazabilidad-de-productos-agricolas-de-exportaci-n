@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Trazabilidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+
+<div class="main-container">
+
+    <!-- IZQUIERDA -->
+    <div class="left fade-in">
+        <h1>Trazabilidad</h1>
+        <p>Gestiona y controla productos agrícolas de exportación de forma fácil y segura.</p>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="login-container slide-up">
+        <!-- FORMULARIO -->
+        <form action="/login" method="POST">
+            <label for="username">Usuario o Correo electrónico</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Usuario o Correo electrónico" required>
+
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+            
+            <button class="login" type="submit">Iniciar sesión</button>
+        </form>
+
+        <a href="/forgot-password" class="forgot">¿Has olvidado la contraseña?</a>
+
+        <hr>
+
+        <button class="register" type="button" onclick="window.location.href='/register'">Crear una cuenta</button>
+    </div>
+
+</div>
+
+</body>
+</html>
