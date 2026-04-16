@@ -1,0 +1,70 @@
+<script>
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("active");
+}
+</script>
+<body>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<!-- BOTÓN -->
+<div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- MENÚ FLOTANTE -->
+<div class="sidebar" id="sidebar">
+    <h2>🌱 Trazabilidad</h2>
+    <ul>
+        
+        <li>🌾 Fincas</li>
+        <li>📦 Lotes</li>
+        <li>👥 Usuarios</li>
+        <li>📊 Reportes</li>
+        <li>🚪 Cerrar sesión</li>
+    </ul>
+</div>
+
+<!-- CONTENIDO -->
+<div class="main">
+
+    <header class="topbar">
+        <h3>traza</h3>
+        <div class="boxx">👤 Admin</div>
+    </header>
+
+    <section class="cards">
+        <div class="card">🌱 Lotes: 25</div>
+        <div class="card">🚜 Fincas: 10</div>
+        <div class="card">⚠️ Alertas: 2</div>
+        <div class="card">📦 Despachos: 5</div>
+    </section>
+
+    <section class="content">
+        <div class="box">📊 Gráficas</div>
+        <div class="box">🕒 Actividad</div>
+    </section>
+
+</div>
+
+<script>
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const btn = document.getElementById("menuBtn");
+
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+
+    // Cambiar icono ☰ -> ✖
+    if (sidebar.classList.contains("active")) {
+        btn.innerHTML = "✖";
+        btn.classList.add("rotate");
+    } else {
+        btn.innerHTML = "☰";
+        btn.classList.remove("rotate");
+    }
+}
+</script>
+
+</body>

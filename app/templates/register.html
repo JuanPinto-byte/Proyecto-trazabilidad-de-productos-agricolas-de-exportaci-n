@@ -20,25 +20,54 @@
 
         <h2>Crear cuenta</h2>
 
-        <form method="POST" action="/register">
+        <!-- 🔥 MENSAJES -->
+        {% set messages = get_flashed_messages(with_categories=true) %}
 
+        <form method="POST" action="{{ url_for('auth.register') }}">
+
+            <!-- NOMBRE Y APELLIDO -->
             <div class="row">
-                <input type="text" name="nombre" placeholder="Nombres" required>
-                <input type="text" name="apellido" placeholder="Apellidos" required>
+                <input type="text" name="nombre" placeholder="Nombres" 
+                       value="{{ request.form.nombre }}" required>
+
+                <input type="text" name="apellido" placeholder="Apellidos" 
+                       value="{{ request.form.apellido }}" required>
             </div>
 
-            <!-- 🔥 NUEVO -->
-            <input type="text" name="username" placeholder="Nombre de usuario" required>
+            <!-- ERROR USERNAME -->
+            {% for category, message in messages %}
+                {% if category == 'user_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
 
-            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <!-- USERNAME -->
+            <input type="text" name="username" placeholder="Nombre de usuario" 
+                   value="{{ request.form.username }}" required>
 
+            <!-- ERROR EMAIL -->
+            {% for category, message in messages %}
+                {% if category == 'email_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- EMAIL -->
+            <input type="email" name="email" placeholder="Correo electrónico" 
+                   value="{{ request.form.email }}" required>
+
+            <!-- PASSWORD -->
             <input type="password" name="password" placeholder="Contraseña" required>
 
+            <!-- BOTÓN -->
             <button type="submit">Registrarse</button>
 
         </form>
 
-        <a href="/" class="back-login">Ya tengo una cuenta</a>
+        <!-- VOLVER AL LOGIN -->
+        <a href="{{ url_for('auth.login') }}" class="back-login">
+            Ya tengo una cuenta
+        </a>
 
     </div>
 

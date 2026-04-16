@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 # Cargamos las variables de entorno
 load_dotenv()
 
-class Config:
+class DevelopmentConfig:
     """Configuración de la aplicación Flask"""
-
+    DEBUG = True
     # Clave secreta para seguridad (JWT, etc.)
     SECRET_KEY = os.getenv('SECRET_KEY', 'clave-temporal-super-secreta-2026')
 
@@ -18,3 +18,7 @@ class Config:
 
     # Clave para JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-clave-temporal-diferente-2026')
+
+config={
+    "development":DevelopmentConfig
+}

@@ -18,22 +18,62 @@
 
     <!-- DERECHA -->
     <div class="login-container slide-up">
-        <!-- FORMULARIO -->
-        <form action="/login" method="POST">
-            <label for="username">Usuario o Correo electrónico</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Usuario o Correo electrónico" required>
 
-            <label for="password">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-            
+        <!-- 🔥 CAPTURAMOS TODOS LOS MENSAJES -->
+        {% set messages = get_flashed_messages(with_categories=true) %}
+
+        <!-- FORMULARIO -->
+        <form method="POST" action="{{ url_for('auth.login') }}">
+
+            <!-- ERROR USUARIO -->
+            {% for category, message in messages %}
+                {% if category == 'user_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- INPUT USERNAME -->
+            <input 
+                type="text" 
+                class="form-control" 
+                name="username" 
+                placeholder="Usuario o Correo electrónico"
+                value="{{ request.form.username }}"
+                required
+            >
+
+            <!-- ERROR PASSWORD -->
+            {% for category, message in messages %}
+                {% if category == 'password_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- INPUT PASSWORD -->
+            <input 
+                type="password" 
+                class="form-control" 
+                name="password" 
+                placeholder="Contraseña"
+                required
+            >
+
+            <!-- BOTÓN -->
             <button class="login" type="submit">Iniciar sesión</button>
+
         </form>
 
+        <!-- LINKS -->
         <a href="/forgot-password" class="forgot">¿Has olvidado la contraseña?</a>
 
         <hr>
 
-        <button class="register" type="button" onclick="window.location.href='/register'">Crear una cuenta</button>
+        <form action="{{ url_for('auth.register') }}">
+    <button class="register" type="submit">
+        Crear una cuenta
+    </button>
+</form>
+
     </div>
 
 </div>

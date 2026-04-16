@@ -1,0 +1,158 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+
+/* FONDO */
+body {
+    background: linear-gradient(135deg, #f0f2f5, #e4e6eb);
+}
+
+/* BOTÓN */
+.menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 26px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 1100;
+    transition: 0.3s;
+}
+
+.menu-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* ROTACIÓN */
+.rotate {
+    transform: rotate(180deg);
+}
+
+/* OVERLAY (FONDO OSCURO) */
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    top: 0;
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* MENÚ FLOTANTE */
+.sidebar {
+    position: fixed;
+    top: 70px;
+    left: 15px;
+    width: 260px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+
+    transform: translateY(-20px) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+
+    transition: all 0.3s ease;
+    z-index: 1050;
+}
+
+/* ACTIVO */
+.sidebar.active {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* MENU ITEMS */
+.sidebar h2 {
+    margin-bottom: 15px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sidebar li:hover {
+    background: #f1f5f9;
+    transform: translateX(5px);
+}
+
+/* MAIN */
+.main {
+    padding: 80px 20px;
+}
+
+/* HEADER */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* CARDS */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* CONTENIDO */
+.content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    height: 250px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .cards {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+}
