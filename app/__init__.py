@@ -1,9 +1,9 @@
 from flask import Flask
 from flask import render_template
 from flask_cors import CORS
-from config import config
-from extensions import db, jwt
-from routes.auth import auth_bp  
+from app.config import config
+from app.extensions import db, jwt
+from app.routes.auth import auth_bp  
 
 def create_app():
     app = Flask(__name__)

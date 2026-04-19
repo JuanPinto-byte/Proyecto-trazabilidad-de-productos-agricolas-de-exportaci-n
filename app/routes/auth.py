@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from extensions import db
-from models.user import User
+from app.extensions import db
+from app.models.user import User
+from app.models.rol import Rol
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_bp = Blueprint("auth", __name__)
@@ -61,7 +62,6 @@ def register():
             nombre_usuario=username,
             nombre_completo=f"{nombre} {apellido}",
             email=email,
-            rol_id=1
         )
 
         nuevo_usuario.set_password(password)

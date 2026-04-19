@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask import session
-from config import config
-from extensions import db
-from routes.auth import auth_bp
+from app.config import config
+from app.extensions import db
+from app.routes.auth import auth_bp
 
 app=Flask(__name__)
 app.config.from_object(config["development"])
