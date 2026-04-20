@@ -12,7 +12,7 @@ class User(db.Model):
     nombre_completo = db.Column(db.String(150), nullable=True)  
     password_hash = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-
+    telefono = db.Column(db.String(20))
     #Fk de roles
     rol_id = db.Column(
         db.Integer,

@@ -44,6 +44,7 @@ def register():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
+        telefono = request.form.get('telefono')
 
         # 🔥 VALIDAR SI YA EXISTE
         user_exist = User.query.filter_by(nombre_usuario=username).first()
@@ -62,6 +63,7 @@ def register():
             nombre_usuario=username,
             nombre_completo=f"{nombre} {apellido}",
             email=email,
+            telefono=telefono
         )
 
         nuevo_usuario.set_password(password)

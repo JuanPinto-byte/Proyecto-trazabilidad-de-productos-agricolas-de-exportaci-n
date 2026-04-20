@@ -184,3 +184,14 @@ body {
         max-width: 350px;
     }
 }
+/*  Quitar flechas en Chrome, Edge, Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/*  Quitar flechas en Firefox */
+input[type="number"] {
+    appearance: textfield;
+}
