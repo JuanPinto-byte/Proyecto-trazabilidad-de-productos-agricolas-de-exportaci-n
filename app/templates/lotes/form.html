@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — {{ 'Editar' if lote else 'Nuevo' }} Lote</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="nav-tabs">
+      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Inicio</a>
+      <a href="{{ url_for('fincas.lista') }}"   class="nav-tab">Fincas</a>
+      <a href="{{ url_for('lotes.lista') }}"    class="nav-tab active">Lotes</a>
+      <a href="#"                               class="nav-tab">Reportes</a>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">{{ 'Editar lote' if lote else 'Nuevo lote' }}</div>
+          <div class="page-subtitle">
+            {{ 'Modifica los datos del lote ' + lote.numero_lote if lote else 'Completa los datos para registrar un nuevo lote' }}
+          </div>
+        </div>
+        <a href="{{ url_for('lotes.lista') }}" class="btn-secondary">← Volver</a>
+      </div>
+
+      <div class="panel">
+        <form method="POST">
+
+          <div class="form-grid">
+
+            <!-- Número de lote -->
+            <div class="form-group">
+              <label class="form-label">Número de lote *</label>
+              <input type="text" name="numero_lote" class="form-input"
+                     value="{{ lote.numero_lote if lote else '' }}"
+                     placeholder="Ej: LT-2025-001" required>
+            </div>
+
+            <!-- Finca -->
+            <div class="form-group">
+              <label class="form-label">Finca *</label>
+              <select name="finca_id" class="form-input" required>
+                <option value="">— Seleccionar finca —</option>
+                {% for finca in fincas %}
+                  <option value="{{ finca.id }}"
+                    {{ 'selected' if lote and lote.finca_id == finca.id else '' }}>
+                    {{ finca.nombre_finca }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Área -->
+            <div class="form-group">
+              <label class="form-label">Área (hectáreas)</label>
+              <input type="number" name="area_hectareas" class="form-input"
+                     step="0.01" min="0"
+                     value="{{ lote.area_hectareas if lote else '' }}"
+                     placeholder="Ej: 3.5">
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group">
+              <label class="form-label">Estado</label>
+              <select name="estado" class="form-input">
+                <option value="ACTIVO"    {{ 'selected' if not lote or lote.estado == 'ACTIVO' }}>Activo</option>
+                <option value="COSECHADO" {{ 'selected' if lote and lote.estado == 'COSECHADO' }}>Cosechado</option>
+                <option value="BLOQUEADO" {{ 'selected' if lote and lote.estado == 'BLOQUEADO' }}>Bloqueado</option>
+                <option value="DESPACHADO"{{ 'selected' if lote and lote.estado == 'DESPACHADO' }}>Despachado</option>
+              </select>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group form-full">
+              <label class="form-label">Descripción</label>
+              <textarea name="descripcion" class="form-input form-textarea"
+                        placeholder="Descripción del lote, características del terreno, etc.">{{ lote.descripcion if lote else '' }}</textarea>
+            </div>
+
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:24px;">
+            <button type="submit" class="btn-primary">
+              {{ 'Guardar cambios' if lote else 'Crear lote' }}
+            </button>
+            <a href="{{ url_for('lotes.lista') }}" class="btn-secondary">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

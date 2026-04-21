@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — {{ 'Editar' if finca else 'Nueva' }} Finca</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="nav-tabs">
+      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Inicio</a>
+      <a href="{{ url_for('fincas.lista') }}"   class="nav-tab active">Fincas</a>
+      <a href="{{ url_for('lotes.lista') }}"    class="nav-tab">Lotes</a>
+      <a href="#"                               class="nav-tab">Reportes</a>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">{{ 'Editar finca' if finca else 'Nueva finca' }}</div>
+          <div class="page-subtitle">
+            {{ 'Modifica los datos de ' + finca.nombre_finca if finca else 'Completa los datos para registrar una nueva finca' }}
+          </div>
+        </div>
+        <a href="{{ url_for('fincas.lista') }}" class="btn-secondary">← Volver</a>
+      </div>
+
+      <div class="panel">
+        <form method="POST">
+
+          <div class="form-grid">
+
+            <!-- Nombre -->
+            <div class="form-group form-full">
+              <label class="form-label">Nombre de la finca *</label>
+              <input type="text" name="nombre_finca" class="form-input"
+                     value="{{ finca.nombre_finca if finca else '' }}"
+                     placeholder="Ej: Finca Las Palmas" required>
+            </div>
+
+            <!-- Agricultor -->
+            <div class="form-group">
+              <label class="form-label">Agricultor *</label>
+              <select name="agricultor_id" class="form-input" required>
+                <option value="">— Seleccionar —</option>
+                {% for ag in agricultores %}
+                  <option value="{{ ag.id }}"
+                    {{ 'selected' if finca and finca.agricultor_id == ag.id else '' }}>
+                    {{ ag.nombre }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Responsable -->
+            <div class="form-group">
+              <label class="form-label">Responsable (usuario)</label>
+              <select name="responsable_id" class="form-input">
+                <option value="">— Sin asignar —</option>
+                {% for u in usuarios %}
+                  <option value="{{ u.id }}"
+                    {{ 'selected' if finca and finca.responsable_id == u.id else '' }}>
+                    {{ u.nombre_completo or u.nombre_usuario }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="form-group">
+              <label class="form-label">Ubicación</label>
+              <input type="text" name="ubicacion" class="form-input"
+                     value="{{ finca.ubicacion if finca else '' }}"
+                     placeholder="Ej: Cúcuta, Norte de Santander">
+            </div>
+
+            <!-- Coordenadas GPS -->
+            <div class="form-group">
+              <label class="form-label">Coordenadas GPS</label>
+              <input type="text" name="coordenadas_gps" class="form-input"
+                     value="{{ finca.coordenadas_gps if finca else '' }}"
+                     placeholder="Ej: 7.8939° N, 72.5078° W">
+            </div>
+
+            <!-- Área total -->
+            <div class="form-group">
+              <label class="form-label">Área total (hectáreas)</label>
+              <input type="number" name="area_total_hectareas" class="form-input"
+                     step="0.01" min="0"
+                     value="{{ finca.area_total_hectareas if finca else '' }}"
+                     placeholder="Ej: 10.5">
+            </div>
+
+            <!-- Área cultivable -->
+            <div class="form-group">
+              <label class="form-label">Área cultivable (hectáreas)</label>
+              <input type="number" name="area_cultivable_hectareas" class="form-input"
+                     step="0.01" min="0"
+                     value="{{ finca.area_cultivable_hectareas if finca else '' }}"
+                     placeholder="Ej: 8.0">
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group">
+              <label class="form-label">Estado</label>
+              <select name="estado" class="form-input">
+                <option value="ACTIVO"    {{ 'selected' if not finca or finca.estado == 'ACTIVO' }}>Activo</option>
+                <option value="INACTIVO"  {{ 'selected' if finca and finca.estado == 'INACTIVO' }}>Inactivo</option>
+              </select>
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <div style="display:flex; gap:10px; margin-top:24px;">
+            <button type="submit" class="btn-primary">
+              {{ 'Guardar cambios' if finca else 'Crear finca' }}
+            </button>
+            <a href="{{ url_for('fincas.lista') }}" class="btn-secondary">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

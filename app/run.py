@@ -2,6 +2,10 @@ from flask import Flask, redirect, url_for
 from app.config import config
 from app.extensions import db, jwt
 from app.routes.auth import auth_bp
+from app.routes.fincas import fincas_bp
+from app.routes.lotes  import lotes_bp
+
+
 
 app = Flask(__name__)
 app.config.from_object(config["development"])
@@ -10,12 +14,14 @@ db.init_app(app)
 jwt.init_app(app)
 
 app.register_blueprint(auth_bp, url_prefix='/auth')
-
+app.register_blueprint(fincas_bp)
+app.register_blueprint(lotes_bp)
 # Ruta raíz → redirige al login
 @app.route("/")
 def index():
+    
     return redirect(url_for("auth.login"))
-
+    
 # Crear tablas si no existen (útil en desarrollo)
 with app.app_context():
     # Importar todos los modelos para que SQLAlchemy los registre
