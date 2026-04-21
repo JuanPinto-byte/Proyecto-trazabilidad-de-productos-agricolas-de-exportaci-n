@@ -1,27 +1,36 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask import session
+from flask import Flask, redirect, url_for
 from app.config import config
-from app.extensions import db
+from app.extensions import db, jwt
 from app.routes.auth import auth_bp
 
-app=Flask(__name__)
+app = Flask(__name__)
 app.config.from_object(config["development"])
+
 db.init_app(app)
+jwt.init_app(app)
+
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
+# Ruta raíz → redirige al login
 @app.route("/")
 def index():
     return redirect(url_for("auth.login"))
 
-app.route("/dashboard")
-def dashboard():
-    if "user_id" not in session:
-        return redirect(url_for("auth.login"))
+# Crear tablas si no existen (útil en desarrollo)
+with app.app_context():
+    # Importar todos los modelos para que SQLAlchemy los registre
+    from app.models import (
+        User, Rol,
+        Agricultor, Finca,
+        Cultivo, Semilla,
+        Lote, Siembra, Cosecha,
+        Agroquimico, AplicacionAgroquimico,
+        Bodega, ControlTemperatura, Almacenamiento,
+        Anomalia, BitacoraCultivo, CondicionMeteorologica,
+        Normativa, Inspeccion, CumplimientoNormativa,
+        Trazabilidad, RecepcionAcopio, Auditoria
+    )
 
-    return render_template("dashboard.html")
 
-if __name__=="__main__":
-    app.config.from_object(config["development"])
+if __name__ == "__main__":
     app.run(debug=True)
-
-print(app.url_map)

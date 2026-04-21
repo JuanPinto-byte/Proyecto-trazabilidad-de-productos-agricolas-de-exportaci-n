@@ -1,70 +1,367 @@
-<script>
-function toggleMenu() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("active");
-}
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
 <body>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<!-- BOTÓN -->
-<div class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰</div>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="dash-root">
 
-<!-- MENÚ FLOTANTE -->
-<div class="sidebar" id="sidebar">
-    <h2>🌱 Trazabilidad</h2>
-    <ul>
-        
-        <li>🌾 Fincas</li>
-        <li>📦 Lotes</li>
-        <li>👥 Usuarios</li>
-        <li>📊 Reportes</li>
-        <li>🚪 Cerrar sesión</li>
-    </ul>
-</div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="nav-tabs">
+      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab active">Inicio</a>
+      <a href="#" class="nav-tab">Fincas</a>
+      <a href="#" class="nav-tab">Reportes</a>
+      <a href="#" class="nav-tab">Normativas</a>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">
+          {{ usuario.nombre_completo[:2].upper() if usuario and usuario.nombre_completo else 'US' }}
+        </div>
+        <span class="user-name">
+          {{ usuario.rol.nombre | capitalize if usuario and usuario.rol else 'Usuario' }}
+        </span>
+      </div>
+    </div>
+  </div>
 
-<!-- CONTENIDO -->
-<div class="main">
+  <div class="layout">
 
-    <header class="topbar">
-        <h3>traza</h3>
-        <div class="boxx">👤 Admin</div>
-    </header>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
 
-    <section class="cards">
-        <div class="card">🌱 Lotes: 25</div>
-        <div class="card">🚜 Fincas: 10</div>
-        <div class="card">⚠️ Alertas: 2</div>
-        <div class="card">📦 Despachos: 5</div>
-    </section>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
 
-    <section class="content">
-        <div class="box">📊 Gráficas</div>
-        <div class="box">🕒 Actividad</div>
-    </section>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
 
-</div>
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
 
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras de cultivo
+        </a>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 14l4-4 3 3 5-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          Agroquímicos
+          {% if alertas_activas > 0 %}
+            <span class="alert-badge">{{ alertas_activas }}</span>
+          {% endif %}
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Acopio</div>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="8" width="14" height="8" rx="1.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 8V6a4 4 0 0 1 8 0v2" stroke="#4a4640" stroke-width="1.3"/>
+          </svg>
+          Almacenamiento
+        </a>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M14 7l-5-5-5 5v9h10V7z" stroke="#4a4640" stroke-width="1.3" fill="none" stroke-linejoin="round"/>
+            <rect x="6.5" y="10" width="5" height="6" rx="0.5" fill="#4a4640" opacity="0.3"/>
+          </svg>
+          Despachos
+        </a>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M6 9l2 2 4-4" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Inspecciones
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="6" r="3" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M3 15c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Usuarios y roles
+        </a>
+
+        <a href="#" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2l1.5 3h3.5l-2.8 2 1.1 3.5L9 9 5.7 10.5l1.1-3.5L4 5h3.5L9 2z" stroke="#4a4640" stroke-width="1.2" fill="none"/>
+          </svg>
+          Normativas
+        </a>
+
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
+
+    </div><!-- /sidebar -->
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+
+      <div class="page-header">
+        <div class="page-title">Panel de control</div>
+        <div class="page-subtitle">
+          Temporada 2025-2026 · Última actualización: {{ now.strftime('%d/%m/%Y %H:%M') }}
+        </div>
+      </div>
+
+      <!-- ── KPIs ────────────────────────────────── -->
+      <div class="kpi-grid">
+        <div class="kpi-card green">
+          <div class="kpi-label">Lotes activos</div>
+          <div class="kpi-value">{{ total_lotes }}</div>
+          <div class="kpi-meta">En producción o cosechados</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">Fincas registradas</div>
+          <div class="kpi-value">{{ total_fincas }}</div>
+          <div class="kpi-meta">Total en el sistema</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Alertas activas</div>
+          <div class="kpi-value">{{ alertas_activas }}</div>
+          <div class="kpi-meta {% if alertas_activas > 0 %}warn{% endif %}">
+            {% if alertas_activas > 0 %}Anomalías pendientes de revisión{% else %}Sin alertas pendientes{% endif %}
+          </div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-label">Despachos en tránsito</div>
+          <div class="kpi-value">{{ despachos_transito }}</div>
+          <div class="kpi-meta">{{ despachos_puerto }} próximos al puerto</div>
+        </div>
+      </div>
+
+      <!-- ── Gráfica + Actividad ─────────────────── -->
+      <div class="content-grid">
+
+        <!-- Gráfica de producción real por finca -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Producción cosechada por finca (kg)</span>
+            <a href="#" class="panel-action">Ver reporte completo →</a>
+          </div>
+
+          {% if grafica_fincas %}
+            <div class="chart-area"
+                 id="chart-produccion"
+                 data-fincas="{{ grafica_fincas | tojson }}"
+                 data-real="{{ grafica_real | tojson }}"
+                 data-max="{{ max_produccion }}">
+              <!-- Las barras se construyen con JS -->
+            </div>
+            <div class="chart-labels" id="chart-labels"></div>
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#3a7c22"></div>Kg cosechados
+              </div>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <p>No hay datos de cosecha registrados aún.</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Actividad reciente (anomalías) -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Anomalías recientes</span>
+          </div>
+          <div class="activity-list">
+            {% for anomalia, numero_lote, nombre_usuario in anomalias_recientes %}
+            <div class="activity-item">
+              <div class="activity-dot
+                {% if anomalia.gravedad == 'GRAVE' %}red
+                {% elif anomalia.gravedad == 'MODERADA' %}amber
+                {% else %}blue{% endif %}">
+              </div>
+              <div>
+                <div class="activity-text">
+                  {{ anomalia.gravedad | capitalize }} · Lote {{ numero_lote }}
+                  — {{ anomalia.descripcion[:60] }}{% if anomalia.descripcion|length > 60 %}…{% endif %}
+                </div>
+                <div class="activity-time">
+                  {{ anomalia.fecha_deteccion.strftime('%d/%m/%Y') if anomalia.fecha_deteccion else '' }}
+                  · {{ nombre_usuario or 'Sistema' }}
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div>
+                <div class="activity-text">Sin anomalías recientes</div>
+                <div class="activity-time">El sistema opera con normalidad</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Lotes + Temperaturas ────────────────── -->
+      <div class="bottom-grid">
+
+        <!-- Tabla de lotes -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Últimos lotes registrados</span>
+            <a href="#" class="panel-action">Ver todos →</a>
+          </div>
+          <table class="lote-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Finca</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lote, nombre_finca in ultimos_lotes %}
+              <tr>
+                <td class="lote-code">{{ lote.numero_lote }}</td>
+                <td>{{ nombre_finca }}</td>
+                <td>
+                  {% if lote.estado == 'ACTIVO' %}
+                    <span class="status-pill ok">Activo</span>
+                  {% elif lote.estado == 'COSECHADO' %}
+                    <span class="status-pill ok">Cosechado</span>
+                  {% elif lote.estado == 'BLOQUEADO' %}
+                    <span class="status-pill block">Bloqueado</span>
+                  {% elif lote.estado == 'DESPACHADO' %}
+                    <span class="status-pill ok">Despachado</span>
+                  {% else %}
+                    <span class="status-pill warn">{{ lote.estado or '—' }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="3" style="color:#9a9282;font-size:13px;padding-top:12px;">
+                  Sin lotes registrados todavía.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Monitor de temperatura -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Temperatura de bodegas</span>
+            <a href="#" class="panel-action">Ver historial →</a>
+          </div>
+
+          {% for b in bodegas_data %}
+          <div class="temp-row">
+            <span class="temp-name">{{ b.nombre }}</span>
+            <div class="temp-bar-track">
+              <div class="temp-bar-fill {{ 'ok' if b.ok else 'warn' }}"
+                   style="width: {{ b.porcentaje }}%"></div>
+            </div>
+            <span class="temp-val {{ '' if b.ok else 'warn-text' }}">
+              {{ b.temperatura }} °C {% if not b.ok %}⚠{% endif %}
+            </span>
+          </div>
+          {% else %}
+          <p style="font-size:13px;color:#9a9282;margin-top:8px;">
+            Sin registros de temperatura.
+          </p>
+          {% endfor %}
+
+          <div class="temp-footer">
+            Rango óptimo según setpoint de cada bodega
+          </div>
+        </div>
+
+      </div><!-- /bottom-grid -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+</div><!-- /dash-root -->
+
+<!-- ── JS: construir gráfica con datos reales ── -->
 <script>
-function toggleMenu() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const btn = document.getElementById("menuBtn");
+(function () {
+  var container = document.getElementById('chart-produccion');
+  var labelsDiv  = document.getElementById('chart-labels');
+  if (!container || !labelsDiv) return;
 
-    sidebar.classList.toggle("active");
-    overlay.classList.toggle("active");
+  var fincas = JSON.parse(container.dataset.fincas || '[]');
+  var real   = JSON.parse(container.dataset.real   || '[]');
+  var maxVal = parseFloat(container.dataset.max)   || 1;
 
-    // Cambiar icono ☰ -> ✖
-    if (sidebar.classList.contains("active")) {
-        btn.innerHTML = "✖";
-        btn.classList.add("rotate");
-    } else {
-        btn.innerHTML = "☰";
-        btn.classList.remove("rotate");
-    }
-}
+  fincas.forEach(function (nombre, i) {
+    var pct = Math.max(Math.round((real[i] / maxVal) * 100), 2);
+
+    var group = document.createElement('div');
+    group.className = 'bar-group';
+    group.title = nombre + ': ' + real[i] + ' kg';
+
+    var bar = document.createElement('div');
+    bar.className = 'bar real';
+    bar.style.height = pct + '%';
+
+    group.appendChild(bar);
+    container.appendChild(group);
+
+    var label = document.createElement('div');
+    label.className = 'chart-label-item';
+    label.textContent = nombre.substring(0, 5);
+    labelsDiv.appendChild(label);
+  });
+})();
 </script>
 
 </body>
+</html>
