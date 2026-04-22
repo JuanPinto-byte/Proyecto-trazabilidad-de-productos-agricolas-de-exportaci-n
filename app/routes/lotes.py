@@ -57,9 +57,6 @@ def crear():
         if area_valor > area_disponible:
              flash("El área del lote no puede ser mayor que el área disponible de la finca.", "error")
              return render_template("lotes/form.html", fincas=fincas, lote=None)
-        if area_valor > float(finca.area_total_hectareas):
-            flash("El área del lote no puede ser mayor que el área de la finca.", "error")
-            return render_template("lotes/form.html", fincas=fincas, lote=None)
 
         # Verificar que el número de lote no esté duplicado
         existe = Lote.query.filter_by(numero_lote=numero_lote).first()
@@ -97,14 +94,22 @@ def editar(id):
         lote.area_hectareas = request.form.get("area_hectareas") or None
         lote.estado        = request.form.get("estado", "ACTIVO")
 
+        finca = Finca.query.get(int(lote.finca_id))
+        area_ocupada = sum(float(l.area_hectareas) for l in finca.lotes if l.area_hectareas)
+        area_disponible = float(finca.area_total_hectareas) - area_ocupada
+        area_valor = float(lote.area_hectareas) if lote.area_hectareas else 0
         if not lote.numero_lote:
             flash("El número de lote es obligatorio.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
-        elif lote.area_hectareas and float(lote.area_hectareas) > float(lote.finca.area_total_hectareas):
-            flash("El área del lote no puede ser mayor que el área de la finca.", "error")
+        elif lote.area_hectareas and float(lote.area_hectareas) > area_disponible:
+            flash("El área del lote no puede ser mayor que el área disponible de la finca.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
 
          # Verificar que el número de lote no esté duplicado (excluyendo el actual)
+        existe = Lote.query.filter(Lote.numero_lote == lote.numero_lote, Lote.id != lote.id).first()
+        if existe:
+            flash(f"El lote '{lote.numero_lote}' ya existe.", "error")
+            return render_template("lotes/form.html", fincas=fincas, lote=lote)
 
         db.session.commit()
         flash(f"Lote '{lote.numero_lote}' actualizado correctamente.", "success")
