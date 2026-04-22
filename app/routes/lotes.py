@@ -50,6 +50,11 @@ def crear():
         if not numero_lote:
             flash("El número de lote es obligatorio.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=None)
+        finca = Finca.query.get(int(finca_id))
+        area_valor = float(area)
+        if area_valor > float(finca.area_total_hectareas):
+            flash("El área del lote no puede ser mayor que el área de la finca.", "error")
+            return render_template("lotes/form.html", fincas=fincas, lote=None)
 
         # Verificar que el número de lote no esté duplicado
         existe = Lote.query.filter_by(numero_lote=numero_lote).first()

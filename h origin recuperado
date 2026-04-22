@@ -1,0 +1,53 @@
+* [33mb8f37e0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrecuperado[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Arregle bugs, cambie el dashboard y meti confirm logout.html y logout.css
+* [33m6c0c762[m botones arreglados del front
+* [33m4ae34b7[m agregando el crud de lotes y fincas funcional
+* [33m1e8dd7a[m agregando cambios al auth, run.py, models/__init__.py, app/__init__.py y al dashboard
+* [33m4b9d94f[m agregando los modelos de agroquimicos y aplicaciones_agroquimicos
+* [33m183e5d8[m agregando los modelos de agroquimicos y aplicaciones_agroquimicos
+* [33m486c370[m agregando el modelo de cosechas
+* [33mf486af0[m agregando los modelos de bodegas, control_temperaturas y almacenamiento
+* [33mef0d6dd[m agregando el modelo de anomalias
+* [33mbb1b967[m agregando el modelo de anomalias
+* [33m426df61[m agreganto los modelos de normativa, inspeccion y cumplimientoNormativa
+* [33m6ea7bf9[m agregando lo modelos trazabilidad, recepcionacopio y auditoria
+* [33m3ae73a0[m agregando los modelos bitacuracultivo y condicionMeteorologica
+* [33ma7f0944[m agregando modelo lote
+* [33m388e348[m agregando modelo finca
+* [33md92aa50[m agregando modelo agricultor.py
+* [33m8a355a9[m agregando modelo siembra.py
+* [33mab084a2[m agregando modelo cultivo.py
+* [33m3888a67[m Eliminando cultivo.py del repositorio(mal ubicado)
+* [33ma7bff4b[m Eliminando siembra.py del repositorio(mal ubicado)
+* [33m5e8546c[m agregando el modelo siembra.py
+* [33md1788d8[m base de datos actualizada
+* [33mc9d4f3c[m Agregando los modelos de siembra y cultivo
+* [33m2e6d62b[m agregando la opcion de guardar telefono desde el register
+* [33m3e72889[m añadí una instrucción para ejecutar la aplicacion
+*   [33m16ea84f[m Resolviendo problemas sql
+[32m|[m[33m\[m  
+[32m|[m * [33mc0ad8ca[m Add files via upload
+[32m|[m * [33m5a7b12b[m Add instructions for virtual environment management
+[32m|[m * [33m4e829f1[m[33m ([m[1;31morigin/copilot/comparaciones-programacion-2023[m[33m)[m Eliminando la base de datos de mateo del repositorio
+* [33m|[m [33m4b45bd2[m Reconfigue models/user.py, cree models/rol, arregle bugs de la base de datos y reestructure el proyecto
+[33m|[m[33m/[m  
+* [33m000c03a[m Requerimientos ahora si completos
+* [33m1f6974d[m[33m ([m[1;31morigin/copilot/update-repo-referencias[m[33m, [m[1;31morigin/copilot/add-login-registration-dashboard-access[m[33m)[m Actualice los requerimientos
+* [33m45c8768[m Corregi validacion de inicio de sesion, corregi validacion de registro y ahora se puede acceder al dashboard
+* [33m34acc8c[m Eliminando carpeta duplicada
+* [33mfa2336c[m fronted de login y register funcional
+* [33mf88dd9e[m Subiendo frontend correctamente
+*   [33m84ca901[m Resolviendo conflictos
+[34m|[m[35m\[m  
+[34m|[m *   [33m109baa2[m Merge branch 'main' of https://github.com/JuanPinto-byte/Proyecto-trazabilidad-de-productos-agricolas-de-exportaci-n
+[34m|[m [36m|[m[1;31m\[m  
+[34m|[m [36m|[m * [33mc8388a5[m Base de datos final
+[34m|[m [36m|[m * [33mcbfcfb2[m Añadi ejecución de flask
+[34m|[m * [1;31m|[m [33m0f45f6a[m Se agrego conexcion con bd}
+[34m|[m [1;31m|[m[1;31m/[m  
+[34m|[m *   [33m2bde3bf[m Merge branch 'main' of https://github.com/JuanPinto-byte/Proyecto-trazabilidad-de-productos-agricolas-de-exportaci-n
+[34m|[m [1;32m|[m[1;33m\[m  
+[34m|[m [1;32m|[m * [33m565cd31[m Primer readme
+[34m|[m * [1;33m|[m [33m1dd61f7[m proyecto ahora ejecutable, conexcion con base de datos y totalmente configurado, listo para iniciar desarrollo
+[34m|[m [1;33m|[m[1;33m/[m  
+[34m|[m * [33mc118ee7[m Agrego proyecto Flask inicial
+* [33me3e9eba[m agregando el fronted del login del proyecto
