@@ -10,6 +10,7 @@ auth_bp = Blueprint("auth", __name__)
 
 
 # ── Decorador: protege rutas que requieren sesión activa ──────────────────────
+
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -23,9 +24,10 @@ def login_required(f):
 # ── LOGIN ─────────────────────────────────────────────────────────────────────
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    # Si ya hay sesión activa, ir directo al dashboard
+
+    # 🔥 CLAVE: si ya está logueado → mostrar confirmación
     if "user_id" in session:
-        return redirect(url_for("auth.dashboard"))
+        return redirect(url_for("auth.confirm_logout"))
 
     if request.method == "POST":
         username = request.form.get("username")
@@ -37,25 +39,24 @@ def login():
 
         if not user:
             flash("Usuario no encontrado", "user_error")
-            return redirect(url_for("auth.login"))
+            return render_template("login.html")
 
         if not user.check_password(password):
             flash("Contraseña incorrecta", "password_error")
-            return redirect(url_for("auth.login"))
+            return render_template("login.html")
 
-        # Guardar sesión
+        # ✅ Guardar sesión
         session["user_id"]  = user.id
         session["username"] = user.nombre_usuario
         session["rol"]      = user.rol.nombre if user.rol else "sin_rol"
 
-        # Actualizar último acceso
+        # ✅ Actualizar último acceso
         user.ultimo_acceso = datetime.utcnow()
         db.session.commit()
 
         return redirect(url_for("auth.dashboard"))
 
     return render_template("login.html")
-
 
 # ── REGISTER ──────────────────────────────────────────────────────────────────
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -104,9 +105,27 @@ def logout():
     flash("Sesión cerrada correctamente.", "success")
     return redirect(url_for("auth.login"))
 
+@auth_bp.route('/confirm-logout', methods=["GET", "POST"])
+@login_required
+def confirm_logout():
 
+    if request.method == "POST":
+        accion = request.form.get("accion")
+
+        if accion == "volver":
+            return redirect(url_for("auth.dashboard"))
+
+        elif accion == "logout":
+            session.clear()
+            flash("Sesión cerrada correctamente.", "success")
+            return redirect(url_for("auth.login"))
+
+    return render_template(
+        "confirm_logout.html",
+        usuario=session.get("username")
+    )
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
-@auth_bp.route("/dashboard")
+@auth_bp.route('/dashboard')
 @login_required
 def dashboard():
     # Importar modelos aquí para evitar importaciones circulares
