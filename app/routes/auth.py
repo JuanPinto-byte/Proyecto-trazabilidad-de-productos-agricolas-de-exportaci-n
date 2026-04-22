@@ -45,12 +45,12 @@ def login():
             flash("Contraseña incorrecta", "password_error")
             return render_template("login.html")
 
-        # ✅ Guardar sesión
+        # Guardar sesión
         session["user_id"]  = user.id
         session["username"] = user.nombre_usuario
         session["rol"]      = user.rol.nombre if user.rol else "sin_rol"
 
-        # ✅ Actualizar último acceso
+        # Actualizar último acceso
         user.ultimo_acceso = datetime.utcnow()
         db.session.commit()
 

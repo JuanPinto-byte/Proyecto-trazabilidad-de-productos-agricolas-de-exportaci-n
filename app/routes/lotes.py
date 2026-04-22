@@ -42,7 +42,11 @@ def crear():
         descripcion   = request.form.get("descripcion", "").strip()
         area          = request.form.get("area_hectareas") or None
         estado        = request.form.get("estado", "ACTIVO")
-
+        
+        finca = Finca.query.get(int(finca_id))
+        area_ocupada = sum(float(l.area_hectareas) for l in finca.lotes if l.area_hectareas)
+        area_disponible = float(finca.area_total_hectareas) - area_ocupada
+        area_valor = float(area) if area else 0
         # Validaciones
         if not finca_id:
             flash("Debes seleccionar una finca.", "error")
@@ -50,8 +54,9 @@ def crear():
         if not numero_lote:
             flash("El número de lote es obligatorio.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=None)
-        finca = Finca.query.get(int(finca_id))
-        area_valor = float(area)
+        if area_valor > area_disponible:
+             flash("El área del lote no puede ser mayor que el área disponible de la finca.", "error")
+             return render_template("lotes/form.html", fincas=fincas, lote=None)
         if area_valor > float(finca.area_total_hectareas):
             flash("El área del lote no puede ser mayor que el área de la finca.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=None)
