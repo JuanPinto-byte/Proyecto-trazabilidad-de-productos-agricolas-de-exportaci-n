@@ -8,9 +8,6 @@ __pycache__/
 venv/
 env/
 
-# Variables de entorno
-.env
-
 # Base de datos
 *.db
 *.sqlite3
