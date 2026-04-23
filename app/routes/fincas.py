@@ -4,6 +4,7 @@ from app.models.finca import Finca
 from app.models.agricultor import Agricultor
 from app.models.user import User
 from functools import wraps
+from sqlalchemy import func
 
 fincas_bp = Blueprint("fincas", __name__)
 
@@ -58,6 +59,15 @@ def crear():
             return render_template("fincas/form.html",
                                    agricultores=agricultores,
                                    usuarios=usuarios, finca=None)
+        
+        nombre = request.form.get("nombre_finca", "").strip().lower()
+        existe = Finca.query.filter(
+            Finca.nombre_finca.ilike(nombre)   # compara sin importar mayúsculas
+            ).first()
+
+        if existe:
+            flash(f"La '{nombre}' ya existe.", "error")
+            return render_template("fincas/form.html", agricultores=agricultores, usuarios=usuarios, finca=None)
 
         nueva = Finca(
             nombre_finca              = nombre,
@@ -102,9 +112,22 @@ def editar(id):
             return render_template("fincas/form.html",
                                    agricultores=agricultores,
                                    usuarios=usuarios, finca=finca)
+        nombre = request.form.get("nombre_finca", "").strip().lower()
 
+# Validar que no exista otra finca con el mismo nombre (case-insensitive),
+# excluyendo la finca que estás editando
+        existe = Finca.query.filter(
+        func.lower(Finca.nombre_finca) == nombre,
+            Finca.id != finca.id
+            ).first()
+
+        if existe:
+            flash(f"La finca '{nombre}' ya existe.", "error")
+            return render_template("fincas/form.html",
+                           agricultores=agricultores,
+                           usuarios=usuarios, finca=finca)
         db.session.commit()
-        flash(f"Finca '{finca.nombre_finca}' actualizada correctamente.", "success")
+        flash(f"La '{finca.nombre_finca}' actualizada correctamente.", "success")
         return redirect(url_for("fincas.lista"))
 
     return render_template("fincas/form.html",
