@@ -59,10 +59,15 @@ def crear():
              return render_template("lotes/form.html", fincas=fincas, lote=None)
 
         # Verificar que el número de lote no esté duplicado
-        existe = Lote.query.filter_by(numero_lote=numero_lote).first()
+        existe = Lote.query.filter(
+                Lote.numero_lote == numero_lote,
+                Lote.finca_id == finca.id   
+                ).first()
+
         if existe:
-            flash(f"El lote '{numero_lote}' ya existe.", "error")
+            flash(f"El lote '{numero_lote}' ya existe en la finca '{finca.nombre_finca}'.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=None)
+
 
         nuevo = Lote(
             finca_id            = int(finca_id),
@@ -95,9 +100,13 @@ def editar(id):
         lote.estado        = request.form.get("estado", "ACTIVO")
 
         finca = Finca.query.get(int(lote.finca_id))
-        area_ocupada = sum(float(l.area_hectareas) for l in finca.lotes if l.area_hectareas)
+        area_ocupada = sum(
+            float(l.area_hectareas) 
+            for l in finca.lotes 
+                if l.area_hectareas and l.id != lote.id
+            )
         area_disponible = float(finca.area_total_hectareas) - area_ocupada
-        area_valor = float(lote.area_hectareas) if lote.area_hectareas else 0
+
         if not lote.numero_lote:
             flash("El número de lote es obligatorio.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
@@ -105,11 +114,18 @@ def editar(id):
             flash("El área del lote no puede ser mayor que el área disponible de la finca.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
 
-         # Verificar que el número de lote no esté duplicado (excluyendo el actual)
-        existe = Lote.query.filter(Lote.numero_lote == lote.numero_lote, Lote.id != lote.id).first()
+
+        # Verificar que el número de lote no esté duplicado en la misma finca
+        existe = Lote.query.filter(
+            Lote.numero_lote == lote.numero_lote,
+            Lote.finca_id == lote.finca_id,  
+            Lote.id != lote.id              
+             ).first()
+
         if existe:
-            flash(f"El lote '{lote.numero_lote}' ya existe.", "error")
+            flash(f"El lote '{lote.numero_lote}' ya existe en la finca '{finca.nombre_finca}'.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
+
 
         db.session.commit()
         flash(f"Lote '{lote.numero_lote}' actualizado correctamente.", "success")
