@@ -4,6 +4,7 @@ from app.extensions import db, jwt
 from app.routes.auth import auth_bp
 from app.routes.fincas import fincas_bp
 from app.routes.lotes  import lotes_bp
+from app.routes.bitacoras import bitacoras_bp
 
 
 
@@ -28,6 +29,7 @@ jwt.init_app(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(fincas_bp)
 app.register_blueprint(lotes_bp)
+app.register_blueprint(bitacoras_bp)
 
 # Ruta raíz → redirige al login
 @app.route("/")

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — {{ 'Editar' if bitacora else 'Nueva' }} Bitácora</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    .form-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e8e6e1;
+    }
+
+    .form-section:last-child {
+      border-bottom: none;
+    }
+
+    .form-section-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #3a7c22;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-section-icon {
+      font-size: 1.2em;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 10px;
+      background: #f5f3f0;
+      border: 2px dashed #3a7c22;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9em;
+      color: #3a7c22;
+      transition: 0.2s;
+    }
+
+    .file-input-label:hover {
+      background: #eee;
+    }
+
+    .file-list {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .file-tag {
+      background: #3a7c22;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-tag button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1.1em;
+      padding: 0;
+    }
+
+    .info-box {
+      background: #f0f8ff;
+      border-left: 4px solid #2196F3;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #1976D2;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras de cultivo
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">{{ 'Editar bitácora' if bitacora else 'Nueva bitácora' }}</div>
+          <div class="page-subtitle">
+            {{ 'Modifica el registro de actividades' if bitacora else 'Crea un nuevo registro de actividades y observaciones' }}
+          </div>
+        </div>
+        <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">← Volver</a>
+      </div>
+
+      <div class="panel">
+        <form method="POST" enctype="multipart/form-data">
+
+          <!-- SECCIÓN 1: DATOS BÁSICOS DEL CULTIVO -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">🌾</span>
+              Datos básicos del cultivo
+            </div>
+            <div class="info-box">
+              ℹ️ Completa la información principal del lote y la fecha del registro.
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Lote *</label>
+                <select name="lote_id" class="form-input" required>
+                  <option value="">— Seleccionar lote —</option>
+                  {% for lote in lotes %}
+                    <option value="{{ lote.id }}"
+                      {{ 'selected' if bitacora and bitacora.lote_id == lote.id else '' }}>
+                      {{ lote.numero_lote }} — {{ lote.finca.nombre_finca }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Fecha *</label>
+                <input type="date" name="fecha" class="form-input" required
+                  value="{{ bitacora.fecha.strftime('%Y-%m-%d') if bitacora and bitacora.fecha else '' }}">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Agrólogo asignado</label>
+                <select name="agronomo_id" class="form-input">
+                  <option value="">— Sin asignar —</option>
+                  {% for usuario in usuarios %}
+                    <option value="{{ usuario.id }}"
+                      {{ 'selected' if bitacora and bitacora.agronomo_id == usuario.id else '' }}>
+                      {{ usuario.nombre_completo or usuario.nombre_usuario }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: ACTIVIDADES REALIZADAS -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">📝</span>
+              Actividades realizadas
+            </div>
+            <div class="info-box">
+              ℹ️ Describe las actividades principales del día. Los detalles específicos se registran en la siguiente sección.
+            </div>
+            <div class="form-grid form-full">
+              <div class="form-group form-full">
+                <label class="form-label">Resumen de actividades *</label>
+                <textarea name="actividades_realizadas" class="form-input form-textarea" required
+                  placeholder="Ej: Control de maleza, aplicación de fertilizante, revisión de plagas...">{{ bitacora.actividades_realizadas if bitacora else '' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: ACTIVIDADES ESPECÍFICAS -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">🔧</span>
+              Registro detallado de labores
+            </div>
+            <div class="info-box">
+              ℹ️ Especifica qué se hizo en cada labor. Si no aplica, deja en blanco.
+            </div>
+            <div class="form-grid">
+              <div class="form-group form-full">
+                <label class="form-label">Siembra</label>
+                <textarea name="siembra" class="form-input form-textarea"
+                  placeholder="Ej: Sembrados 500m² con variedad X, profundidad 5cm, distancia 30x30cm">{{ '' }}</textarea>
+              </div>
+
+              <div class="form-group form-full">
+                <label class="form-label">Riego</label>
+                <textarea name="riego" class="form-input form-textarea"
+                  placeholder="Ej: Riego por goteo, 25mm, duración 2 horas, cobertura 80%">{{ '' }}</textarea>
+              </div>
+
+              <div class="form-group form-full">
+                <label class="form-label">Fertilización</label>
+                <textarea name="fertilizacion" class="form-input form-textarea"
+                  placeholder="Ej: Aplicado N-P-K (10-10-10), dosis 20kg/ha, método foliar">{{ '' }}</textarea>
+              </div>
+
+              <div class="form-group form-full">
+                <label class="form-label">Insumos utilizados</label>
+                <textarea name="insumos" class="form-input form-textarea"
+                  placeholder="Ej: Fungicida X (0.5L/ha), Insecticida Y (2ml/L), Cal (500kg)">{{ '' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 4: CONDICIONES AMBIENTALES -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">🌤️</span>
+              Condiciones ambientales
+            </div>
+            <div class="info-box">
+              ℹ️ Registra los datos meteorológicos y ambientales del día.
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Temperatura (°C)</label>
+                <input type="number" name="temperatura" class="form-input" step="0.1"
+                  placeholder="Ej: 28.5">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Humedad relativa (%)</label>
+                <input type="number" name="humedad" class="form-input" min="0" max="100" step="0.1"
+                  placeholder="Ej: 65">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Precipitación (mm)</label>
+                <input type="number" name="precipitacion" class="form-input" step="0.1" min="0"
+                  placeholder="Ej: 5.2">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 5: OBSERVACIONES ADICIONALES -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">📌</span>
+              Observaciones y notas
+            </div>
+            <div class="info-box">
+              ℹ️ Espacio libre para anotar cualquier observación relevante.
+            </div>
+            <div class="form-grid form-full">
+              <div class="form-group form-full">
+                <label class="form-label">Observaciones</label>
+                <textarea name="observaciones" class="form-input form-textarea"
+                  placeholder="Ej: Se observó presencia de plagas, requiere tratamiento. Drenaje en buen estado. Próxima cosecha estimada para 15 días.">{{ '' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 6: EVIDENCIA MULTIMEDIA -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <span class="form-section-icon">📸</span>
+              Evidencia multimedia
+            </div>
+            <div class="info-box">
+              ℹ️ Carga imágenes como evidencia de las actividades (PNG, JPG, GIF, WebP). Máximo 10MB por imagen.
+            </div>
+            <div class="form-grid form-full">
+              <div class="file-input-wrapper">
+                <label for="imagenes" class="file-input-label">
+                  📁 Selecciona imágenes (puedes seleccionar varias)
+                </label>
+                <input type="file" id="imagenes" name="imagenes" multiple accept=".png,.jpg,.jpeg,.gif,.webp">
+              </div>
+              <div id="file-list" class="file-list"></div>
+            </div>
+          </div>
+
+          <!-- BOTONES DE ACCIÓN -->
+          <div style="display:flex; gap:10px; margin-top:30px; padding-top:20px; border-top: 2px solid #e8e6e1;">
+            <button type="submit" class="btn-primary">
+              {{ 'Guardar cambios' if bitacora else 'Crear bitácora' }}
+            </button>
+            <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Mostrar archivos seleccionados
+  document.getElementById('imagenes').addEventListener('change', function(e) {
+    const fileList = document.getElementById('file-list');
+    fileList.innerHTML = '';
+
+    Array.from(this.files).forEach((file, index) => {
+      const tag = document.createElement('div');
+      tag.className = 'file-tag';
+      tag.innerHTML = `
+        <span>🖼️ ${file.name}</span>
+        <button type="button" onclick="removeFile(${index})">✕</button>
+      `;
+      fileList.appendChild(tag);
+    });
+  });
+
+  function removeFile(index) {
+    const input = document.getElementById('imagenes');
+    const dt = new DataTransfer();
+    const files = input.files;
+
+    for (let i = 0; i < files.length; i++) {
+      if (i !== index) {
+        dt.items.add(files[i]);
+      }
+    }
+
+    input.files = dt.files;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+</script>
+
+</body>
+</html>
