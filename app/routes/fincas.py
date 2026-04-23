@@ -54,6 +54,16 @@ def crear():
             return render_template("fincas/form.html",
                                    agricultores=agricultores,
                                    usuarios=usuarios, finca=None)
+        if area_cultiv>area_total:
+            flash("El area cultivable no puede ser mas grande que area total.", "error")
+            return render_template("fincas/form.html",
+                                   agricultores=agricultores,
+                                   usuarios=usuarios, finca=None)
+        if not area_cultiv:
+            flash("El Area Cultivable es obligatorio.", "error")
+            return render_template("fincas/form.html",
+                                   agricultores=agricultores,
+                                   usuarios=usuarios, finca=None)
         if not agricultor_id:
             flash("Debes seleccionar un agricultor.", "error")
             return render_template("fincas/form.html",
@@ -113,7 +123,23 @@ def editar(id):
                                    agricultores=agricultores,
                                    usuarios=usuarios, finca=finca)
         nombre = request.form.get("nombre_finca", "").strip().lower()
+        # Obtener y convertir datos correctamente
+        area_total = float(request.form.get("area_total_hectareas") or 0)
+        area_cultivable = float(request.form.get("area_cultivable_hectareas") or 0)
 
+        # Asignar ya como números
+        finca.area_total_hectareas = area_total
+        finca.area_cultivable_hectareas = area_cultivable
+
+        # Validación correcta
+        if area_cultivable > area_total:
+            flash("El area cultivable no puede ser mayor que el area total.", "error")
+            return render_template(
+            "fincas/form.html",
+            agricultores=agricultores,
+            usuarios=usuarios,
+            finca=finca   
+    )
 # Validar que no exista otra finca con el mismo nombre (case-insensitive),
 # excluyendo la finca que estás editando
         existe = Finca.query.filter(

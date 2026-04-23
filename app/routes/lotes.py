@@ -176,7 +176,11 @@ def desbloquear(id):
     )
 
     # Si al desbloquear se excede el área cultivable
-    if lote.area_hectareas and (area_ocupada + float(lote.area_hectareas)) > float(finca.area_cultivable_hectareas):
+    area_lote = float(lote.area_hectareas or 0)
+    area_finca = float(finca.area_cultivable_hectareas or 0)
+    area_ocupada = float(area_ocupada or 0)
+
+    if (area_ocupada + area_lote) > area_finca:
         flash(f"No se puede desbloquear el lote '{lote.numero_lote}' porque supera las hectáreas cultivables de la finca.", "error")
         return redirect(url_for("lotes.lista"))
 
