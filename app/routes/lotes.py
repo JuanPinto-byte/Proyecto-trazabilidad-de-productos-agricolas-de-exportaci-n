@@ -44,8 +44,12 @@ def crear():
         estado        = request.form.get("estado", "ACTIVO")
         
         finca = Finca.query.get(int(finca_id))
-        area_ocupada = sum(float(l.area_hectareas) for l in finca.lotes if l.area_hectareas)
-        area_disponible = float(finca.area_total_hectareas) - area_ocupada
+
+        area_ocupada = sum(
+            float(l.area_hectareas) for l in finca.lotes 
+            if l.area_hectareas and l.estado == "ACTIVO"
+            )
+        area_disponible = float(finca.area_cultivable_hectareas) - area_ocupada
         area_valor = float(area) if area else 0
         # Validaciones
         if not finca_id:
@@ -93,39 +97,52 @@ def editar(id):
     fincas = Finca.query.filter_by(estado="ACTIVO").order_by(Finca.nombre_finca).all()
     
     if request.method == "POST":
-        lote.finca_id      = int(request.form.get("finca_id"))
-        lote.numero_lote   = request.form.get("numero_lote", "").strip()
-        lote.descripcion   = request.form.get("descripcion", "").strip()
+        lote.finca_id       = int(request.form.get("finca_id"))
+        lote.numero_lote    = request.form.get("numero_lote", "").strip()
+        lote.descripcion    = request.form.get("descripcion", "").strip()
         lote.area_hectareas = request.form.get("area_hectareas") or None
-        lote.estado        = request.form.get("estado", "ACTIVO")
+        lote.estado         = request.form.get("estado", "ACTIVO")
 
         finca = Finca.query.get(int(lote.finca_id))
-        area_ocupada = sum(
-            float(l.area_hectareas) 
-            for l in finca.lotes 
-                if l.area_hectareas and l.id != lote.id
-            )
-        area_disponible = float(finca.area_total_hectareas) - area_ocupada
 
+        #Validar que al activar no se exceda el área cultivable
+        if lote.estado == "ACTIVO":
+            area_ocupada = sum(
+                float(l.area_hectareas)
+                for l in finca.lotes
+                if l.area_hectareas and l.estado == "ACTIVO" and l.id != lote.id
+            )
+            if lote.area_hectareas and (area_ocupada + float(lote.area_hectareas)) > float(finca.area_cultivable_hectareas):
+                flash(f"No se puede activar el lote '{lote.numero_lote}' porque supera las hectáreas cultivables de la finca.", "error")
+                return render_template("lotes/form.html", fincas=fincas, lote=lote)
+
+        #Validar número de lote obligatorio
         if not lote.numero_lote:
             flash("El número de lote es obligatorio.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
-        elif lote.area_hectareas and float(lote.area_hectareas) > area_disponible:
+
+        #Validar área contra disponible (solo lotes activos)
+        area_ocupada = sum(
+            float(l.area_hectareas) 
+            for l in finca.lotes 
+            if l.area_hectareas and l.estado == "ACTIVO" and l.id != lote.id
+        )
+        area_disponible = float(finca.area_cultivable_hectareas) - area_ocupada
+
+        if lote.area_hectareas and float(lote.area_hectareas) > area_disponible:
             flash("El área del lote no puede ser mayor que el área disponible de la finca.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
 
-
-        # Verificar que el número de lote no esté duplicado en la misma finca
+        #Validar duplicados en la misma finca
         existe = Lote.query.filter(
             Lote.numero_lote == lote.numero_lote,
-            Lote.finca_id == lote.finca_id,  
-            Lote.id != lote.id              
-             ).first()
+            Lote.finca_id == lote.finca_id,
+            Lote.id != lote.id
+        ).first()
 
         if existe:
             flash(f"El lote '{lote.numero_lote}' ya existe en la finca '{finca.nombre_finca}'.", "error")
             return render_template("lotes/form.html", fincas=fincas, lote=lote)
-
 
         db.session.commit()
         flash(f"Lote '{lote.numero_lote}' actualizado correctamente.", "success")
@@ -149,10 +166,26 @@ def bloquear(id):
 @login_required
 def desbloquear(id):
     lote = Lote.query.get_or_404(id)
+    finca = lote.finca
+
+    # Área ocupada actual (solo lotes activos)
+    area_ocupada = sum(
+        float(l.area_hectareas) 
+        for l in finca.lotes 
+        if l.area_hectareas and l.estado == "ACTIVO"
+    )
+
+    # Si al desbloquear se excede el área cultivable
+    if lote.area_hectareas and (area_ocupada + float(lote.area_hectareas)) > float(finca.area_cultivable_hectareas):
+        flash(f"No se puede desbloquear el lote '{lote.numero_lote}' porque supera las hectáreas cultivables de la finca.", "error")
+        return redirect(url_for("lotes.lista"))
+
+    # Si no excede, se desbloquea normalmente
     lote.estado = "ACTIVO"
     db.session.commit()
     flash(f"Lote '{lote.numero_lote}' desbloqueado.", "success")
     return redirect(url_for("lotes.lista"))
+
 
 
 # ── ELIMINAR ──────────────────────────────────────────────────────────────────
