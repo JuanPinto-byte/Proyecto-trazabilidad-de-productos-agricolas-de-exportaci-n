@@ -14,4 +14,8 @@ from .bodega     import Bodega, ControlTemperatura, Almacenamiento
 from .anomalia   import Anomalia
 from .bitacora   import BitacoraCultivo, CondicionMeteorologica
 from .normativa  import Normativa, Inspeccion, CumplimientoNormativa
+<<<<<<< HEAD
 from .trazabilidad import Trazabilidad, RecepcionAcopio, Auditoria
+=======
+from .trazabilidad import Trazabilidad, TrazabilidadEvento, RecepcionAcopio, Auditoria
+>>>>>>> c7495d7 (Crear trazabilidad)

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trazabilidad del Lote — TrazaAgro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <a href="{{ url_for('trazabilidad.lista') }}" class="nav-tab">Volver a Lotes</a>
+      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Dashboard</a>
+    </div>
+  </div>
+
+  <div class="layout" style="padding: 28px;">
+
+    <!-- Mensajes de flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="page-header">
+      <h1 class="page-title">Trazabilidad del Lote: {{ lote.numero_lote }}</h1>
+      <div class="lote-info">
+        <span class="info-chip">Finca: {{ lote.finca.nombre_finca if lote.finca else 'N/A' }}</span>
+        <span class="info-chip">Estado actual: {{ traza.estado if traza else 'Sin trazabilidad' }}</span>
+        <span class="info-chip">Código: {{ traza.codigo_trazabilidad if traza else 'N/A' }}</span>
+      </div>
+    </div>
+
+    <div class="sections-grid">
+
+      <!-- FORMULARIO DE EVENTO -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Registrar Evento de Trazabilidad</h2>
+          <div class="section-icon">📝</div>
+        </div>
+        <div class="section-content">
+          {% if traza %}
+            <form method="POST" id="estado-form" class="event-form">
+              <div class="form-row">
+                <label for="estado">Estado</label>
+                <select name="estado" id="estado" required>
+                  <option value="">Selecciona un estado</option>
+                  <option value="GENERADO" {% if traza.estado == 'GENERADO' %}selected{% endif %}>Generado</option>
+                  <option value="EN_TRANSITO" {% if traza.estado == 'EN_TRANSITO' %}selected{% endif %}>En Tránsito</option>
+                  <option value="EN_PUERTO" {% if traza.estado == 'EN_PUERTO' %}selected{% endif %}>En Puerto</option>
+                  <option value="ENTREGADO" {% if traza.estado == 'ENTREGADO' %}selected{% endif %}>Entregado</option>
+                  <option value="BLOQUEADO" {% if traza.estado == 'BLOQUEADO' %}selected{% endif %}>Bloqueado</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="ubicacion_actual">Ubicación actual</label>
+                <input type="text" name="ubicacion_actual" id="ubicacion_actual" placeholder="Ciudad, terminal o dirección">
+              </div>
+
+              <div class="form-row">
+                <label for="transportista">Transportista</label>
+                <input type="text" name="transportista" id="transportista" placeholder="Empresa o conductor">
+              </div>
+
+              <div class="form-row">
+                <label for="vehiculo">Vehículo / Contenedor</label>
+                <input type="text" name="vehiculo" id="vehiculo" placeholder="Placa, contenedor o camión">
+              </div>
+
+              <div class="form-row">
+                <label for="origen">Origen</label>
+                <input type="text" name="origen" id="origen" placeholder="Lugar de salida">
+              </div>
+
+              <div class="form-row">
+                <label for="destino">Destino</label>
+                <input type="text" name="destino" id="destino" placeholder="Lugar de llegada prevista">
+              </div>
+
+              <div class="form-row">
+                <label for="observaciones">Observaciones</label>
+                <textarea name="observaciones" id="observaciones" rows="3" placeholder="Notas adicionales"></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary" id="update-btn">Guardar evento</button>
+            </form>
+          {% else %}
+            <div class="empty-section">
+              <div class="empty-icon">⚠️</div>
+              <p>No existe trazabilidad registrada para este lote. Crea primero la trazabilidad en el sistema.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- HISTORIAL DE EVENTOS -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Historial de Eventos</h2>
+          <div class="section-icon">📊</div>
+        </div>
+        <div class="section-content">
+          {% if eventos %}
+            {% for evento in eventos %}
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <div class="timeline-date">Hora Colombia: {{ evento.fecha_evento.strftime('%d/%m/%Y %H:%M') }}</div>
+                  <div class="timeline-title">{{ evento.estado }}</div>
+                  {% if eventos_usuarios.get(evento.id) %}
+                    <div class="timeline-user">👤 {{ eventos_usuarios.get(evento.id) }}</div>
+                  {% endif %}
+                  <div class="timeline-meta">Ubicación: {{ evento.ubicacion_actual or 'No registrada' }}</div>
+                  <div class="timeline-meta">Transportista: {{ evento.transportista or 'No registrado' }}</div>
+                  <div class="timeline-meta">Vehículo/Contenedor: {{ evento.vehiculo or 'No registrado' }}</div>
+                  <div class="timeline-meta">Origen: {{ evento.origen or 'No registrado' }} / Destino: {{ evento.destino or 'No registrado' }}</div>
+                  {% if evento.observaciones %}
+                    <div class="timeline-meta"><em>{{ evento.observaciones }}</em></div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-section">
+              <div class="empty-icon">📋</div>
+              <p>No hay eventos registrados aún.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  color: #1a1a17;
+  margin-bottom: 16px;
+}
+
+.lote-info {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.info-chip {
+  background: #e8f4fd;
+  color: #1877f2;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sections-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a17;
+  margin: 0;
+}
+
+.section-icon {
+  font-size: 24px;
+}
+
+.section-content {
+  padding: 20px;
+}
+
+/* TIMELINE */
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  width: 12px;
+  height: 12px;
+  background: #1877f2;
+  border-radius: 50%;
+  margin-right: 16px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: #6b6b6b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.timeline-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a17;
+  margin-bottom: 4px;
+}
+
+.timeline-user {
+  font-size: 13px;
+  color: #1877f2;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.timeline-meta {
+  font-size: 14px;
+  color: #4a4640;
+}
+
+.event-form {
+  display: grid;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+  width: 100%;
+  border: 1px solid #d8dee2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #1a1a17;
+  background: #f9fafb;
+}
+
+.form-row textarea {
+  resize: vertical;
+}
+
+.empty-section {
+  text-align: center;
+  padding: 40px 0;
+  color: #5d5d5d;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.blocked-notice {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  color: #856404;
+}
+
+.blocked-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.blocked-notice h3 {
+  margin: 12px 0 8px;
+  font-size: 18px;
+  color: #333;
+}
+
+.blocked-notice p {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #333;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-warning:hover {
+  background: #ffb300;
+}
+
+.timeline-meta code {
+  background: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* BITÁCORAS */
+.bitacora-item {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.bitacora-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.bitacora-date {
+  font-size: 12px;
+  color: #6b6b6b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.bitacora-content p {
+  margin-bottom: 8px;
+  color: #1a1a17;
+}
+
+.observaciones {
+  color: #6b6b6b;
+  font-style: italic;
+}
+
+/* EMPTY STATES */
+.empty-section {
+  text-align: center;
+  padding: 32px 20px;
+  color: #6b6b6b;
+}
+
+.empty-section .empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.empty-section p {
+  margin: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lote-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* FLASH MESSAGES */
+.flash-messages {
+  margin-bottom: 20px;
+}
+
+.flash {
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.flash.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.flash.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+</style>
+
+<script>
+document.getElementById('estado-form').addEventListener('submit', function() {
+  const btn = document.getElementById('update-btn');
+  btn.disabled = true;
+  btn.textContent = 'Actualizando...';
+});
+</script>
+
+</body>
+</html>

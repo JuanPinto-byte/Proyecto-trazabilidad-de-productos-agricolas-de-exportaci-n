@@ -12,10 +12,41 @@ class Trazabilidad(db.Model):
     # Estados: 'GENERADO', 'EN_TRANSITO', 'EN_PUERTO', 'ENTREGADO', 'BLOQUEADO'
     estado               = db.Column(db.String(30))
 
+<<<<<<< HEAD
+=======
+    eventos = db.relationship(
+        'TrazabilidadEvento',
+        backref='trazabilidad',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
+
+>>>>>>> c7495d7 (Crear trazabilidad)
     def __repr__(self):
         return f'<Trazabilidad {self.codigo_trazabilidad} — {self.estado}>'
 
 
+<<<<<<< HEAD
+=======
+class TrazabilidadEvento(db.Model):
+    __tablename__ = 'trazabilidad_eventos'
+
+    id                = db.Column(db.Integer, primary_key=True)
+    trazabilidad_id   = db.Column(db.Integer, db.ForeignKey('trazabilidad.id'), nullable=False)
+    fecha_evento      = db.Column(db.DateTime, default=datetime.utcnow)
+    estado            = db.Column(db.String(30), nullable=False)
+    ubicacion_actual  = db.Column(db.String(150))
+    transportista     = db.Column(db.String(120))
+    vehiculo          = db.Column(db.String(120))
+    origen            = db.Column(db.String(150))
+    destino           = db.Column(db.String(150))
+    observaciones     = db.Column(db.Text)
+
+    def __repr__(self):
+        return f'<TrazabilidadEvento traza={self.trazabilidad_id} estado={self.estado} fecha={self.fecha_evento}>'
+
+
+>>>>>>> c7495d7 (Crear trazabilidad)
 class RecepcionAcopio(db.Model):
     __tablename__ = 'recepcion_acopio'
 
