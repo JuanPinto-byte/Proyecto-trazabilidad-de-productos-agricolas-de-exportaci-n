@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista de Trazabilidad — TrazaAgro</title>
+  <title>TrazaAgro — Trazabilidad</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="dash-root">
 
   <!-- TOPBAR -->
@@ -19,151 +18,150 @@
       <div class="logo-text">Traza<span>Agro</span></div>
     </div>
     <div class="topbar-right">
-      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Volver al Dashboard</a>
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
     </div>
   </div>
 
-  <div class="layout" style="padding: 28px;">
+  <div class="layout">
 
-    <div class="page-header">
-      <h1 class="page-title">Trazabilidad de Lotes</h1>
-      <p class="page-subtitle">Selecciona un lote para ver su trazabilidad completa</p>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Inicio
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras
+        </a>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="14" cy="13" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M15.8 15.8l1.5 1.5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Trazabilidad
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
     </div>
 
-    <div class="content-grid">
-      {% for lote in lotes %}
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">{{ lote.numero_lote }}</h3>
-            <div class="card-meta">ID: {{ lote.id }}</div>
-          </div>
-          <div class="card-content">
-            <p><strong>Finca:</strong> {{ lote.finca.nombre_finca if lote.finca else 'N/A' }}</p>
-            <p><strong>Estado:</strong> {{ lote.estado }}</p>
-          </div>
-          <div class="card-actions">
-            <a href="{{ url_for('trazabilidad.ver_trazabilidad', lote_id=lote.id) }}" class="btn-primary">
-              Ver Trazabilidad
-            </a>
-          </div>
-        </div>
-      {% else %}
-        <div class="empty-state">
-          <div class="empty-icon">📋</div>
-          <h3>No hay lotes registrados</h3>
-          <p>Crea lotes de producción para comenzar con la trazabilidad.</p>
-        </div>
-      {% endfor %}
-    </div>
+    <!-- CONTENIDO -->
+    <div class="main-content">
 
+      <!-- Mensajes flash -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Trazabilidad</div>
+          <div class="page-subtitle">Seguimiento del estado de exportación por lote de producción</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:0;">
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Finca</th>
+              <th>Código trazabilidad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lote in lotes %}
+            <tr>
+              <td class="lote-code">{{ lote.numero_lote }}</td>
+              <td>{{ lote.finca.nombre_finca if lote.finca else '—' }}</td>
+              <td>
+                {% if lote.trazabilidad %}
+                  <code style="font-size:12px; background:#f1f3f0; padding:2px 6px; border-radius:4px;">
+                    {{ lote.trazabilidad.codigo_trazabilidad }}
+                  </code>
+                {% else %}
+                  <span style="color:#9a9282;">Sin registro</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if lote.trazabilidad %}
+                  {% set estado = lote.trazabilidad.estado %}
+                  {% if estado == 'GENERADO' %}
+                    <span class="status-pill ok">Generado</span>
+                  {% elif estado == 'EN_TRANSITO' %}
+                    <span class="status-pill warn">En tránsito</span>
+                  {% elif estado == 'EN_PUERTO' %}
+                    <span class="status-pill warn">En puerto</span>
+                  {% elif estado == 'ENTREGADO' %}
+                    <span class="status-pill ok">Entregado</span>
+                  {% elif estado == 'BLOQUEADO' %}
+                    <span class="status-pill block">Bloqueado</span>
+                  {% else %}
+                    <span class="status-pill warn">{{ estado }}</span>
+                  {% endif %}
+                {% else %}
+                  <span class="status-pill warn">Sin trazabilidad</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display:flex; gap:8px;">
+                  <a href="{{ url_for('trazabilidad.ver_trazabilidad', lote_id=lote.id) }}" class="btn-sm btn-edit">Ver detalle</a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" style="color:#9a9282; padding:20px 0; text-align:center;">
+                No hay lotes registrados. <a href="{{ url_for('lotes.crear') }}">Crear el primero</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
-
 </div>
-
-<style>
-.page-header {
-  margin-bottom: 32px;
-}
-
-.page-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 32px;
-  color: #1a1a17;
-  margin-bottom: 8px;
-}
-
-.page-subtitle {
-  color: #6b6b6b;
-  font-size: 16px;
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-}
-
-.card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.card-header {
-  padding: 20px 20px 0 20px;
-}
-
-.card-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a17;
-  margin-bottom: 4px;
-}
-
-.card-meta {
-  font-size: 12px;
-  color: #6b6b6b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-content {
-  padding: 16px 20px;
-}
-
-.card-content p {
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #4a4640;
-}
-
-.card-actions {
-  padding: 0 20px 20px 20px;
-}
-
-.btn-primary {
-  display: inline-block;
-  padding: 13px 20px;
-  background: linear-gradient(135deg, #1877f2, #166fe5);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: none;
-}
-
-.btn-primary:hover {
-  transform: scale(1.03);
-  box-shadow: 0 5px 15px rgba(24,119,242,0.4);
-}
-
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 64px 20px;
-  color: #6b6b6b;
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.empty-state h3 {
-  font-size: 20px;
-  margin-bottom: 8px;
-  color: #1a1a17;
-}
-</style>
-
 </body>
 </html>

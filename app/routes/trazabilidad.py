@@ -5,6 +5,7 @@ from app.extensions import db
 from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen
 import json
+import uuid
 
 trazabilidad_bp = Blueprint('trazabilidad', __name__, url_prefix='/trazabilidad')
 
@@ -48,14 +49,22 @@ def ver_trazabilidad(lote_id):
     eventos = []
     eventos_usuarios = {}
 
-    if traza:
-        eventos = TrazabilidadEvento.query.filter_by(trazabilidad_id=traza.id).order_by(TrazabilidadEvento.fecha_evento.desc()).all()
+    # Si no existe trazabilidad, crearla automáticamente
+    if not traza:
+        codigo = f"TRZ-{lote.numero_lote}-{uuid.uuid4().hex[:6].upper()}"
+        traza = Trazabilidad(
+            lote_id=lote_id,
+            codigo_trazabilidad=codigo,
+            estado='GENERADO',
+            fecha_generacion=get_remote_colombia_time()
+        )
+        db.session.add(traza)
+        db.session.commit()
+        flash(f'Trazabilidad iniciada con código {codigo}.', 'success')
+
+    eventos = TrazabilidadEvento.query.filter_by(trazabilidad_id=traza.id).order_by(TrazabilidadEvento.fecha_evento.desc()).all()
 
     if request.method == 'POST':
-        if not traza:
-            flash('No se encontró registro de trazabilidad para este lote.', 'error')
-            return redirect(url_for('trazabilidad.ver_trazabilidad', lote_id=lote_id))
-
         nuevo_estado = request.form.get('estado')
         ubicacion_actual = request.form.get('ubicacion_actual')
         transportista = request.form.get('transportista')
@@ -67,8 +76,6 @@ def ver_trazabilidad(lote_id):
         # Validar que al menos un valor sea diferente del último evento
         if eventos:
             ultimo_evento = eventos[0]
-            
-            # Comparar los campos
             es_igual = (
                 nuevo_estado == ultimo_evento.estado and
                 ubicacion_actual == (ultimo_evento.ubicacion_actual or '') and
@@ -78,7 +85,6 @@ def ver_trazabilidad(lote_id):
                 destino == (ultimo_evento.destino or '') and
                 observaciones == (ultimo_evento.observaciones or '')
             )
-            
             if es_igual:
                 flash('El evento debe tener al menos un valor diferente al anterior. Por favor, modifica algún campo.', 'error')
                 return redirect(url_for('trazabilidad.ver_trazabilidad', lote_id=lote_id))
@@ -103,8 +109,7 @@ def ver_trazabilidad(lote_id):
 
         db.session.add(evento)
         db.session.commit()
-        
-        # Guardar el usuario en un diccionario para mostrar en la plantilla
+
         eventos_usuarios[evento.id] = usuario_nombre
 
         flash('Estado de trazabilidad y evento registrados correctamente.', 'success')

@@ -12,8 +12,6 @@ class Trazabilidad(db.Model):
     # Estados: 'GENERADO', 'EN_TRANSITO', 'EN_PUERTO', 'ENTREGADO', 'BLOQUEADO'
     estado               = db.Column(db.String(30))
 
-<<<<<<< HEAD
-=======
     eventos = db.relationship(
         'TrazabilidadEvento',
         backref='trazabilidad',
@@ -21,13 +19,10 @@ class Trazabilidad(db.Model):
         cascade='all, delete-orphan'
     )
 
->>>>>>> c7495d7 (Crear trazabilidad)
     def __repr__(self):
         return f'<Trazabilidad {self.codigo_trazabilidad} — {self.estado}>'
 
 
-<<<<<<< HEAD
-=======
 class TrazabilidadEvento(db.Model):
     __tablename__ = 'trazabilidad_eventos'
 
@@ -46,7 +41,6 @@ class TrazabilidadEvento(db.Model):
         return f'<TrazabilidadEvento traza={self.trazabilidad_id} estado={self.estado} fecha={self.fecha_evento}>'
 
 
->>>>>>> c7495d7 (Crear trazabilidad)
 class RecepcionAcopio(db.Model):
     __tablename__ = 'recepcion_acopio'
 

@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trazabilidad del Lote — TrazaAgro</title>
+  <title>TrazaAgro — Trazabilidad del Lote</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="dash-root">
 
   <!-- TOPBAR -->
@@ -19,437 +18,269 @@
       <div class="logo-text">Traza<span>Agro</span></div>
     </div>
     <div class="topbar-right">
-      <a href="{{ url_for('trazabilidad.lista') }}" class="nav-tab">Volver a Lotes</a>
-      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Dashboard</a>
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
     </div>
   </div>
 
-  <div class="layout" style="padding: 28px;">
+  <div class="layout">
 
-    <!-- Mensajes de flash -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <div class="page-header">
-      <h1 class="page-title">Trazabilidad del Lote: {{ lote.numero_lote }}</h1>
-      <div class="lote-info">
-        <span class="info-chip">Finca: {{ lote.finca.nombre_finca if lote.finca else 'N/A' }}</span>
-        <span class="info-chip">Estado actual: {{ traza.estado if traza else 'Sin trazabilidad' }}</span>
-        <span class="info-chip">Código: {{ traza.codigo_trazabilidad if traza else 'N/A' }}</span>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras
+        </a>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="14" cy="13" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M15.8 15.8l1.5 1.5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Trazabilidad
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
       </div>
     </div>
 
-    <div class="sections-grid">
+    <!-- CONTENIDO -->
+    <div class="main-content">
 
-      <!-- FORMULARIO DE EVENTO -->
-      <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">Registrar Evento de Trazabilidad</h2>
-          <div class="section-icon">📝</div>
+      <!-- Mensajes flash -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Lote {{ lote.numero_lote }}</div>
+          <div class="page-subtitle">
+            Finca: <strong>{{ lote.finca.nombre_finca if lote.finca else '—' }}</strong>
+            {% if traza %}
+              &nbsp;·&nbsp; Código:
+              <code style="font-size:12px; background:#f1f3f0; padding:1px 6px; border-radius:4px;">
+                {{ traza.codigo_trazabilidad }}
+              </code>
+            {% endif %}
+          </div>
         </div>
-        <div class="section-content">
-          {% if traza %}
-            <form method="POST" id="estado-form" class="event-form">
-              <div class="form-row">
-                <label for="estado">Estado</label>
-                <select name="estado" id="estado" required>
-                  <option value="">Selecciona un estado</option>
-                  <option value="GENERADO" {% if traza.estado == 'GENERADO' %}selected{% endif %}>Generado</option>
-                  <option value="EN_TRANSITO" {% if traza.estado == 'EN_TRANSITO' %}selected{% endif %}>En Tránsito</option>
-                  <option value="EN_PUERTO" {% if traza.estado == 'EN_PUERTO' %}selected{% endif %}>En Puerto</option>
-                  <option value="ENTREGADO" {% if traza.estado == 'ENTREGADO' %}selected{% endif %}>Entregado</option>
-                  <option value="BLOQUEADO" {% if traza.estado == 'BLOQUEADO' %}selected{% endif %}>Bloqueado</option>
-                </select>
-              </div>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="btn-sm btn-edit">← Volver</a>
+      </div>
 
-              <div class="form-row">
-                <label for="ubicacion_actual">Ubicación actual</label>
-                <input type="text" name="ubicacion_actual" id="ubicacion_actual" placeholder="Ciudad, terminal o dirección">
-              </div>
+      {% if not traza %}
+      <!-- Sin trazabilidad -->
+      <div class="panel" style="margin-top:0; text-align:center; padding:40px 0; color:#9a9282;">
+        <div style="font-size:40px; margin-bottom:12px;">⚠️</div>
+        <strong>Este lote no tiene trazabilidad registrada.</strong>
+        <p style="margin-top:8px; font-size:14px;">Crea primero la trazabilidad desde el sistema administrativo.</p>
+      </div>
 
-              <div class="form-row">
-                <label for="transportista">Transportista</label>
-                <input type="text" name="transportista" id="transportista" placeholder="Empresa o conductor">
-              </div>
+      {% else %}
 
-              <div class="form-row">
-                <label for="vehiculo">Vehículo / Contenedor</label>
-                <input type="text" name="vehiculo" id="vehiculo" placeholder="Placa, contenedor o camión">
-              </div>
-
-              <div class="form-row">
-                <label for="origen">Origen</label>
-                <input type="text" name="origen" id="origen" placeholder="Lugar de salida">
-              </div>
-
-              <div class="form-row">
-                <label for="destino">Destino</label>
-                <input type="text" name="destino" id="destino" placeholder="Lugar de llegada prevista">
-              </div>
-
-              <div class="form-row">
-                <label for="observaciones">Observaciones</label>
-                <textarea name="observaciones" id="observaciones" rows="3" placeholder="Notas adicionales"></textarea>
-              </div>
-
-              <button type="submit" class="btn-primary" id="update-btn">Guardar evento</button>
-            </form>
+      <!-- ESTADO ACTUAL -->
+      <div class="panel" style="margin-top:0; display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+        <div>
+          <div style="font-size:12px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Estado actual</div>
+          {% set estado = traza.estado %}
+          {% if estado == 'GENERADO' %}
+            <span class="status-pill ok">Generado</span>
+          {% elif estado == 'EN_TRANSITO' %}
+            <span class="status-pill warn">En tránsito</span>
+          {% elif estado == 'EN_PUERTO' %}
+            <span class="status-pill warn">En puerto</span>
+          {% elif estado == 'ENTREGADO' %}
+            <span class="status-pill ok">Entregado</span>
+          {% elif estado == 'BLOQUEADO' %}
+            <span class="status-pill block">Bloqueado</span>
           {% else %}
-            <div class="empty-section">
-              <div class="empty-icon">⚠️</div>
-              <p>No existe trazabilidad registrada para este lote. Crea primero la trazabilidad en el sistema.</p>
-            </div>
+            <span class="status-pill warn">{{ estado or '—' }}</span>
           {% endif %}
+        </div>
+        <div>
+          <div style="font-size:12px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Última actualización</div>
+          <div style="font-size:14px; font-weight:500;">
+            {{ traza.fecha_generacion.strftime('%d/%m/%Y %H:%M') if traza.fecha_generacion else '—' }}
+          </div>
         </div>
       </div>
 
-      <!-- HISTORIAL DE EVENTOS -->
-      <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">Historial de Eventos</h2>
-          <div class="section-icon">📊</div>
+      <!-- DOS COLUMNAS: FORM + HISTORIAL -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px;">
+
+        <!-- FORMULARIO DE EVENTO -->
+        <div class="panel" style="margin-top:0;">
+          <div style="font-size:16px; font-weight:600; color:#1a1a17; margin-bottom:18px;">Registrar nuevo evento</div>
+          <form method="POST" id="estado-form">
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Estado *</label>
+              <select name="estado" required style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; color:#1a1a17; background:#f9fafb;">
+                <option value="">Selecciona un estado</option>
+                <option value="GENERADO"   {% if traza.estado == 'GENERADO'   %}selected{% endif %}>Generado</option>
+                <option value="EN_TRANSITO" {% if traza.estado == 'EN_TRANSITO' %}selected{% endif %}>En Tránsito</option>
+                <option value="EN_PUERTO"  {% if traza.estado == 'EN_PUERTO'  %}selected{% endif %}>En Puerto</option>
+                <option value="ENTREGADO"  {% if traza.estado == 'ENTREGADO'  %}selected{% endif %}>Entregado</option>
+                <option value="BLOQUEADO"  {% if traza.estado == 'BLOQUEADO'  %}selected{% endif %}>Bloqueado</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Ubicación actual</label>
+              <input type="text" name="ubicacion_actual" placeholder="Ciudad, terminal o dirección"
+                     style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb;">
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Transportista</label>
+              <input type="text" name="transportista" placeholder="Empresa o conductor"
+                     style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb;">
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Vehículo / Contenedor</label>
+              <input type="text" name="vehiculo" placeholder="Placa, contenedor o camión"
+                     style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb;">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+              <div>
+                <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Origen</label>
+                <input type="text" name="origen" placeholder="Lugar de salida"
+                       style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb;">
+              </div>
+              <div>
+                <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Destino</label>
+                <input type="text" name="destino" placeholder="Lugar de llegada"
+                       style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb;">
+              </div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+              <label style="display:block; font-size:13px; font-weight:600; color:#4a4640; margin-bottom:5px;">Observaciones</label>
+              <textarea name="observaciones" rows="3" placeholder="Notas adicionales"
+                        style="width:100%; border:1px solid #d8dee2; border-radius:7px; padding:9px 11px; font-size:14px; background:#f9fafb; resize:vertical;"></textarea>
+            </div>
+
+            <button type="submit" id="update-btn" class="btn-primary">Guardar evento</button>
+          </form>
         </div>
-        <div class="section-content">
+
+        <!-- HISTORIAL DE EVENTOS -->
+        <div class="panel" style="margin-top:0;">
+          <div style="font-size:16px; font-weight:600; color:#1a1a17; margin-bottom:18px;">Historial de eventos</div>
+
           {% if eventos %}
-            {% for evento in eventos %}
-              <div class="timeline-item">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content">
-                  <div class="timeline-date">Hora Colombia: {{ evento.fecha_evento.strftime('%d/%m/%Y %H:%M') }}</div>
-                  <div class="timeline-title">{{ evento.estado }}</div>
-                  {% if eventos_usuarios.get(evento.id) %}
-                    <div class="timeline-user">👤 {{ eventos_usuarios.get(evento.id) }}</div>
-                  {% endif %}
-                  <div class="timeline-meta">Ubicación: {{ evento.ubicacion_actual or 'No registrada' }}</div>
-                  <div class="timeline-meta">Transportista: {{ evento.transportista or 'No registrado' }}</div>
-                  <div class="timeline-meta">Vehículo/Contenedor: {{ evento.vehiculo or 'No registrado' }}</div>
-                  <div class="timeline-meta">Origen: {{ evento.origen or 'No registrado' }} / Destino: {{ evento.destino or 'No registrado' }}</div>
-                  {% if evento.observaciones %}
-                    <div class="timeline-meta"><em>{{ evento.observaciones }}</em></div>
-                  {% endif %}
+            <div style="position:relative;">
+              {% for evento in eventos %}
+              <div style="display:flex; align-items:flex-start; margin-bottom:20px; position:relative;">
+                <!-- línea vertical (excepto último) -->
+                {% if not loop.last %}
+                <div style="position:absolute; left:5px; top:14px; width:2px; height:calc(100% + 4px); background:#e2e6e0;"></div>
+                {% endif %}
+                <!-- punto -->
+                <div style="width:12px; height:12px; background:#3a7c22; border-radius:50%; margin-right:14px; margin-top:4px; flex-shrink:0; position:relative; z-index:1;"></div>
+                <!-- contenido -->
+                <div style="flex:1;">
+                  <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">
+                    {{ evento.fecha_evento.strftime('%d/%m/%Y %H:%M') }}
+                    {% if eventos_usuarios.get(evento.id) %}
+                      &nbsp;·&nbsp; 👤 {{ eventos_usuarios.get(evento.id) }}
+                    {% endif %}
+                  </div>
+                  <div style="font-size:14px; font-weight:600; color:#1a1a17; margin-bottom:6px;">
+                    {% if evento.estado == 'GENERADO' %}
+                      <span class="status-pill ok">Generado</span>
+                    {% elif evento.estado == 'EN_TRANSITO' %}
+                      <span class="status-pill warn">En tránsito</span>
+                    {% elif evento.estado == 'EN_PUERTO' %}
+                      <span class="status-pill warn">En puerto</span>
+                    {% elif evento.estado == 'ENTREGADO' %}
+                      <span class="status-pill ok">Entregado</span>
+                    {% elif evento.estado == 'BLOQUEADO' %}
+                      <span class="status-pill block">Bloqueado</span>
+                    {% else %}
+                      <span class="status-pill warn">{{ evento.estado }}</span>
+                    {% endif %}
+                  </div>
+                  <div style="font-size:13px; color:#4a4640; line-height:1.6;">
+                    {% if evento.ubicacion_actual %}<div><b>Ubicacion Actual: </b> {{ evento.ubicacion_actual }}</div>{% endif %}
+                    {% if evento.transportista %}<div><b>Transportista: </b> {{ evento.transportista }}</div>{% endif %}
+                    {% if evento.vehiculo %}<div> <b>Vehiculo: </b> {{ evento.vehiculo }}</div>{% endif %}
+                    {% if evento.origen or evento.destino %}
+                      <div>{{ evento.origen or '—' }} → {{ evento.destino or '—' }}</div>
+                    {% endif %}
+                    {% if evento.observaciones %}
+                      <div style="color:#9a9282; font-style:italic; margin-top:4px;">{{ evento.observaciones }}</div>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
-            {% endfor %}
+              {% endfor %}
+            </div>
           {% else %}
-            <div class="empty-section">
-              <div class="empty-icon">📋</div>
-              <p>No hay eventos registrados aún.</p>
+            <div style="text-align:center; padding:32px 0; color:#9a9282;">
+              <div style="font-size:32px; margin-bottom:10px;">📋</div>
+              No hay eventos registrados aún.
             </div>
           {% endif %}
         </div>
+
       </div>
+      {% endif %}
 
     </div>
-
   </div>
-
 </div>
 
-<style>
-.page-header {
-  margin-bottom: 32px;
-}
-
-.page-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 32px;
-  color: #1a1a17;
-  margin-bottom: 16px;
-}
-
-.lote-info {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.info-chip {
-  background: #e8f4fd;
-  color: #1877f2;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.sections-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-.section-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1a1a17;
-  margin: 0;
-}
-
-.section-icon {
-  font-size: 24px;
-}
-
-.section-content {
-  padding: 20px;
-}
-
-/* TIMELINE */
-.timeline-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.timeline-item:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-marker {
-  width: 12px;
-  height: 12px;
-  background: #1877f2;
-  border-radius: 50%;
-  margin-right: 16px;
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-
-.timeline-content {
-  flex: 1;
-}
-
-.timeline-date {
-  font-size: 12px;
-  color: #6b6b6b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.timeline-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a17;
-  margin-bottom: 4px;
-}
-
-.timeline-user {
-  font-size: 13px;
-  color: #1877f2;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.timeline-meta {
-  font-size: 14px;
-  color: #4a4640;
-}
-
-.event-form {
-  display: grid;
-  gap: 16px;
-}
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-row label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-}
-
-.form-row input,
-.form-row select,
-.form-row textarea {
-  width: 100%;
-  border: 1px solid #d8dee2;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: #1a1a17;
-  background: #f9fafb;
-}
-
-.form-row textarea {
-  resize: vertical;
-}
-
-.empty-section {
-  text-align: center;
-  padding: 40px 0;
-  color: #5d5d5d;
-}
-
-.empty-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.blocked-notice {
-  background: #fff3cd;
-  border: 2px solid #ffc107;
-  border-radius: 8px;
-  padding: 24px;
-  text-align: center;
-  color: #856404;
-}
-
-.blocked-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.blocked-notice h3 {
-  margin: 12px 0 8px;
-  font-size: 18px;
-  color: #333;
-}
-
-.blocked-notice p {
-  margin: 0 0 16px;
-  font-size: 14px;
-}
-
-.btn-warning {
-  background: #ffc107;
-  color: #333;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-warning:hover {
-  background: #ffb300;
-}
-
-.timeline-meta code {
-  background: #f1f3f4;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-}
-
-/* BITÁCORAS */
-.bitacora-item {
-  border-bottom: 1px solid #e9ecef;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
-}
-
-.bitacora-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.bitacora-date {
-  font-size: 12px;
-  color: #6b6b6b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.bitacora-content p {
-  margin-bottom: 8px;
-  color: #1a1a17;
-}
-
-.observaciones {
-  color: #6b6b6b;
-  font-style: italic;
-}
-
-/* EMPTY STATES */
-.empty-section {
-  text-align: center;
-  padding: 32px 20px;
-  color: #6b6b6b;
-}
-
-.empty-section .empty-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.empty-section p {
-  margin: 0;
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .sections-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lote-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-/* FLASH MESSAGES */
-.flash-messages {
-  margin-bottom: 20px;
-}
-
-.flash {
-  padding: 10px 15px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  font-weight: 500;
-}
-
-.flash.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.flash.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-</style>
-
 <script>
-document.getElementById('estado-form').addEventListener('submit', function() {
-  const btn = document.getElementById('update-btn');
-  btn.disabled = true;
-  btn.textContent = 'Actualizando...';
-});
+  const form = document.getElementById('estado-form');
+  if (form) {
+    form.addEventListener('submit', function() {
+      const btn = document.getElementById('update-btn');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+    });
+  }
 </script>
 
 </body>
