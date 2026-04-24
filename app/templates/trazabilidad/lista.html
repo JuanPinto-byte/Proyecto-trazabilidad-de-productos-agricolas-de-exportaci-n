@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Trazabilidad — TrazaAgro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <a href="{{ url_for('auth.dashboard') }}" class="nav-tab">Volver al Dashboard</a>
+    </div>
+  </div>
+
+  <div class="layout" style="padding: 28px;">
+
+    <div class="page-header">
+      <h1 class="page-title">Trazabilidad de Lotes</h1>
+      <p class="page-subtitle">Selecciona un lote para ver su trazabilidad completa</p>
+    </div>
+
+    <div class="content-grid">
+      {% for lote in lotes %}
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">{{ lote.numero_lote }}</h3>
+            <div class="card-meta">ID: {{ lote.id }}</div>
+          </div>
+          <div class="card-content">
+            <p><strong>Finca:</strong> {{ lote.finca.nombre_finca if lote.finca else 'N/A' }}</p>
+            <p><strong>Estado:</strong> {{ lote.estado }}</p>
+          </div>
+          <div class="card-actions">
+            <a href="{{ url_for('trazabilidad.ver_trazabilidad', lote_id=lote.id) }}" class="btn-primary">
+              Ver Trazabilidad
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No hay lotes registrados</h3>
+          <p>Crea lotes de producción para comenzar con la trazabilidad.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  color: #1a1a17;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  color: #6b6b6b;
+  font-size: 16px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.card-header {
+  padding: 20px 20px 0 20px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a17;
+  margin-bottom: 4px;
+}
+
+.card-meta {
+  font-size: 12px;
+  color: #6b6b6b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-content {
+  padding: 16px 20px;
+}
+
+.card-content p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #4a4640;
+}
+
+.card-actions {
+  padding: 0 20px 20px 20px;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #1877f2, #166fe5);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 15px rgba(24,119,242,0.4);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 64px 20px;
+  color: #6b6b6b;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #1a1a17;
+}
+</style>
+
+</body>
+</html>

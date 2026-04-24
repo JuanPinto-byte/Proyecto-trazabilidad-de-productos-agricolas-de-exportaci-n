@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+<body>
+
+<div class="main-container">
+
+    <!-- IZQUIERDA -->
+    <div class="left fade-in">
+        <h1>Trazabilidad</h1>
+        <p>Crea tu cuenta y comienza a gestionar productos agrícolas fácilmente.</p>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="register-container slide-up">
+
+        <h2>Crear cuenta</h2>
+
+        <!-- 🔥 MENSAJES -->
+        {% set messages = get_flashed_messages(with_categories=true) %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+
+            <!-- NOMBRE Y APELLIDO -->
+            <div class="row">
+                <input type="text" name="nombre" placeholder="Nombres" 
+                       value="{{ request.form.nombre }}" required>
+
+                <input type="text" name="apellido" placeholder="Apellidos" 
+                       value="{{ request.form.apellido }}" required>
+            </div>
+
+            <!-- ERROR USERNAME -->
+            {% for category, message in messages %}
+                {% if category == 'user_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- USERNAME -->
+            <input type="text" name="username" placeholder="Nombre de usuario" 
+                   value="{{ request.form.username }}" required>
+
+            <!-- ERROR EMAIL -->
+            {% for category, message in messages %}
+                {% if category == 'email_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- EMAIL -->
+            <input type="email" name="email" placeholder="Correo electrónico" 
+                   value="{{ request.form.email }}" required>
+            <!-- Telefono -->       
+            <input type="number" name="telefono" placeholder="Numero de Telefono" 
+                   value="{{ request.form.telefono }}" required>
+            <!-- PASSWORD -->
+            <input type="password" name="password" placeholder="Contraseña" required>
+
+            <!-- BOTÓN -->
+            <button type="submit">Registrarse</button>
+
+        </form>
+
+        <!-- VOLVER AL LOGIN -->
+        <a href="{{ url_for('auth.login') }}" class="back-login">
+            Ya tengo una cuenta
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

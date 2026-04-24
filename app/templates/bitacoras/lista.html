@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — Bitácoras</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras de cultivo
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Bitácoras de cultivo</div>
+          <div class="page-subtitle">Registro histórico de actividades y observaciones por lote</div>
+        </div>
+        <a href="{{ url_for('bitacoras.crear') }}" class="btn-primary">+ Nueva bitácora</a>
+      </div>
+
+      <!-- PANEL DE FILTROS -->
+      <div class="panel" style="margin-top:0; margin-bottom:20px; background: #f8f7f5;">
+        <form method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+          
+          <div style="flex: 1; min-width: 200px;">
+            <label class="form-label">Buscar por lote</label>
+            <select name="lote" class="form-input" style="margin:0;">
+              <option value="">— Todos los lotes —</option>
+              {% for lote in lotes_disponibles %}
+                <option value="{{ lote.numero_lote }}"
+                  {{ 'selected' if busqueda_lote == lote.numero_lote else '' }}>
+                  {{ lote.numero_lote }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div style="flex: 0 1 180px;">
+            <label class="form-label">Desde</label>
+            <input type="date" name="fecha_desde" class="form-input" style="margin:0;"
+              value="{{ fecha_desde }}">
+          </div>
+
+          <div style="flex: 0 1 180px;">
+            <label class="form-label">Hasta</label>
+            <input type="date" name="fecha_hasta" class="form-input" style="margin:0;"
+              value="{{ fecha_hasta }}">
+          </div>
+
+          <button type="submit" class="btn-primary" style="align-self: flex-end;">
+            Filtrar
+          </button>
+          
+          <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary" style="align-self: flex-end;">
+            Limpiar
+          </a>
+
+        </form>
+      </div>
+
+      <!-- TABLA DE BITÁCORAS -->
+      <div class="panel" style="margin-top:0;">
+        {% if bitacoras %}
+          <table class="lote-table">
+            <thead>
+              <tr>
+                <th>Lote</th>
+                <th>Finca</th>
+                <th>Fecha</th>
+                <th>Agrólogo</th>
+                <th>Actividad</th>
+                <th style="text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bitacora, numero_lote, nombre_finca, agronomo in bitacoras %}
+                <tr>
+                  <td><strong>{{ numero_lote }}</strong></td>
+                  <td>{{ nombre_finca }}</td>
+                  <td>{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</td>
+                  <td>{{ agronomo if agronomo else '—' }}</td>
+                  <td style="font-size: 0.9em; color: #666;">
+                    {{ bitacora.actividades_realizadas[:60] if bitacora.actividades_realizadas else '—' }}...
+                  </td>
+                  <td style="text-align: center; white-space: nowrap;">
+                    <a href="{{ url_for('bitacoras.ver', id=bitacora.id) }}" class="btn-small btn-info">👁 Ver</a>
+                    <a href="{{ url_for('bitacoras.editar', id=bitacora.id) }}" class="btn-small btn-warning">✏ Editar</a>
+                    <form method="POST" action="{{ url_for('bitacoras.eliminar', id=bitacora.id) }}" 
+                          style="display:inline;" 
+                          onsubmit="return confirm('¿Eliminar esta bitácora?');">
+                      <button type="submit" class="btn-small btn-danger">🗑 Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div style="text-align: center; padding: 40px; color: #999;">
+            <p style="font-size: 1.1em; margin-bottom: 10px;">📋 No hay bitácoras registradas</p>
+            <p>Crea una nueva bitácora para comenzar a registrar actividades.</p>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 0.85em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.2s;
+    margin: 0 4px;
+  }
+
+  .btn-info {
+    background: #2196F3;
+    color: white;
+  }
+
+  .btn-info:hover {
+    background: #1976D2;
+  }
+
+  .btn-warning {
+    background: #FF9800;
+    color: white;
+  }
+
+  .btn-warning:hover {
+    background: #F57C00;
+  }
+
+  .btn-danger {
+    background: #f44336;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #da190b;
+  }
+</style>
+
+</body>
+</html>

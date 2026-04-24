@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Trazabilidad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+
+<div class="main-container">
+
+    <!-- IZQUIERDA -->
+    <div class="left fade-in">
+        <h1>Trazabilidad</h1>
+        <p>Gestiona y controla productos agrícolas de exportación de forma fácil y segura.</p>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="login-container slide-up">
+
+        <!-- 🔥 CAPTURAMOS TODOS LOS MENSAJES -->
+        {% set messages = get_flashed_messages(with_categories=true) %}
+
+        <!-- FORMULARIO -->
+        <form method="POST" action="{{ url_for('auth.login') }}">
+
+            <!-- ERROR USUARIO -->
+            {% for category, message in messages %}
+                {% if category == 'user_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- INPUT USERNAME -->
+            <input 
+                type="text" 
+                class="form-control" 
+                name="username" 
+                placeholder="Usuario o Correo electrónico"
+                value="{{ request.form.username }}"
+                required
+            >
+
+            <!-- ERROR PASSWORD -->
+            {% for category, message in messages %}
+                {% if category == 'password_error' %}
+                    <p style="color:red; margin-bottom:5px;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- INPUT PASSWORD -->
+            <input 
+                type="password" 
+                class="form-control" 
+                name="password" 
+                placeholder="Contraseña"
+                required
+            >
+
+            <!-- BOTÓN -->
+            <button class="login" type="submit">Iniciar sesión</button>
+
+        </form>
+
+        <!-- LINKS -->
+        <a href="/forgot-password" class="forgot">¿Has olvidado la contraseña?</a>
+
+        <hr>
+
+        <form action="{{ url_for('auth.register') }}">
+    <button class="register" type="submit">
+        Crear una cuenta
+    </button>
+</form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
