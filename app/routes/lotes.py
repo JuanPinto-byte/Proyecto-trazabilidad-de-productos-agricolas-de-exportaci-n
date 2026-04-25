@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.extensions import db
-from app.models.lote import Lote
-from app.models.finca import Finca
-from app.models.user import User
+from app.models.produccion.lote import Lote
+from app.models.produccion.finca import Finca
+from app.models.usuarios.user import User
 from functools import wraps
 
 lotes_bp = Blueprint("lotes", __name__)
@@ -176,11 +176,7 @@ def desbloquear(id):
     )
 
     # Si al desbloquear se excede el área cultivable
-    area_lote = float(lote.area_hectareas or 0)
-    area_finca = float(finca.area_cultivable_hectareas or 0)
-    area_ocupada = float(area_ocupada or 0)
-
-    if (area_ocupada + area_lote) > area_finca:
+    if lote.area_hectareas and (area_ocupada + float(lote.area_hectareas)) > float(finca.area_cultivable_hectareas):
         flash(f"No se puede desbloquear el lote '{lote.numero_lote}' porque supera las hectáreas cultivables de la finca.", "error")
         return redirect(url_for("lotes.lista"))
 
