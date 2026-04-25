@@ -16,7 +16,11 @@ class BitacoraCultivo(db.Model):
     precipitacion_mm        = db.Column(db.Numeric(6, 2))
     observaciones           = db.Column(db.Text)
     agronomo_id             = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
-    fecha_creacion          = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
 
     def __repr__(self):
         return f'<BitacoraCultivo lote={self.lote_id} fecha={self.fecha}>'

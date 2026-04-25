@@ -197,6 +197,11 @@ def eliminar(id):
     if lote.cosechas or lote.siembras:
         flash(f"No se puede eliminar '{lote.numero_lote}' porque tiene siembras o cosechas asociadas.", "error")
         return redirect(url_for("lotes.lista"))
+    if lote.trazabilidad:
+        flash(f"No se puede eliminar '{lote.numero_lote}' porque tiene trazabilidades asociadas.", "error")
+        return redirect(url_for("lotes.lista"))
+    if lote.bitacoras:
+        flash(f"No se puede eliminar '{lote.numero_lote}' porque tiene bitácoras asociadas.", "error")
 
     numero = lote.numero_lote
     db.session.delete(lote)

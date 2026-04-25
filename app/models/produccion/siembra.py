@@ -1,5 +1,4 @@
 from app.extensions import db
-from datetime import datetime
 
 
 class Siembra(db.Model):
@@ -13,8 +12,17 @@ class Siembra(db.Model):
     fecha_cosecha_estimada = db.Column(db.Date)   # calculada automáticamente con cultivo.ciclo_dias
     observaciones         = db.Column(db.Text)
     usuario_creacion_id   = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
-    fecha_creacion        = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
 
+    cultivo = db.relationship("Cultivo", back_populates="siembras")
+
+    # Relación con Semilla
+    semilla = db.relationship("Semilla", back_populates="siembras")
+        
     def calcular_fecha_cosecha(self):
         """Calcula la fecha estimada de cosecha basándose en el ciclo biológico del cultivo."""
         from datetime import timedelta

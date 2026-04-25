@@ -8,28 +8,22 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    nombre_usuario = db.Column(db.String(80), unique=True, nullable=False)
-    nombre_completo = db.Column(db.String(150), nullable=True)  
-    password_hash = db.Column(db.String(256), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    telefono = db.Column(db.String(20))
-    #Fk de roles
-    rol_id = db.Column(
-        db.Integer,
-        db.ForeignKey('roles.id'),
-        nullable=False
-    )
-
+    nombre_usuario = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    nombre_completo = db.Column(db.String(100), nullable=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     telefono = db.Column(db.String(20), nullable=True)
     activo = db.Column(db.Boolean, default=True, nullable=False)
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    fecha_actualizacion = db.Column(
+
+    fecha_creacion = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
+        server_default=db.func.current_timestamp(),
+        nullable=True,
     )
+    fecha_actualizacion = db.Column(db.DateTime, nullable=True)
     ultimo_acceso = db.Column(db.DateTime, nullable=True)
 
+    rol_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
 
     rol = db.relationship(Rol, backref='usuarios')
 
@@ -41,4 +35,5 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f'<User {self.nombre_usuario} ({self.rol.nombre})>'
+        rol_nombre = self.rol.nombre if self.rol else 'sin_rol'
+        return f'<User {self.nombre_usuario} ({rol_nombre})>'

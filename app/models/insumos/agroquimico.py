@@ -10,11 +10,16 @@ class Agroquimico(db.Model):
     # tipo: 'FERTILIZANTE', 'PESTICIDA', 'FUNGICIDA', etc.
     tipo                  = db.Column(db.String(50))
     dosis_recomendada     = db.Column(db.Numeric(10, 2))
+    dosis_limite_hectarea = db.Column(db.Numeric(10, 2))
     unidad_dosis          = db.Column(db.String(20))
     periodo_carencia_dias = db.Column(db.Integer)    # días que deben pasar antes de cosechar
     ficha_tecnica_url     = db.Column(db.String(255))
     activo                = db.Column(db.Boolean, default=True)
-    fecha_creacion        = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
 
     aplicaciones = db.relationship('AplicacionAgroquimico', backref='agroquimico', lazy=True)
 

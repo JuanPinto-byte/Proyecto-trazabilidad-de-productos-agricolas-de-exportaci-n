@@ -40,7 +40,8 @@ def crear():
 
     if request.method == "POST":
         nombre       = request.form.get("nombre_finca", "").strip()
-        ubicacion    = request.form.get("ubicacion", "").strip()
+        departamento  = request.form.get("departamento", "").strip()
+        municipio     = request.form.get("municipio", "").strip()
         coordenadas  = request.form.get("coordenadas_gps", "").strip()
         area_total   = request.form.get("area_total_hectareas") or None
         area_cultiv  = request.form.get("area_cultivable_hectareas") or None
@@ -81,7 +82,8 @@ def crear():
 
         nueva = Finca(
             nombre_finca              = nombre,
-            ubicacion                 = ubicacion,
+            departamento                 = departamento,
+            municipio                     = municipio,
             coordenadas_gps           = coordenadas,
             area_total_hectareas      = area_total,
             area_cultivable_hectareas = area_cultiv,
@@ -109,7 +111,8 @@ def editar(id):
 
     if request.method == "POST":
         finca.nombre_finca              = request.form.get("nombre_finca", "").strip()
-        finca.ubicacion                 = request.form.get("ubicacion", "").strip()
+        finca.departamento              = request.form.get("departamento", "").strip()
+        finca.municipio                 = request.form.get("municipio", "").strip()
         finca.coordenadas_gps           = request.form.get("coordenadas_gps", "").strip()
         finca.area_total_hectareas      = request.form.get("area_total_hectareas") or None
         finca.area_cultivable_hectareas = request.form.get("area_cultivable_hectareas") or None

@@ -15,7 +15,17 @@ class Bodega(db.Model):
     humedad_setpoint     = db.Column(db.Numeric(5, 2))
     responsable_id       = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     estado               = db.Column(db.String(30))
-    fecha_creacion       = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
+
+    departamento_id = db.Column(db.Integer, db.ForeignKey('departamentos.id'), nullable=True)
+    municipio_id = db.Column(db.Integer, db.ForeignKey('municipios.id'), nullable=True)
+
+    departamento_ref = db.relationship('Departamento', foreign_keys=[departamento_id])
+    municipio_ref = db.relationship('Municipio', foreign_keys=[municipio_id])
 
     registros_temperatura = db.relationship('ControlTemperatura', backref='bodega', lazy=True)
     almacenamientos       = db.relationship('Almacenamiento', backref='bodega', lazy=True)
@@ -35,7 +45,11 @@ class ControlTemperatura(db.Model):
 
     id          = db.Column(db.Integer, primary_key=True)
     bodega_id   = db.Column(db.Integer, db.ForeignKey('bodegas.id'), nullable=False)
-    fecha_hora  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    fecha_hora = db.Column(
+        db.DateTime,
+        nullable=False,
+        server_default=db.func.current_timestamp(),
+    )
     temperatura = db.Column(db.Numeric(5, 2))
     humedad     = db.Column(db.Numeric(5, 2))
 
@@ -55,7 +69,11 @@ class Almacenamiento(db.Model):
     fecha_salida        = db.Column(db.Date)
     operario_id         = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     observaciones       = db.Column(db.Text)
-    fecha_actualizacion = db.Column(db.DateTime)
+    fecha_actualizacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
 
     def __repr__(self):
         return f'<Almacenamiento lote={self.lote_id} bodega={self.bodega_id}>'

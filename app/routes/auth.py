@@ -39,11 +39,11 @@ def login():
 
         if not user:
             flash("Usuario no encontrado", "user_error")
-            return render_template("login.html")
+            return render_template("inicio/login.html")
 
         if not user.check_password(password):
             flash("Contraseña incorrecta", "password_error")
-            return render_template("login.html")
+            return render_template("inicio/login.html")
 
         # Guardar sesión
         session["user_id"]  = user.id
@@ -56,7 +56,7 @@ def login():
 
         return redirect(url_for("auth.dashboard"))
 
-    return render_template("login.html")
+    return render_template("inicio/login.html")
 
 # ── REGISTER ──────────────────────────────────────────────────────────────────
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -95,7 +95,7 @@ def register():
         flash("Registro exitoso. Inicia sesión.", "success")
         return redirect(url_for('auth.login'))
 
-    return render_template('register.html')
+    return render_template('inicio/register.html')
 
 
 # ── LOGOUT ────────────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ def confirm_logout():
             return redirect(url_for("auth.login"))
 
     return render_template(
-        "confirm_logout.html",
+        "inicio/confirm_logout.html",
         usuario=session.get("username")
     )
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -211,7 +211,7 @@ def dashboard():
         .limit(5).all()
 
     return render_template(
-        "dashboard.html",
+        "dashboard/dashboard.html",
         # Usuario
         usuario         = usuario_actual,
         # KPIs

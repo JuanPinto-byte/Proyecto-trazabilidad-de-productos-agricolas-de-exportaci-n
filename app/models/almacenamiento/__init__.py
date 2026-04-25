@@ -1,2 +1,2 @@
-from bodega import Bodega, ControlTemperatura, Almacenamiento
-from cosecha import Cosecha
+from .bodega import Bodega, ControlTemperatura, Almacenamiento
+from .cosecha import Cosecha

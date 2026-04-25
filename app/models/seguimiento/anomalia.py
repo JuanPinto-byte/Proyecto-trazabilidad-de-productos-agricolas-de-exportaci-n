@@ -12,7 +12,11 @@ class Anomalia(db.Model):
     gravedad                  = db.Column(db.String(20), nullable=False)
     # Estado: 'PENDIENTE', 'EN_REVISION', 'RESUELTA'
     estado                    = db.Column(db.String(20), default='PENDIENTE')
-    fecha_deteccion           = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    fecha_deteccion = db.Column(
+        db.Date,
+        nullable=False,
+        server_default=db.func.current_date(),
+    )
     registrado_por_usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
 
     def esta_pendiente(self):

@@ -1,2 +1,2 @@
-from anomalia import Anomalia
-from bitacora import BitacoraCultivo, CondicionMeteorologica
+from .anomalia import Anomalia
+from .bitacora import BitacoraCultivo, CondicionMeteorologica

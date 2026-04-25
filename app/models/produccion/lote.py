@@ -5,6 +5,10 @@ from datetime import datetime
 class Lote(db.Model):
     __tablename__ = 'lotes'
 
+    __table_args__ = (
+        db.UniqueConstraint('finca_id', 'numero_lote', name='uq_lote_por_finca'),
+    )
+
     id             = db.Column(db.Integer, primary_key=True)
     finca_id       = db.Column(db.Integer, db.ForeignKey('fincas.id'), nullable=False)
     numero_lote    = db.Column(db.String(50))
@@ -14,8 +18,12 @@ class Lote(db.Model):
     # Estados posibles: ACTIVO, COSECHADO, BLOQUEADO, DESPACHADO
     estado = db.Column(db.String(30))
 
-    fecha_creacion      = db.Column(db.DateTime, default=datetime.utcnow)
-    fecha_actualizacion = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        server_default=db.func.current_timestamp(),
+        nullable=True,
+    )
+    fecha_actualizacion = db.Column(db.DateTime, onupdate=datetime.utcnow, nullable=True)
 
     # FK → usuario que creó el lote
     usuario_creacion_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))

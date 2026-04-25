@@ -7,8 +7,8 @@ from app.routes.lotes  import lotes_bp
 from app.routes.bitacoras import bitacoras_bp
 from app.routes.trazabilidad import trazabilidad_bp
 
-
-
+# Cargar todos los modelos (import side-effect) para evitar errores por relaciones string
+import app.models  # noqa: F401
 
 app = Flask(__name__)
 app.config.from_object(config["development"])
@@ -40,19 +40,6 @@ def index():
     return redirect(url_for("auth.login"))
     
 # Crear tablas si no existen (útil en desarrollo)
-with app.app_context():
-    # Importar todos los modelos para que SQLAlchemy los registre
-    from app.models import (
-        User, Rol,
-        Agricultor, Finca,
-        Cultivo, Semilla,
-        Lote, Siembra, Cosecha,
-        Agroquimico, AplicacionAgroquimico,
-        Bodega, ControlTemperatura, Almacenamiento,
-        Anomalia, BitacoraCultivo, CondicionMeteorologica,
-        Normativa, Inspeccion, CumplimientoNormativa,
-        Trazabilidad, TrazabilidadEvento, RecepcionAcopio, Auditoria
-    )
 
 
 if __name__ == "__main__":
