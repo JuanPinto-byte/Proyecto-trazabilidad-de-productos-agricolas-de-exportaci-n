@@ -95,7 +95,7 @@
               <label class="form-label">Nombre de la finca *</label>
               <input type="text" name="nombre_finca" class="form-input"
                      value="{{ finca.nombre_finca if finca else '' }}"
-                     placeholder="Ej: Finca Las Palmas" required>
+                     placeholder="Ej: Finca Las Palmas" required minlength="3" maxlength="100">
             </div>
 
             <!-- Agricultor -->
@@ -126,12 +126,26 @@
               </select>
             </div>
 
-            <!-- Ubicación -->
+            <!-- Departamento -->
             <div class="form-group">
-              <label class="form-label">Ubicación</label>
-              <input type="text" name="ubicacion" class="form-input"
-                     value="{{ finca.ubicacion if finca else '' }}"
-                     placeholder="Ej: Cúcuta, Norte de Santander">
+              <label class="form-label">Departamento *</label>
+              <select id="departamento_id" name="departamento_id" class="form-input" required>
+                <option value="">— Seleccionar —</option>
+                {% for d in departamentos %}
+                  <option value="{{ d.id }}" {{ 'selected' if finca and finca.departamento_id == d.id else '' }}>
+                    {{ d.nombre }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Municipio -->
+            <div class="form-group">
+              <label class="form-label">Municipio *</label>
+              <select id="municipio_id" name="municipio_id" class="form-input" required
+                      data-selected-municipio="{{ finca.municipio_id if finca and finca.municipio_id else '' }}">
+                <option value="">— Seleccionar —</option>
+              </select>
             </div>
 
             <!-- Coordenadas GPS -->
@@ -139,14 +153,14 @@
               <label class="form-label">Coordenadas GPS</label>
               <input type="text" name="coordenadas_gps" class="form-input"
                      value="{{ finca.coordenadas_gps if finca else '' }}"
-                     placeholder="Ej: 7.8939° N, 72.5078° W">
+                     placeholder="Ej: 7.8939° N, 72.5078° W" maxlength="100">
             </div>
 
             <!-- Área total -->
             <div class="form-group">
               <label class="form-label">Área total (hectáreas)</label>
               <input type="number" name="area_total_hectareas" class="form-input"
-                     step="0.01" min="0"
+                     step="0.01" min="0.01"
                      value="{{ finca.area_total_hectareas if finca else '' }}"
                      placeholder="Ej: 10.5">
             </div>
@@ -155,7 +169,7 @@
             <div class="form-group">
               <label class="form-label">Área cultivable (hectáreas)</label>
               <input type="number" name="area_cultivable_hectareas" class="form-input"
-                     step="0.01" min="0"
+                     step="0.01" min="0.01" required
                      value="{{ finca.area_cultivable_hectareas if finca else '' }}"
                      placeholder="Ej: 8.0">
             </div>
@@ -184,5 +198,72 @@
     </div>
   </div>
 </div>
+
+<script>
+  const departamentoSelect = document.getElementById('departamento_id');
+  const municipioSelect = document.getElementById('municipio_id');
+  const municipiosEndpoint = "{{ url_for('fincas.municipios_por_departamento') }}";
+
+  async function cargarMunicipios(departamentoId, municipioSeleccionado) {
+    municipioSelect.innerHTML = "<option value=''>— Seleccionar —</option>";
+    municipioSelect.disabled = true;
+
+    if (!departamentoId) {
+      municipioSelect.disabled = false;
+      return;
+    }
+
+    try {
+      const res = await fetch(`${municipiosEndpoint}?departamento_id=${departamentoId}`);
+      if (!res.ok) throw new Error('Error cargando municipios');
+      const data = await res.json();
+
+      data.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.nombre;
+        if (municipioSeleccionado && String(m.id) === String(municipioSeleccionado)) {
+          opt.selected = true;
+        }
+        municipioSelect.appendChild(opt);
+      });
+    } catch (e) {
+      // Silencioso: el backend ya valida.
+    } finally {
+      municipioSelect.disabled = false;
+    }
+  }
+
+  departamentoSelect.addEventListener('change', () => {
+    cargarMunicipios(departamentoSelect.value, null);
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const selectedMunicipio = municipioSelect.dataset.selectedMunicipio;
+    if (departamentoSelect.value) {
+      cargarMunicipios(departamentoSelect.value, selectedMunicipio);
+    }
+  });
+</script>
+
+<script>
+  (function () {
+    function isBackForward() {
+      try {
+        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        return nav && nav.length && nav[0].type === 'back_forward';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || isBackForward()) {
+        window.location.replace("{{ url_for('auth.confirm_logout') }}");
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>

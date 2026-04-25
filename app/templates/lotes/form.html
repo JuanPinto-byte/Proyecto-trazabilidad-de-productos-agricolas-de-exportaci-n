@@ -95,7 +95,10 @@
               <label class="form-label">Número de lote *</label>
               <input type="text" name="numero_lote" class="form-input"
                      value="{{ lote.numero_lote if lote else '' }}"
-                     placeholder="Ej: LT-2025-001" required>
+                     placeholder="Ej: LT-2025-001" required
+                     minlength="2" maxlength="50"
+                     pattern="[A-Za-z0-9][A-Za-z0-9 _./_-]{1,49}"
+                     title="Usa letras/números y solo estos símbolos: espacio, - _ . /">
             </div>
 
             <!-- Finca -->
@@ -106,7 +109,7 @@
                 {% for finca in fincas %}
                   <option value="{{ finca.id }}"
                     {{ 'selected' if lote and lote.finca_id == finca.id else '' }}>
-                    {{ finca.nombre_finca }}
+                    {{ finca.nombre_finca }} — {{ (finca.municipio_ref.nombre if finca.municipio_ref else finca.municipio) or '—' }}, {{ (finca.departamento_ref.nombre if finca.departamento_ref else finca.departamento) or '—' }}
                   </option>
                 {% endfor %}
               </select>
@@ -154,5 +157,24 @@
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    function isBackForward() {
+      try {
+        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        return nav && nav.length && nav[0].type === 'back_forward';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || isBackForward()) {
+        window.location.replace("{{ url_for('auth.confirm_logout') }}");
+      }
+    });
+  })();
+</script>
 </body>
 </html>

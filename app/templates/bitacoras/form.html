@@ -219,7 +219,7 @@
                   {% for lote in lotes %}
                     <option value="{{ lote.id }}"
                       {{ 'selected' if bitacora and bitacora.lote_id == lote.id else '' }}>
-                      {{ lote.numero_lote }} — {{ lote.finca.nombre_finca }}
+                      {{ lote.numero_lote }} — {{ lote.finca.nombre_finca if lote.finca else '—' }} ({{ (lote.finca.municipio_ref.nombre if lote.finca and lote.finca.municipio_ref else (lote.finca.municipio if lote.finca else None)) or '—' }}, {{ (lote.finca.departamento_ref.nombre if lote.finca and lote.finca.departamento_ref else (lote.finca.departamento if lote.finca else None)) or '—' }})
                     </option>
                   {% endfor %}
                 </select>
@@ -405,6 +405,25 @@
   function removeFile(index) {
     const input = document.getElementById('imagenes');
     const dt = new DataTransfer();
+
+    <script>
+      (function () {
+        function isBackForward() {
+          try {
+            const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+            return nav && nav.length && nav[0].type === 'back_forward';
+          } catch (e) {
+            return false;
+          }
+        }
+
+        window.addEventListener('pageshow', function (event) {
+          if (event.persisted || isBackForward()) {
+            window.location.replace("{{ url_for('auth.confirm_logout') }}");
+          }
+        });
+      })();
+    </script>
     const files = input.files;
 
     for (let i = 0; i < files.length; i++) {

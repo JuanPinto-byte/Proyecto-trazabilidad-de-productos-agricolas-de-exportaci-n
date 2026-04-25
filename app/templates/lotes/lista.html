@@ -1,167 +1,307 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrazaAgro — Lotes</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-</head>
-<body>
-<div class="dash-root">
-
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark">🌿</div>
-      <div class="logo-text">Traza<span>Agro</span></div>
-    </div>
-    <div class="topbar-right">
-      <div class="user-chip">
-        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
-        <span class="user-name">{{ session.rol | capitalize }}</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="layout">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">Gestión</div>
-        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
-            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
-            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
-            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
-          </svg>
-          Inicio
-        </a>
-        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-          </svg>
-          Fincas
-        </a>
-        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item active">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
-            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
-          </svg>
-          Lotes de producción
-        </a>
-        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-          Bitácoras
-        </a>
-                        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M4 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M6 8h8" stroke="#4a4640" stroke-width="1.3"/>
-          </svg>
-          Trazabilidad
-        </a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Sistema</div>
-        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Cerrar sesión
-        </a>
-      </div>
-    </div>
-
-    <!-- CONTENIDO -->
-    <div class="main-content">
-
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-          <div class="flash flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endwith %}
-
-      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
-        <div>
-          <div class="page-title">Lotes de producción</div>
-          <div class="page-subtitle">Gestión de lotes registrados por finca</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrazaAgro — Lotes</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="dash-root">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="logo">
+          <div class="logo-mark">🌿</div>
+          <div class="logo-text">Traza<span>Agro</span></div>
         </div>
-        <a href="{{ url_for('lotes.crear') }}" class="btn-primary">+ Nuevo lote</a>
+        <div class="topbar-right">
+          <div class="user-chip">
+            <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+            <span class="user-name">{{ session.rol | capitalize }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="panel" style="margin-top:0;">
-        <table class="lote-table">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Finca</th>
-              <th>Área (ha)</th>
-              <th>Estado</th>
-              <th>Fecha creación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for lote, nombre_finca in lotes %}
-            <tr>
-              <td class="lote-code">{{ lote.numero_lote }}</td>
-              <td>{{ nombre_finca }}</td>
-              <td>{{ lote.area_hectareas or '—' }}</td>
-              <td>
-                {% if lote.estado == 'ACTIVO' %}
-                  <span class="status-pill ok">Activo</span>
-                {% elif lote.estado == 'COSECHADO' %}
-                  <span class="status-pill ok">Cosechado</span>
-                {% elif lote.estado == 'BLOQUEADO' %}
-                  <span class="status-pill block">Bloqueado</span>
-                {% elif lote.estado == 'DESPACHADO' %}
-                  <span class="status-pill ok">Despachado</span>
+      <div class="layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-label">Gestión</div>
+            <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="#3a7c22"
+                />
+                <rect
+                  x="11"
+                  y="1"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="#3a7c22"
+                />
+                <rect
+                  x="1"
+                  y="11"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="#3a7c22"
+                />
+                <rect
+                  x="11"
+                  y="11"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="#3a7c22"
+                />
+              </svg>
+              Inicio
+            </a>
+            <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <path
+                  d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                  fill="none"
+                />
+              </svg>
+              Fincas
+            </a>
+            <a href="{{ url_for('lotes.lista') }}" class="sidebar-item active">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="2"
+                  y="4"
+                  width="14"
+                  height="11"
+                  rx="2"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                  fill="none"
+                />
+                <path
+                  d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                />
+                <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2" />
+              </svg>
+              Lotes de producción
+            </a>
+            <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <circle
+                  cx="9"
+                  cy="9"
+                  r="7"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                  fill="none"
+                />
+                <path
+                  d="M9 5v4l3 2"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Bitácoras
+            </a>
+            <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <path
+                  d="M4 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M6 8h8"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                />
+              </svg>
+              Trazabilidad
+            </a>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-label">Sistema</div>
+            <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+              <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+                <path
+                  d="M3 9h12M12 6l3 3-3 3"
+                  stroke="#4a4640"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Cerrar sesión
+            </a>
+          </div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="main-content">
+          {% with messages = get_flashed_messages(with_categories=true) %} {%
+          for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %} {% endwith %}
+
+          <div
+            class="page-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+            "
+          >
+            <div>
+              <div class="page-title">Lotes de producción</div>
+              <div class="page-subtitle">
+                Gestión de lotes registrados por finca
+              </div>
+            </div>
+            <a href="{{ url_for('lotes.crear') }}" class="btn-primary"
+              >+ Nuevo lote</a
+            >
+          </div>
+
+          <div class="panel" style="margin-top: 0">
+            <table class="lote-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Finca</th>
+                  <th>Área (ha)</th>
+                  <th>Estado</th>
+                  <th>Fecha creación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for lote, nombre_finca, departamento, municipio in lotes %}
+                <tr>
+                  <td class="lote-code">{{ lote.numero_lote }}</td>
+
+                  <td>{{ nombre_finca }} — {{ municipio }}, {{ departamento }}</td>
+
+                  <td>{{ lote.area_hectareas or '—' }}</td>
+
+                  <td>
+                    {% if lote.estado == 'ACTIVO' %}
+                    <span class="status-pill ok">Activo</span>
+
+                    {% elif lote.estado == 'COSECHADO' %}
+                    <span class="status-pill ok">Cosechado</span>
+
+                    {% elif lote.estado == 'BLOQUEADO' %}
+                    <span class="status-pill block">Bloqueado</span>
+
+                    {% elif lote.estado == 'DESPACHADO' %}
+                    <span class="status-pill ok">Despachado</span>
+
+                    {% else %}
+                    <span class="status-pill warn">
+                      {{ lote.estado or '—' }}
+                    </span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {{ lote.fecha_creacion.strftime('%d/%m/%Y') if
+                    lote.fecha_creacion else '—' }}
+                  </td>
+
+                  <td>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+                      <a
+                        href="{{ url_for('lotes.editar', id=lote.id) }}"
+                        class="btn-sm btn-edit"
+                      >
+                        Editar
+                      </a>
+
+                      {% if lote.estado != 'BLOQUEADO' %}
+                      <form
+                        method="POST"
+                        action="{{ url_for('lotes.bloquear', id=lote.id) }}"
+                      >
+                        <button type="submit" class="btn-sm btn-warn">
+                          Bloquear
+                        </button>
+                      </form>
+                      {% else %}
+                      <form
+                        method="POST"
+                        action="{{ url_for('lotes.desbloquear', id=lote.id) }}"
+                      >
+                        <button type="submit" class="btn-sm btn-edit">
+                          Desbloquear
+                        </button>
+                      </form>
+                      {% endif %}
+
+                      <form
+                        method="POST"
+                        action="{{ url_for('lotes.eliminar', id=lote.id) }}"
+                        onsubmit="return confirm('¿Eliminar el lote {{ lote.numero_lote }}?')"
+                      >
+                        <button type="submit" class="btn-sm btn-delete">
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+
                 {% else %}
-                  <span class="status-pill warn">{{ lote.estado or '—' }}</span>
-                {% endif %}
-              </td>
-              <td>{{ lote.fecha_creacion.strftime('%d/%m/%Y') if lote.fecha_creacion else '—' }}</td>
-              <td>
-                <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                  <a href="{{ url_for('lotes.editar', id=lote.id) }}" class="btn-sm btn-edit">Editar</a>
-
-                  {% if lote.estado != 'BLOQUEADO' %}
-                    <form method="POST" action="{{ url_for('lotes.bloquear', id=lote.id) }}">
-                      <button type="submit" class="btn-sm btn-warn">Bloquear</button>
-                    </form>
-                  {% else %}
-                    <form method="POST" action="{{ url_for('lotes.desbloquear', id=lote.id) }}">
-                      <button type="submit" class="btn-sm btn-edit">Desbloquear</button>
-                    </form>
-                  {% endif %}
-
-                  <form method="POST" action="{{ url_for('lotes.eliminar', id=lote.id) }}"
-                        onsubmit="return confirm('¿Eliminar el lote {{ lote.numero_lote }}?')">
-                    <button type="submit" class="btn-sm btn-delete">Eliminar</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="6" style="color:#9a9282; padding:20px 0; text-align:center;">
-                No hay lotes registrados. <a href="{{ url_for('lotes.crear') }}">Crear el primero</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+                <tr>
+                  <td
+                    colspan="6"
+                    style="color: #9a9282; padding: 20px 0; text-align: center"
+                  >
+                    No hay lotes registrados.
+                    <a href="{{ url_for('lotes.crear') }}">Crear el primero</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-
     </div>
-  </div>
-</div>
-</body>
+
+    <script>
+      (function () {
+        function isBackForward() {
+          try {
+            const nav =
+              performance.getEntriesByType &&
+              performance.getEntriesByType("navigation");
+            return nav && nav.length && nav[0].type === "back_forward";
+          } catch (e) {
+            return false;
+          }
+        }
+
+        window.addEventListener("pageshow", function (event) {
+          if (event.persisted || isBackForward()) {
+            window.location.replace("{{ url_for('auth.confirm_logout') }}");
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>

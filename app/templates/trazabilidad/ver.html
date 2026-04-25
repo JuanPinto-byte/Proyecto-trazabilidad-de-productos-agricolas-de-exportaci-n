@@ -273,6 +273,25 @@
 </div>
 
 <script>
+  (function () {
+    function isBackForward() {
+      try {
+        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        return nav && nav.length && nav[0].type === 'back_forward';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || isBackForward()) {
+        window.location.replace("{{ url_for('auth.confirm_logout') }}");
+      }
+    });
+  })();
+</script>
+
+<script>
   const form = document.getElementById('estado-form');
   if (form) {
     form.addEventListener('submit', function() {

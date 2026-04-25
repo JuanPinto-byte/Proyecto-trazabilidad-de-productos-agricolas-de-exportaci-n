@@ -31,22 +31,57 @@
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Gestión</div>
-        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">Inicio</a>
-        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item active">Fincas</a>
-        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">Lotes de producción</a>
-        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">Bitácoras</a>
-        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">Trazabilidad</a>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Inicio
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras
+        </a>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M4 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 6a2 2 0 1 0 4 0 2 2 0 1 0-4 0M6 8h8" stroke="#4a4640" stroke-width="1.3"/>
+          </svg>
+          Trazabilidad
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Sistema</div>
-        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">Cerrar sesión</a>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </a>
       </div>
     </div>
 
     <!-- CONTENIDO -->
     <div class="main-content">
 
-      <!-- Mensajes flash -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
           <div class="flash flash-{{ category }}">{{ message }}</div>
@@ -62,59 +97,56 @@
       </div>
 
       <div class="panel" style="margin-top:0;">
-        <form method="POST" action="{{ url_for('fincas.crear') }}" class="form-grid">
-
-          <div class="form-group form-full">
-            <label class="form-label" for="nombre_finca">Nombre de la finca *</label>
-            <input type="text" id="nombre_finca" name="nombre_finca" class="form-input" placeholder="Ej: Finca Las Palmas" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="departamento">Departamento *</label>
-            <select id="departamento" name="departamento" class="form-input" required>
-              <option value="">Seleccione departamento</option>
-              <option value="Norte de Santander">Norte de Santander</option>
-              <option value="Antioquia">Antioquia</option>
-              <option value="Cundinamarca">Cundinamarca</option>
-              <!-- agrega más departamentos -->
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="municipio">Municipio *</label>
-            <select id="municipio" name="municipio" class="form-input" required>
-              <option value="">Seleccione municipio</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="gps">Coordenadas GPS</label>
-            <input type="text" id="gps" name="gps" class="form-input" placeholder="Ej: 7.8939° N, 72.5078° W">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="area_total">Área total (hectáreas)</label>
-            <input type="number" step="0.01" id="area_total" name="area_total" class="form-input" placeholder="Ej: 10.5">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="area_cultivable">Área cultivable (hectáreas)</label>
-            <input type="number" step="0.01" id="area_cultivable" name="area_cultivable" class="form-input" placeholder="Ej: 8.0">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="estado">Estado</label>
-            <select id="estado" name="estado" class="form-input">
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
-            </select>
-          </div>
-
-          <div class="form-full" style="display:flex; gap:10px; margin-top:16px;">
-            <button type="submit" class="btn-primary">Crear finca</button>
-            <a href="{{ url_for('fincas.lista') }}" class="btn-secondary">Cancelar</a>
-          </div>
-        </form>
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Agricultor</th>
+              <th>Municipio</th>
+              <th>Departamento</th>
+              <th>Área cultivable (ha)</th>
+              <th>Estado</th>
+              <th>Fecha creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for finca, agricultor_nombre in fincas %}
+            <tr>
+              <td>{{ finca.nombre_finca }}</td>
+              <td>{{ agricultor_nombre }}</td>
+              <td>{{ (finca.municipio_ref.nombre if finca.municipio_ref else finca.municipio) or '—' }}</td>
+              <td>{{ (finca.departamento_ref.nombre if finca.departamento_ref else finca.departamento) or '—' }}</td>
+              <td>{{ finca.area_cultivable_hectareas or '—' }}</td>
+              <td>
+                {% if finca.estado == 'ACTIVO' %}
+                  <span class="status-pill ok">Activo</span>
+                {% elif finca.estado == 'INACTIVO' %}
+                  <span class="status-pill warn">Inactivo</span>
+                {% else %}
+                  <span class="status-pill warn">{{ finca.estado or '—' }}</span>
+                {% endif %}
+              </td>
+              <td>{{ finca.fecha_creacion.strftime('%d/%m/%Y') if finca.fecha_creacion else '—' }}</td>
+              <td>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <a href="{{ url_for('fincas.editar', id=finca.id) }}" class="btn-sm btn-edit">Editar</a>
+                  <form method="POST" action="{{ url_for('fincas.eliminar', id=finca.id) }}"
+                        onsubmit="return confirm('¿Eliminar la finca {{ finca.nombre_finca }}?')">
+                    <button type="submit" class="btn-sm btn-delete">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="8" style="color:#9a9282; padding:20px 0; text-align:center;">
+                No hay fincas registradas. <a href="{{ url_for('fincas.crear') }}">Crear la primera</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
     </div>
@@ -122,55 +154,22 @@
 </div>
 
 <script>
-  // Relación departamento → municipios
-  const municipiosPorDepto = {
-   "Amazonas": ["Leticia", "Puerto Nariño"],
-   "Antioquia": ["Medellín", "Bello", "Envigado", "Rionegro", "Itagüí", "Turbo", "Apartadó", "La Ceja", "Copacabana", "Sabaneta"],
-   "Arauca": ["Arauca", "Arauquita", "Saravena", "Tame"],
-   "Atlántico": ["Barranquilla", "Soledad", "Malambo", "Puerto Colombia", "Sabanalarga"],
-   "Bolívar": ["Cartagena", "Magangué", "Mompós", "Turbaco"],
-   "Boyacá": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá", "Paipa"],
-   "Caldas": ["Manizales", "Villamaría", "Chinchiná", "La Dorada"],
-   "Caquetá": ["Florencia", "San Vicente del Caguán", "Puerto Rico"],
-   "Casanare": ["Yopal", "Aguazul", "Villanueva", "Monterrey"],
-   "Cauca": ["Popayán", "Santander de Quilichao", "Puerto Tejada"],
-   "Cesar": ["Valledupar", "Aguachica", "Curumaní"],
-   "Chocó": ["Quibdó", "Istmina", "Condoto"],
-   "Córdoba": ["Montería", "Lorica", "Sahagún"],
-   "Cundinamarca": ["Bogotá D.C.", "Soacha", "Zipaquirá", "Fusagasugá", "Girardot"],
-   "Guainía": ["Inírida"],
-   "Guaviare": ["San José del Guaviare"],
-   "Huila": ["Neiva", "Pitalito", "Garzón"],
-   "La Guajira": ["Riohacha", "Maicao", "Uribia"],
-   "Magdalena": ["Santa Marta", "Ciénaga", "Fundación"],
-   "Meta": ["Villavicencio", "Acacías", "Granada"],
-   "Nariño": ["Pasto", "Ipiales", "Tumaco"],
-   "Norte de Santander": ["Cúcuta", "Ocaña", "Pamplona", "Tibú"],
-   "Putumayo": ["Mocoa", "Puerto Asís", "Orito"],
-   "Quindío": ["Armenia", "Montenegro", "Quimbaya"],
-   "Risaralda": ["Pereira", "Dosquebradas", "Santa Rosa de Cabal"],
-   "San Andrés y Providencia": ["San Andrés", "Providencia"],
-   "Santander": ["Bucaramanga", "Floridablanca", "Girón", "Piedecuesta", "Barrancabermeja"],
-   "Sucre": ["Sincelejo", "Corozal", "Sampués"],
-   "Tolima": ["Ibagué", "Espinal", "Honda"],
-   "Valle del Cauca": ["Cali", "Palmira", "Buenaventura", "Tuluá", "Cartago"],
-   "Vaupés": ["Mitú"],
-  "Vichada": ["Puerto Carreño"]
-
-  };
-
-  const departamentoSelect = document.getElementById("departamento");
-  const municipioSelect = document.getElementById("municipio");
-
-  departamentoSelect.addEventListener("change", function() {
-    const depto = this.value;
-    municipioSelect.innerHTML = "<option value=''>Seleccione municipio</option>";
-    if (municipiosPorDepto[depto]) {
-      municipiosPorDepto[depto].forEach(m => {
-        municipioSelect.innerHTML += `<option value="${m}">${m}</option>`;
-      });
+  (function () {
+    function isBackForward() {
+      try {
+        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        return nav && nav.length && nav[0].type === 'back_forward';
+      } catch (e) {
+        return false;
+      }
     }
-  });
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || isBackForward()) {
+        window.location.replace("{{ url_for('auth.confirm_logout') }}");
+      }
+    });
+  })();
 </script>
 </body>
 </html>
