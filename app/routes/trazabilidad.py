@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from app.models.lote import Lote
-from app.models.trazabilidad import Trazabilidad, TrazabilidadEvento
+from app.models.produccion.lote import Lote
+from app.models.trazabilidad.trazabilidad import Trazabilidad, TrazabilidadEvento
 from app.extensions import db
 from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen

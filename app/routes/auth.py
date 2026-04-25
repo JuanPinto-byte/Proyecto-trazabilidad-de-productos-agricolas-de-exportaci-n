@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.extensions import db
-from app.models.user import User
-from app.models.rol import Rol
+from app.models.usuarios.user import User
+from app.models.usuarios.rol import Rol
 from sqlalchemy import func
 from datetime import datetime
 from functools import wraps
@@ -129,12 +129,12 @@ def confirm_logout():
 @login_required
 def dashboard():
     # Importar modelos aquí para evitar importaciones circulares
-    from app.models.finca    import Finca
-    from app.models.lote     import Lote
-    from app.models.anomalia import Anomalia
+    from app.models.produccion.finca    import Finca
+    from app.models.produccion.lote     import Lote
+    from app.models.seguimiento.anomalia import Anomalia
     from app.models.trazabilidad import Trazabilidad
-    from app.models.bodega   import Bodega, ControlTemperatura
-    from app.models.cosecha  import Cosecha
+    from app.models.almacenamiento.bodega   import Bodega, ControlTemperatura
+    from app.models.almacenamiento.cosecha  import Cosecha
 
     # ── Usuario actual ────────────────────────────────────────────────────────
     usuario_actual = User.query.get(session["user_id"])

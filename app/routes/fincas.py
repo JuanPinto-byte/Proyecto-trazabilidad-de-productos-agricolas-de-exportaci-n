@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.extensions import db
-from app.models.finca import Finca
-from app.models.agricultor import Agricultor
-from app.models.user import User
+from app.models.produccion.finca import Finca
+from app.models.produccion.agricultor import Agricultor
+from app.models.usuarios.user import User
 from functools import wraps
 from sqlalchemy import func
 

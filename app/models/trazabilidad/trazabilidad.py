@@ -33,7 +33,20 @@ class RecepcionAcopio(db.Model):
     def __repr__(self):
         return f'<RecepcionAcopio lote={self.lote_id} kg={self.cantidad_kg}>'
 
+class TrazabilidadEvento(db.Model):
+    __tablename__ = 'trazabilidad_eventos'
 
+    id                = db.Column(db.Integer, primary_key=True)
+    trazabilidad_id   = db.Column(db.Integer, db.ForeignKey('trazabilidad.id'), nullable=False)
+    fecha_evento      = db.Column(db.DateTime, default=datetime.utcnow)
+    estado            = db.Column(db.String(30), nullable=False)
+    ubicacion_actual  = db.Column(db.String(150))
+    transportista     = db.Column(db.String(120))
+    vehiculo          = db.Column(db.String(120))
+    origen            = db.Column(db.String(150))
+    destino           = db.Column(db.String(150))
+    observaciones     = db.Column(db.Text)
+    
 class Auditoria(db.Model):
     """Registro automático de todas las operaciones críticas del sistema."""
     __tablename__ = 'auditoria'

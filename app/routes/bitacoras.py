@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.extensions import db
-from app.models.bitacora import BitacoraCultivo
-from app.models.lote import Lote
-from app.models.finca import Finca
-from app.models.user import User
+from app.models.seguimiento.bitacora import BitacoraCultivo
+from app.models.produccion.lote import Lote
+from app.models.produccion.finca import Finca
+from app.models.usuarios.user import User
 from functools import wraps
 from datetime import datetime
 import os

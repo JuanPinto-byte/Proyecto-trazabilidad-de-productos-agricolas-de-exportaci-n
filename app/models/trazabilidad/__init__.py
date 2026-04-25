@@ -1,1 +1,1 @@
-from .trazabilidad import Trazabilidad, RecepcionAcopio, Auditoria
+from .trazabilidad import Trazabilidad, RecepcionAcopio, Auditoria, TrazabilidadEvento
