@@ -226,15 +226,17 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label">Fecha *</label>
+                <label class="form-label">Fecha * (máximo hoy)</label>
                 <input type="date" name="fecha" class="form-input" required
-                  value="{{ bitacora.fecha.strftime('%Y-%m-%d') if bitacora and bitacora.fecha else '' }}">
+                  value="{{ bitacora.fecha.strftime('%Y-%m-%d') if bitacora and bitacora.fecha else '' }}"
+                  max="{{ now.strftime('%Y-%m-%d') if now else '' }}"
+                  onchange="var hoy = new Date().toISOString().split('T')[0]; if(this.value > hoy) {this.value = hoy; alert('No se pueden registrar fechas futuras.');}">
               </div>
 
               <div class="form-group">
-                <label class="form-label">Agrólogo asignado</label>
-                <select name="agronomo_id" class="form-input">
-                  <option value="">— Sin asignar —</option>
+                <label class="form-label">Agrólogo asignado *</label>
+                <select name="agronomo_id" class="form-input" required>
+                  <option value="">— Seleccionar agrólogo —</option>
                   {% for usuario in usuarios %}
                     <option value="{{ usuario.id }}"
                       {{ 'selected' if bitacora and bitacora.agronomo_id == usuario.id else '' }}>
@@ -311,9 +313,11 @@
             </div>
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label">Temperatura (°C)</label>
-                <input type="number" name="temperatura" class="form-input" step="0.1"
-                  placeholder="Ej: 28.5">
+                <label class="form-label">Temperatura (°C) *</label>
+                <input type="number" name="temperatura" class="form-input" step="0.1" required
+                  min="0" max="30"
+                  placeholder="Ej: 28.5 (máximo 30°C)"
+                  onchange="if(this.value > 30) {this.value = 30; alert('La temperatura máxima permitida es 30°C.');}">
               </div>
 
               <div class="form-group">
@@ -323,9 +327,11 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label">Precipitación (mm)</label>
-                <input type="number" name="precipitacion" class="form-input" step="0.1" min="0"
-                  placeholder="Ej: 5.2">
+                <label class="form-label">Precipitación (mm) *</label>
+                <input type="number" name="precipitacion" class="form-input" step="0.1" required
+                  min="0" max="15"
+                  placeholder="Ej: 5.2 (máximo 15mm - riesgo muy alto)"
+                  onchange="if(this.value > 15) {this.value = 15; alert('La precipitación máxima permitida es 15mm (límite de riesgo muy alto).');}">
               </div>
             </div>
           </div>

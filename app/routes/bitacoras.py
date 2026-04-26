@@ -114,7 +114,8 @@ def crear():
                 "bitacoras/form.html",
                 lotes=lotes,
                 usuarios=usuarios,
-                bitacora=None
+                bitacora=None,
+                now=datetime.now()
             )
         
         if not fecha:
@@ -123,7 +124,8 @@ def crear():
                 "bitacoras/form.html",
                 lotes=lotes,
                 usuarios=usuarios,
-                bitacora=None
+                bitacora=None,
+                now=datetime.now()
             )
         
         if not actividades:
@@ -132,8 +134,88 @@ def crear():
                 "bitacoras/form.html",
                 lotes=lotes,
                 usuarios=usuarios,
-                bitacora=None
+                bitacora=None,
+                now=datetime.now()
             )
+        
+        # Validación de fecha (no puede ser futura)
+        try:
+            fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
+            if fecha_obj > datetime.now().date():
+                flash("No se pueden registrar fechas futuras. Solo hasta el día actual.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=None,
+                    now=datetime.now()
+                )
+        except ValueError:
+            flash("Formato de fecha inválido.", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=None,
+                now=datetime.now()
+            )
+        
+        # Validación de agrónomo (obligatorio)
+        if not agronomo_id:
+            flash("Debes asignar un agrólogo obligatoriamente.", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=None,
+                now=datetime.now()
+            )
+        
+        # Validación de temperatura (máximo 30°C)
+        if temperatura:
+            try:
+                temp_valor = float(temperatura)
+                if temp_valor > 30:
+                    flash("La temperatura no puede ser superior a 30°C.", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=None,
+                        now=datetime.now()
+                    )
+            except ValueError:
+                flash("Temperatura inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=None,
+                    now=datetime.now()
+                )
+        
+        # Validación de precipitación (máximo 15mm)
+        if precipitacion:
+            try:
+                precip_valor = float(precipitacion)
+                if precip_valor > 15:
+                    flash("La precipitación no puede ser superior a 15mm (límite de riesgo muy alto).", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=None,
+                        now=datetime.now()
+                    )
+            except ValueError:
+                flash("Precipitación inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=None,
+                    now=datetime.now()
+                )
         
         # Construir el registro detallado en observaciones
         registro_detallado = f"""
@@ -187,7 +269,7 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
             fecha=datetime.strptime(fecha, "%Y-%m-%d").date(),
             actividades_realizadas=actividades,
             observaciones=registro_detallado + imagenes_info,
-            agronomo_id=int(agronomo_id) if agronomo_id else None
+            agronomo_id=int(agronomo_id)
         )
         
         db.session.add(nueva_bitacora)
@@ -200,7 +282,8 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
         "bitacoras/form.html",
         lotes=lotes,
         usuarios=usuarios,
-        bitacora=None
+        bitacora=None,
+        now=datetime.now()
     )
 
 
@@ -215,10 +298,10 @@ def editar(id):
     usuarios = User.query.filter_by(activo=True).all()
     
     if request.method == "POST":
-        bitacora.lote_id = int(request.form.get("lote_id"))
-        bitacora.fecha = datetime.strptime(request.form.get("fecha"), "%Y-%m-%d").date()
-        bitacora.actividades_realizadas = request.form.get("actividades_realizadas", "").strip()
-        bitacora.agronomo_id = int(request.form.get("agronomo_id")) if request.form.get("agronomo_id") else None
+        lote_id = request.form.get("lote_id")
+        fecha_str = request.form.get("fecha")
+        actividades = request.form.get("actividades_realizadas", "").strip()
+        agronomo_id = request.form.get("agronomo_id")
         
         # Datos adicionales
         observaciones = request.form.get("observaciones", "").strip()
@@ -231,7 +314,7 @@ def editar(id):
         precipitacion = request.form.get("precipitacion", "").strip()
         
         # Validaciones
-        if not bitacora.actividades_realizadas:
+        if not actividades:
             flash("Debes registrar al menos una actividad.", "error")
             return render_template(
                 "bitacoras/form.html",
@@ -239,6 +322,90 @@ def editar(id):
                 usuarios=usuarios,
                 bitacora=bitacora
             )
+        
+        # Validación de fecha (no puede ser futura)
+        try:
+            fecha_obj = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            if fecha_obj > datetime.now().date():
+                flash("No se pueden registrar fechas futuras. Solo hasta el día actual.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=bitacora,
+                    now=datetime.now()
+                )
+        except ValueError:
+            flash("Formato de fecha inválido.", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=bitacora,
+                now=datetime.now()
+            )
+        
+        # Validación de agrónomo (obligatorio)
+        if not agronomo_id:
+            flash("Debes asignar un agrólogo obligatoriamente.", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=bitacora,
+                now=datetime.now()
+            )
+        
+        # Validación de temperatura (máximo 30°C)
+        if temperatura:
+            try:
+                temp_valor = float(temperatura)
+                if temp_valor > 30:
+                    flash("La temperatura no puede ser superior a 30°C.", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=bitacora,
+                        now=datetime.now()
+                    )
+            except ValueError:
+                flash("Temperatura inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=bitacora,
+                    now=datetime.now()
+                )
+        
+        # Validación de precipitación (máximo 15mm)
+        if precipitacion:
+            try:
+                precip_valor = float(precipitacion)
+                if precip_valor > 15:
+                    flash("La precipitación no puede ser superior a 15mm (límite de riesgo muy alto).", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=bitacora
+                    )
+            except ValueError:
+                flash("Precipitación inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=bitacora,
+                    now=datetime.now()
+                )
+        
+        # Asignar valores validados
+        bitacora.lote_id = int(lote_id)
+        bitacora.fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        bitacora.actividades_realizadas = actividades
+        bitacora.agronomo_id = int(agronomo_id)
         
         # Reconstruir observaciones con nuevo registro
         registro_detallado = f"""
