@@ -279,25 +279,25 @@
               <div class="form-group form-full">
                 <label class="form-label">Siembra</label>
                 <textarea name="siembra" class="form-input form-textarea"
-                  placeholder="Ej: Sembrados 500m² con variedad X, profundidad 5cm, distancia 30x30cm">{{ '' }}</textarea>
+                  placeholder="Ej: Sembrados 500m² con variedad X, profundidad 5cm, distancia 30x30cm">{{ bitacora.siembra if bitacora and bitacora.siembra else '' }}</textarea>
               </div>
 
               <div class="form-group form-full">
                 <label class="form-label">Riego</label>
                 <textarea name="riego" class="form-input form-textarea"
-                  placeholder="Ej: Riego por goteo, 25mm, duración 2 horas, cobertura 80%">{{ '' }}</textarea>
+                  placeholder="Ej: Riego por goteo, 25mm, duración 2 horas, cobertura 80%">{{ bitacora.riego if bitacora and bitacora.riego else '' }}</textarea>
               </div>
 
               <div class="form-group form-full">
                 <label class="form-label">Fertilización</label>
                 <textarea name="fertilizacion" class="form-input form-textarea"
-                  placeholder="Ej: Aplicado N-P-K (10-10-10), dosis 20kg/ha, método foliar">{{ '' }}</textarea>
+                  placeholder="Ej: Aplicado N-P-K (10-10-10), dosis 20kg/ha, método foliar">{{ bitacora.fertilizacion if bitacora and bitacora.fertilizacion else '' }}</textarea>
               </div>
 
               <div class="form-group form-full">
                 <label class="form-label">Insumos utilizados</label>
                 <textarea name="insumos" class="form-input form-textarea"
-                  placeholder="Ej: Fungicida X (0.5L/ha), Insecticida Y (2ml/L), Cal (500kg)">{{ '' }}</textarea>
+                  placeholder="Ej: Fungicida X (0.5L/ha), Insecticida Y (2ml/L), Cal (500kg)">{{ bitacora.insumos_utilizados if bitacora and bitacora.insumos_utilizados else '' }}</textarea>
               </div>
             </div>
           </div>
@@ -316,6 +316,7 @@
                 <label class="form-label">Temperatura (°C) *</label>
                 <input type="number" name="temperatura" class="form-input" step="0.1" required
                   min="0" max="30"
+                  value="{{ bitacora.temperatura_c if bitacora and bitacora.temperatura_c else '' }}"
                   placeholder="Ej: 28.5 (máximo 30°C)"
                   onchange="if(this.value > 30) {this.value = 30; alert('La temperatura máxima permitida es 30°C.');}">
               </div>
@@ -323,6 +324,7 @@
               <div class="form-group">
                 <label class="form-label">Humedad relativa (%)</label>
                 <input type="number" name="humedad" class="form-input" min="0" max="100" step="0.1"
+                  value="{{ bitacora.humedad_pct if bitacora and bitacora.humedad_pct else '' }}"
                   placeholder="Ej: 65">
               </div>
 
@@ -330,6 +332,7 @@
                 <label class="form-label">Precipitación (mm) *</label>
                 <input type="number" name="precipitacion" class="form-input" step="0.1" required
                   min="0" max="15"
+                  value="{{ bitacora.precipitacion_mm if bitacora and bitacora.precipitacion_mm else '' }}"
                   placeholder="Ej: 5.2 (máximo 15mm - riesgo muy alto)"
                   onchange="if(this.value > 15) {this.value = 15; alert('La precipitación máxima permitida es 15mm (límite de riesgo muy alto).');}">
               </div>
@@ -349,7 +352,7 @@
               <div class="form-group form-full">
                 <label class="form-label">Observaciones</label>
                 <textarea name="observaciones" class="form-input form-textarea"
-                  placeholder="Ej: Se observó presencia de plagas, requiere tratamiento. Drenaje en buen estado. Próxima cosecha estimada para 15 días.">{{ '' }}</textarea>
+                  placeholder="Ej: Se observó presencia de plagas, requiere tratamiento. Drenaje en buen estado. Próxima cosecha estimada para 15 días.">{{ bitacora.observaciones if bitacora and bitacora.observaciones else '' }}</textarea>
               </div>
             </div>
           </div>

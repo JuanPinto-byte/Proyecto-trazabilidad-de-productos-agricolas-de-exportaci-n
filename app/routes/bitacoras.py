@@ -263,20 +263,59 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
             if imagenes_guardadas:
                 imagenes_info = f"\n--- EVIDENCIA MULTIMEDIA ---\nImágenes adjuntas: {', '.join(imagenes_guardadas)}\n"
         
+        # Construir registro detallado en observaciones
+        registro_detallado = f"""=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
+Fecha: {fecha}
+
+--- ACTIVIDADES REALIZADAS ---
+{actividades}
+
+--- ACTIVIDADES ESPECÍFICAS ---
+Siembra: {siembra if siembra else 'N/A'}
+Riego: {riego if riego else 'N/A'}
+Fertilización: {fertilizacion if fertilizacion else 'N/A'}
+Insumos utilizados: {insumos if insumos else 'N/A'}
+
+--- CONDICIONES AMBIENTALES ---
+Temperatura (°C): {temperatura if temperatura else 'N/A'}
+Humedad (%): {humedad if humedad else 'N/A'}
+Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
+
+--- OBSERVACIONES ADICIONALES ---
+{observaciones if observaciones else 'Sin observaciones'}
+
+=== FIN DEL REGISTRO ==="""
+        
         # Crear bitácora con el registro completo
-        nueva_bitacora = BitacoraCultivo(
-            lote_id=int(lote_id),
-            fecha=datetime.strptime(fecha, "%Y-%m-%d").date(),
-            actividades_realizadas=actividades,
-            observaciones=registro_detallado + imagenes_info,
-            agronomo_id=int(agronomo_id)
-        )
-        
-        db.session.add(nueva_bitacora)
-        db.session.commit()
-        
-        flash("Bitácora creada correctamente.", "success")
-        return redirect(url_for("bitacoras.lista"))
+        try:
+            nueva_bitacora = BitacoraCultivo(
+                lote_id=int(lote_id),
+                fecha=datetime.strptime(fecha, "%Y-%m-%d").date(),
+                tipo_actividad=siembra if siembra else (riego if riego else (fertilizacion if fertilizacion else "Mantenimiento")),
+                actividades_realizadas=actividades,
+                insumos_utilizados=insumos if insumos else None,
+                temperatura_c=float(temperatura) if temperatura else None,
+                humedad_pct=float(humedad) if humedad else None,
+                precipitacion_mm=float(precipitacion) if precipitacion else None,
+                observaciones=registro_detallado,
+                agronomo_id=int(agronomo_id)
+            )
+            
+            db.session.add(nueva_bitacora)
+            db.session.commit()
+            
+            flash("Bitácora creada correctamente.", "success")
+            return redirect(url_for("bitacoras.lista"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error al guardar la bitácora: {str(e)}", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=None,
+                now=datetime.now()
+            )
     
     return render_template(
         "bitacoras/form.html",
@@ -404,12 +443,16 @@ def editar(id):
         # Asignar valores validados
         bitacora.lote_id = int(lote_id)
         bitacora.fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        bitacora.tipo_actividad = siembra if siembra else (riego if riego else (fertilizacion if fertilizacion else "Mantenimiento"))
         bitacora.actividades_realizadas = actividades
+        bitacora.insumos_utilizados = insumos if insumos else None
+        bitacora.temperatura_c = float(temperatura) if temperatura else None
+        bitacora.humedad_pct = float(humedad) if humedad else None
+        bitacora.precipitacion_mm = float(precipitacion) if precipitacion else None
         bitacora.agronomo_id = int(agronomo_id)
         
-        # Reconstruir observaciones con nuevo registro
-        registro_detallado = f"""
-=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
+        # Reconstruir registro detallado
+        registro_detallado = f"""=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
 Fecha: {bitacora.fecha}
 
 --- ACTIVIDADES REALIZADAS ---
@@ -429,31 +472,23 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
 --- OBSERVACIONES ADICIONALES ---
 {observaciones if observaciones else 'Sin observaciones'}
 
-=== FIN DEL REGISTRO ===
-"""
+=== FIN DEL REGISTRO ==="""
         
-        # Procesar nuevas imágenes
-        imagenes_info = ""
-        if 'imagenes' in request.files:
-            archivos = request.files.getlist('imagenes')
-            imagenes_guardadas = []
-            
-            for archivo in archivos:
-                if archivo and archivo.filename != '' and allowed_file(archivo.filename):
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
-                    filename = secure_filename(timestamp + archivo.filename)
-                    filepath = os.path.join(UPLOAD_FOLDER, filename)
-                    archivo.save(filepath)
-                    imagenes_guardadas.append(filename)
-            
-            if imagenes_guardadas:
-                imagenes_info = f"\n--- EVIDENCIA MULTIMEDIA ---\nImágenes adjuntas: {', '.join(imagenes_guardadas)}\n"
+        bitacora.observaciones = registro_detallado
         
-        bitacora.observaciones = registro_detallado + imagenes_info
-        db.session.commit()
-        
-        flash("Bitácora actualizada correctamente.", "success")
-        return redirect(url_for("bitacoras.lista"))
+        try:
+            db.session.commit()
+            flash("Bitácora actualizada correctamente.", "success")
+            return redirect(url_for("bitacoras.lista"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error al actualizar la bitácora: {str(e)}", "error")
+            return render_template(
+                "bitacoras/form.html",
+                lotes=lotes,
+                usuarios=usuarios,
+                bitacora=bitacora
+            )
     
     return render_template(
         "bitacoras/form.html",
