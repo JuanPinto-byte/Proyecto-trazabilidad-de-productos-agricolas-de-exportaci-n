@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from app.models.produccion.lote import Lote
+from app.models.produccion import Lote, Finca
 from app.models.trazabilidad.trazabilidad import Trazabilidad, TrazabilidadEvento
 from app.extensions import db
 from datetime import datetime
@@ -23,7 +23,15 @@ def login_required(f):
 @trazabilidad_bp.route('/', endpoint='lista')
 @login_required
 def lista():
-    lotes = Lote.query.all()
+    lotes = db.session.query(
+        Lote,
+        Finca.nombre_finca,
+        Finca.departamento,
+        Finca.municipio
+        )\
+        .join(Finca, Finca.id == Lote.finca_id)\
+        .order_by(Lote.fecha_creacion.desc())\
+        .all()
     return render_template('trazabilidad/lista.html', lotes=lotes)
 
 def get_colombia_time():

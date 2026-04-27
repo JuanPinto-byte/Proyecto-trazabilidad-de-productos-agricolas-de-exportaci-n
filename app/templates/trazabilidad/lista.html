@@ -117,10 +117,10 @@
             </tr>
           </thead>
           <tbody>
-            {% for lote in lotes %}
+            {% for lote, nombre_finca, departamento, municipio in lotes %}
             <tr>
-              <td class="lote-code">{{ lote.numero_lote }}</td>
-              <td>{{ lote.finca.nombre_finca if lote.finca else '—' }}</td>
+              <td class="lote-code">{{ lote.numero_lote}}</td>
+              <td>{{ nombre_finca }} - {{ municipio }}, {{ departamento }}</td>
               <td>
                 {% if lote.trazabilidad %}
                   <code style="font-size:12px; background:#f1f3f0; padding:2px 6px; border-radius:4px;">
