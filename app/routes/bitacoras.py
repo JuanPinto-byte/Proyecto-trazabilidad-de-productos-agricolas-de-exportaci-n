@@ -286,6 +286,29 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
 
 === FIN DEL REGISTRO ==="""
         
+        # Construir el registro detallado en observaciones
+        registro_detallado = f"""=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
+Fecha: {fecha}
+
+--- ACTIVIDADES REALIZADAS ---
+{actividades}
+
+--- ACTIVIDADES ESPECÍFICAS ---
+Siembra: {siembra if siembra else 'N/A'}
+Riego: {riego if riego else 'N/A'}
+Fertilización: {fertilizacion if fertilizacion else 'N/A'}
+Insumos utilizados: {insumos if insumos else 'N/A'}
+
+--- CONDICIONES AMBIENTALES ---
+Temperatura (°C): {temperatura if temperatura else 'N/A'}
+Humedad (%): {humedad if humedad else 'N/A'}
+Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
+
+--- OBSERVACIONES ADICIONALES ---
+{observaciones if observaciones else 'Sin observaciones'}
+
+=== FIN DEL REGISTRO ==="""
+        
         # Crear bitácora con el registro completo
         try:
             nueva_bitacora = BitacoraCultivo(
@@ -335,6 +358,68 @@ def editar(id):
     bitacora = BitacoraCultivo.query.get_or_404(id)
     lotes = Lote.query.filter_by(estado="ACTIVO").order_by(Lote.numero_lote).all()
     usuarios = User.query.filter_by(activo=True).all()
+    
+    # Extraer datos del campo observaciones si existen
+    siembra_valor = ""
+    riego_valor = ""
+    fertilizacion_valor = ""
+    insumos_valor = ""
+    temperatura_valor = ""
+    humedad_valor = ""
+    precipitacion_valor = ""
+    observaciones_valor = ""
+    
+    if bitacora.observaciones:
+        obs = bitacora.observaciones
+        # Parsear siembra
+        if "Siembra:" in obs:
+            inicio = obs.find("Siembra:") + len("Siembra:")
+            fin = obs.find("\n", inicio)
+            siembra_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            siembra_valor = siembra_valor.replace("N/A", "")
+        # Parsear riego
+        if "Riego:" in obs:
+            inicio = obs.find("Riego:") + len("Riego:")
+            fin = obs.find("\n", inicio)
+            riego_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            riego_valor = riego_valor.replace("N/A", "")
+        # Parsear fertilización
+        if "Fertilización:" in obs:
+            inicio = obs.find("Fertilización:") + len("Fertilización:")
+            fin = obs.find("\n", inicio)
+            fertilizacion_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            fertilizacion_valor = fertilizacion_valor.replace("N/A", "")
+        # Parsear insumos
+        if "Insumos utilizados:" in obs:
+            inicio = obs.find("Insumos utilizados:") + len("Insumos utilizados:")
+            fin = obs.find("\n", inicio)
+            insumos_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            insumos_valor = insumos_valor.replace("N/A", "")
+        # Parsear temperatura
+        if "Temperatura (°C):" in obs:
+            inicio = obs.find("Temperatura (°C):") + len("Temperatura (°C):")
+            fin = obs.find("\n", inicio)
+            temperatura_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            temperatura_valor = temperatura_valor.replace("N/A", "")
+        # Parsear humedad
+        if "Humedad (%):" in obs:
+            inicio = obs.find("Humedad (%):") + len("Humedad (%):")
+            fin = obs.find("\n", inicio)
+            humedad_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            humedad_valor = humedad_valor.replace("N/A", "")
+        # Parsear precipitación
+        if "Precipitación (mm):" in obs:
+            inicio = obs.find("Precipitación (mm):") + len("Precipitación (mm):")
+            fin = obs.find("\n", inicio)
+            precipitacion_valor = obs[inicio:fin].strip() if fin != -1 else obs[inicio:].strip()
+            precipitacion_valor = precipitacion_valor.replace("N/A", "")
+        # Parsear observaciones adicionales
+        if "--- OBSERVACIONES ADICIONALES ---" in obs:
+            inicio = obs.find("--- OBSERVACIONES ADICIONALES ---") + len("--- OBSERVACIONES ADICIONALES ---")
+            fin = obs.find("=== FIN DEL REGISTRO ===")
+            if fin == -1:
+                fin = len(obs)
+            observaciones_valor = obs[inicio:fin].strip()
     
     if request.method == "POST":
         lote_id = request.form.get("lote_id")
@@ -456,7 +541,7 @@ def editar(id):
 Fecha: {bitacora.fecha}
 
 --- ACTIVIDADES REALIZADAS ---
-{bitacora.actividades_realizadas}
+{actividades}
 
 --- ACTIVIDADES ESPECÍFICAS ---
 Siembra: {siembra if siembra else 'N/A'}
@@ -494,7 +579,15 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
         "bitacoras/form.html",
         lotes=lotes,
         usuarios=usuarios,
-        bitacora=bitacora
+        bitacora=bitacora,
+        siembra_value=siembra_valor,
+        riego_value=riego_valor,
+        fertilizacion_value=fertilizacion_valor,
+        insumos_value=insumos_valor,
+        temperatura_value=temperatura_valor,
+        humedad_value=humedad_valor,
+        precipitacion_value=precipitacion_valor,
+        observaciones_value=observaciones_valor
     )
 
 
