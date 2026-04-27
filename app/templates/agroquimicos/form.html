@@ -148,19 +148,19 @@
             <!-- Dosis Recomendada -->
             <div class="form-group">
               <label class="form-label">Dosis recomendada *</label>
-              <input type="text" name="dosis_recomendada" class="form-input"
+              <input type="number" name="dosis_recomendada" class="form-input"
                      value="{{ agroquimico.dosis_recomendada if agroquimico else '' }}"
-                     placeholder="Ej: 2.5" required pattern="^\d+([.,]\d+)?$">
-              <small style="color:#7d7a75;">Dosis óptima por hectárea (ej: 2.5 kg/ha)</small>
+                     placeholder="Ej: 2.5" required min="0.01" max="1000" step="0.01">
+              <small style="color:#7d7a75;">Dosis óptima por hectárea. Máximo 1000 por hectárea.</small>
             </div>
 
             <!-- Dosis Límite -->
             <div class="form-group">
               <label class="form-label">Dosis límite por hectárea *</label>
-              <input type="text" name="dosis_limite_hectarea" class="form-input"
+              <input type="number" name="dosis_limite_hectarea" class="form-input"
                      value="{{ agroquimico.dosis_limite_hectarea if agroquimico else '' }}"
-                     placeholder="Ej: 4.0" required pattern="^\d+([.,]\d+)?$">
-              <small style="color:#7d7a75;">Máximo permitido según normativa (ej: 4.0 kg/ha)</small>
+                     placeholder="Ej: 4.0" required min="0.01" max="1000" step="0.01">
+              <small style="color:#7d7a75;">Máximo permitido por normativa. No puede superar 1000 por hectárea.</small>
             </div>
 
             <!-- Período de Carencia -->

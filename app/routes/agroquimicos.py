@@ -12,6 +12,7 @@ agroquimicos_bp = Blueprint("agroquimicos", __name__)
 
 TIPOS_AGROQUIMICOS = ["FERTILIZANTE", "PESTICIDA", "FUNGICIDA", "HERBICIDA", "INSECTICIDA", "ACARICIDA", "NEMATICIDA", "OTRO"]
 UNIDADES_DOSIS = ["kg/ha", "L/ha", "ml/ha", "g/ha", "dosis/ha"]
+MAX_DOSIS_HECTAREA = Decimal("1000.00")
 
 
 def login_required(f):
@@ -30,6 +31,7 @@ def _parse_decimal(
     field_label: str,
     required: bool = False,
     min_value: Decimal | None = None,
+    max_value: Decimal | None = None,
 ):
     raw = (value or "").strip()
     if not raw:
@@ -48,6 +50,11 @@ def _parse_decimal(
     if min_value is not None and parsed < min_value:
         flash(f"{field_label} no puede ser menor que {min_value}.", "error")
         return None, False
+
+    if max_value is not None and parsed > max_value:
+        flash(f"{field_label} no puede ser mayor que {max_value}.", "error")
+        return None, False
+
     return parsed, True
 
 
@@ -75,12 +82,14 @@ def crear():
             request.form.get("dosis_recomendada"),
             field_label="Dosis recomendada",
             min_value=Decimal("0.01"),
+            max_value=MAX_DOSIS_HECTAREA,
         )
         
         dosis_limite_hectarea, ok_dosis_lim = _parse_decimal(
             request.form.get("dosis_limite_hectarea"),
             field_label="Dosis límite por hectárea",
             min_value=Decimal("0.01"),
+            max_value=MAX_DOSIS_HECTAREA,
         )
         
         periodo_carencia = request.form.get("periodo_carencia_dias", type=int) or 0
@@ -144,12 +153,14 @@ def editar(id):
             request.form.get("dosis_recomendada"),
             field_label="Dosis recomendada",
             min_value=Decimal("0.01"),
+            max_value=MAX_DOSIS_HECTAREA,
         )
         
         dosis_limite_hectarea, ok_dosis_lim = _parse_decimal(
             request.form.get("dosis_limite_hectarea"),
             field_label="Dosis límite por hectárea",
             min_value=Decimal("0.01"),
+            max_value=MAX_DOSIS_HECTAREA,
         )
         
         periodo_carencia = request.form.get("periodo_carencia_dias", type=int) or 0
