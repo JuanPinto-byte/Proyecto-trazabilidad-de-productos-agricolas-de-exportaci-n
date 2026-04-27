@@ -2,9 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.models.produccion.lote import Lote
 from app.models.trazabilidad.trazabilidad import Trazabilidad, TrazabilidadEvento
 from app.extensions import db
-from datetime import datetime, timedelta, timezone
-from urllib.request import urlopen
-import json
+from datetime import datetime
+import pytz
 import uuid
 from functools import wraps
 
@@ -27,31 +26,52 @@ def lista():
     lotes = Lote.query.all()
     return render_template('trazabilidad/lista.html', lotes=lotes)
 
-def get_remote_colombia_time():
-    try:
-        with urlopen('http://worldtimeapi.org/api/timezone/America/Bogota', timeout=5) as response:
-            payload = json.load(response)
+def get_colombia_time():
+    """Obtiene la hora actual de Colombia sin depender de APIs externas"""
+    return datetime.now(pytz.timezone('America/Bogota')).replace(tzinfo=None)
 
-        utc_dt_str = payload.get('utc_datetime')
-        utc_offset = payload.get('utc_offset')
-        if utc_dt_str and utc_offset:
-            if utc_dt_str.endswith('Z'):
-                utc_dt_str = utc_dt_str[:-1] + '+00:00'
-            utc_dt = datetime.fromisoformat(utc_dt_str)
-            if utc_dt.tzinfo is None:
-                utc_dt = utc_dt.replace(tzinfo=timezone.utc)
-
-            sign = 1 if utc_offset[0] == '+' else -1
-            offset_hours = int(utc_offset[1:3])
-            offset_minutes = int(utc_offset[4:6])
-            bogota_tz = timezone(sign * timedelta(hours=offset_hours, minutes=offset_minutes))
-            bogota_dt = utc_dt.astimezone(bogota_tz)
-            return bogota_dt.replace(tzinfo=None)
-    except Exception:
-        pass
-
-    # Fallback local Colombia time if remote fails
-    return datetime.utcnow() - timedelta(hours=5)
+def create_trazabilidad(lote_id):
+    """Crea automáticamente un registro de Trazabilidad para un lote con evento inicial en la ubicación de la finca"""
+    # Verificar que el lote existe
+    lote = Lote.query.get(lote_id)
+    if not lote:
+        return None
+    
+    # Verificar que no exista ya una trazabilidad para este lote
+    traza_existente = Trazabilidad.query.filter_by(lote_id=lote_id).first()
+    if traza_existente:
+        return traza_existente
+    
+    # Crear código de trazabilidad único
+    codigo = f"TRZ-{lote.numero_lote}-{uuid.uuid4().hex[:6].upper()}"
+    
+    # Obtener la ubicación de la finca
+    finca = lote.finca
+    ubicacion_finca = finca.municipio or finca.departamento or finca.nombre_finca or "Finca"
+    
+    # Crear nuevo registro de trazabilidad
+    nueva_traza = Trazabilidad(
+        lote_id=lote_id,
+        codigo_trazabilidad=codigo,
+        estado='GENERADO',
+        fecha_generacion=get_colombia_time()
+    )
+    
+    db.session.add(nueva_traza)
+    db.session.commit()
+    
+    # Crear evento inicial con la ubicación de la finca
+    evento_inicial = TrazabilidadEvento(
+        lote_id=lote_id,
+        etapa='GENERADO',
+        fecha_evento=get_colombia_time(),
+        ubicacion_actual=ubicacion_finca
+    )
+    
+    db.session.add(evento_inicial)
+    db.session.commit()
+    
+    return nueva_traza
 
 
 @trazabilidad_bp.route('/<int:lote_id>', methods=['GET', 'POST'])
@@ -69,7 +89,7 @@ def ver_trazabilidad(lote_id):
             lote_id=lote_id,
             codigo_trazabilidad=codigo,
             estado='GENERADO',
-            fecha_generacion=get_remote_colombia_time()
+            fecha_generacion=get_colombia_time()
         )
         db.session.add(traza)
         db.session.commit()
@@ -104,7 +124,7 @@ def ver_trazabilidad(lote_id):
                 flash('El evento debe tener al menos un valor diferente al anterior. Por favor, modifica algún campo.', 'error')
                 return redirect(url_for('trazabilidad.ver_trazabilidad', lote_id=lote_id))
 
-        event_time = get_remote_colombia_time()
+        event_time = get_colombia_time()
         traza.estado = nuevo_estado
         traza.fecha_generacion = event_time
 

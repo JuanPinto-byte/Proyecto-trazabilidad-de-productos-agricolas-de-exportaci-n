@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 from app.extensions import db
 from app.models.produccion.lote import Lote
 from app.models.produccion.finca import Finca
+from app.routes.trazabilidad import create_trazabilidad
 
 lotes_bp = Blueprint("lotes", __name__)
 
@@ -182,6 +183,10 @@ def crear():
         )
         db.session.add(nuevo)
         db.session.commit()
+        
+        # Crear trazabilidad automáticamente para el nuevo lote
+        create_trazabilidad(nuevo.id)
+        
         flash(f"Lote '{numero_lote}' creado correctamente.", "success")
         return redirect(url_for("lotes.lista"))
 
