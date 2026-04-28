@@ -24,6 +24,10 @@ def create_app():
     from app.routes.bitacoras import bitacoras_bp
     from app.routes.trazabilidad import trazabilidad_bp
     from app.routes.agroquimicos import agroquimicos_bp
+<<<<<<< HEAD
+=======
+    from app.routes.reportes import reportes_bp
+>>>>>>> 3d8e2f463b2c565b7b3f586dc0fe11380045d978
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(fincas_bp)
@@ -31,5 +35,9 @@ def create_app():
     app.register_blueprint(bitacoras_bp)
     app.register_blueprint(trazabilidad_bp)
     app.register_blueprint(agroquimicos_bp)
+<<<<<<< HEAD
+=======
+    app.register_blueprint(reportes_bp)
+>>>>>>> 3d8e2f463b2c565b7b3f586dc0fe11380045d978
 
     return app

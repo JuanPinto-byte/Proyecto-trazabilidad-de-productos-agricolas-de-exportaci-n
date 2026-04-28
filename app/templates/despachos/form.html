@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — {{ 'Editar' if despacho else 'Nuevo' }} Despacho</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/></svg>
+          Inicio
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>
+          Lotes
+        </a>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Trazabilidad
+        </a>
+        <a href="{{ url_for('despachos.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M2 12l4-8h6l4 8H2z" stroke="#3a7c22" stroke-width="1.3" fill="none"/><path d="M2 12h14" stroke="#3a7c22" stroke-width="1.3"/></svg>
+          Despachos
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Reportes
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">{{ 'Editar despacho' if despacho else 'Nuevo despacho' }}</div>
+          <div class="page-subtitle">{{ 'Actualiza los datos del despacho' if despacho else 'Registra un nuevo contenedor de exportación' }}</div>
+        </div>
+        <a href="{{ url_for('despachos.lista') }}" class="btn-secondary">← Volver</a>
+      </div>
+
+      <div class="panel">
+        <form method="POST">
+
+          <div class="form-grid">
+
+            <!-- Lote -->
+            <div class="form-group form-full">
+              <label class="form-label">Lote de producción *</label>
+              <select name="lote_id" class="form-input" {% if despacho %}disabled{% endif %} required>
+                <option value="">— Seleccionar lote —</option>
+                {% for lote, nombre_finca in lotes %}
+                  <option value="{{ lote.id }}"
+                    {{ 'selected' if despacho and despacho.lote_id == lote.id else '' }}>
+                    {{ nombre_finca }} — Lote {{ lote.numero_lote }} ({{ lote.estado }})
+                  </option>
+                {% endfor %}
+              </select>
+              {% if despacho %}
+                {# Campo oculto para mantener el valor al editar #}
+                <input type="hidden" name="lote_id" value="{{ despacho.lote_id }}">
+                <small style="color:#7d7a75;">El lote no puede cambiarse una vez creado el despacho.</small>
+              {% else %}
+                <small style="color:#7d7a75;">Solo se muestran lotes en estado ACTIVO o COSECHADO.</small>
+              {% endif %}
+            </div>
+
+            <!-- Código contenedor -->
+            <div class="form-group">
+              <label class="form-label">Código de contenedor</label>
+              <input type="text" name="codigo_contenedor" class="form-input"
+                     value="{{ despacho.codigo_contenedor if despacho else '' }}"
+                     placeholder="Ej: TCKU3953405" maxlength="50">
+              <small style="color:#7d7a75;">Código ISO del contenedor físico (opcional).</small>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group">
+              <label class="form-label">Estado del despacho *</label>
+              <select name="estado" class="form-input" required>
+                {% for est in estados %}
+                  <option value="{{ est }}"
+                    {{ 'selected' if despacho and despacho.estado == est else ('selected' if not despacho and est == 'PROGRAMADO' else '') }}>
+                    {{ est | replace('_', ' ') | title }}
+                  </option>
+                {% endfor %}
+              </select>
+              <small style="color:#7d7a75;">Al pasar a EN_TRANSITO, EN_PUERTO o ENTREGADO se actualiza también la trazabilidad del lote.</small>
+            </div>
+
+            <!-- Fecha despacho -->
+            <div class="form-group">
+              <label class="form-label">Fecha de despacho</label>
+              <input type="date" name="fecha_despacho" class="form-input"
+                     value="{{ despacho.fecha_despacho.isoformat() if despacho and despacho.fecha_despacho else '' }}">
+            </div>
+
+            <!-- Fecha estimada llegada -->
+            <div class="form-group">
+              <label class="form-label">Fecha estimada de llegada</label>
+              <input type="date" name="fecha_estimada_llegada" class="form-input"
+                     value="{{ despacho.fecha_estimada_llegada.isoformat() if despacho and despacho.fecha_estimada_llegada else '' }}">
+            </div>
+
+            <!-- Puerto destino -->
+            <div class="form-group">
+              <label class="form-label">Puerto de destino *</label>
+              <input type="text" name="puerto_destino" class="form-input"
+                     value="{{ despacho.puerto_destino if despacho else '' }}"
+                     placeholder="Ej: Puerto de Rotterdam" required maxlength="100">
+            </div>
+
+            <!-- País destino -->
+            <div class="form-group">
+              <label class="form-label">País de destino *</label>
+              <input type="text" name="pais_destino" class="form-input"
+                     value="{{ despacho.pais_destino if despacho else '' }}"
+                     placeholder="Ej: Países Bajos" required maxlength="100">
+            </div>
+
+            <!-- Ubicación actual -->
+            <div class="form-group form-full">
+              <label class="form-label">Ubicación actual del contenedor</label>
+              <input type="text" name="ubicacion_actual" class="form-input"
+                     value="{{ despacho.ubicacion_actual if despacho else '' }}"
+                     placeholder="Ej: Puerto de Buenaventura, Colombia" maxlength="150">
+              <small style="color:#7d7a75;">Actualiza este campo cuando el contenedor cambie de ubicación.</small>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="form-group form-full">
+              <label class="form-label">Observaciones</label>
+              <textarea name="observaciones" class="form-input" rows="3"
+                        placeholder="Notas adicionales sobre el despacho...">{{ despacho.observaciones if despacho else '' }}</textarea>
+            </div>
+
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:20px;">
+            <button type="submit" class="btn-primary">
+              {{ 'Guardar cambios' if despacho else 'Registrar despacho' }}
+            </button>
+            <a href="{{ url_for('despachos.lista') }}" class="btn-secondary">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

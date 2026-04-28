@@ -159,6 +159,8 @@
   letter-spacing: 0.08em;
   color: #9a9282;
   padding: 0 8px;
+
+  margin-top: 14px;   /* 👈 separa del bloque anterior */
   margin-bottom: 6px;
 }
 
