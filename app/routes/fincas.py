@@ -116,7 +116,7 @@ def crear():
             required=True,
             min_value=0.01,
         )
-        if area_total > 10000:
+        if area_total is not None and area_total > 10000:
             flash("El área total no puede exceder 10,000 hectáreas.", "error")
             return _render_form(
                 finca=None,
@@ -298,7 +298,7 @@ def editar(id):
             required=True,
             min_value=0.01,
         )
-        if area_total > 10000:
+        if area_total is not None and area_total > 10000:
             flash("El área total no puede exceder 10,000 hectáreas.", "error")
             return _render_form(
                 finca=finca,

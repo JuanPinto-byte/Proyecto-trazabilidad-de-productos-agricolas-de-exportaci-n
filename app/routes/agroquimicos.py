@@ -241,6 +241,15 @@ def validar_dosis():
     agroquimico_id = request.form.get("agroquimico_id", type=int)
     dosis_aplicada = request.form.get("dosis_aplicada", type=float)
     lote_id = request.form.get("lote_id", type=int)
+
+    if not agroquimico_id:
+        return jsonify({"valido": False, "mensaje": "Agroquímico no indicado"}), 400
+
+    if dosis_aplicada is None or dosis_aplicada <= 0:
+        return jsonify({"valido": False, "mensaje": "Dosis aplicada inválida"}), 400
+
+    if not lote_id:
+        return jsonify({"valido": False, "mensaje": "Lote no indicado"}), 400
     
     agroquimico = Agroquimico.query.get(agroquimico_id)
     if not agroquimico:

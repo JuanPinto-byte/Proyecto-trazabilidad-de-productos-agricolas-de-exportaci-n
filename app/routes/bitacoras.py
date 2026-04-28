@@ -217,31 +217,6 @@ def crear():
                     now=datetime.now()
                 )
         
-        # Construir el registro detallado en observaciones
-        registro_detallado = f"""
-=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
-Fecha: {fecha}
-
---- ACTIVIDADES REALIZADAS ---
-{actividades}
-
---- ACTIVIDADES ESPECÍFICAS ---
-Siembra: {siembra if siembra else 'N/A'}
-Riego: {riego if riego else 'N/A'}
-Fertilización: {fertilizacion if fertilizacion else 'N/A'}
-Insumos utilizados: {insumos if insumos else 'N/A'}
-
---- CONDICIONES AMBIENTALES ---
-Temperatura (°C): {temperatura if temperatura else 'N/A'}
-Humedad (%): {humedad if humedad else 'N/A'}
-Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
-
---- OBSERVACIONES ADICIONALES ---
-{observaciones if observaciones else 'Sin observaciones'}
-
-=== FIN DEL REGISTRO ===
-"""
-        
         # Procesar imágenes
         imagenes_info = ""
         if 'imagenes' in request.files:
@@ -261,31 +236,8 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
                     imagenes_guardadas.append(filename)
             
             if imagenes_guardadas:
-                imagenes_info = f"\n--- EVIDENCIA MULTIMEDIA ---\nImágenes adjuntas: {', '.join(imagenes_guardadas)}\n"
-        
-        # Construir registro detallado en observaciones
-        registro_detallado = f"""=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
-Fecha: {fecha}
+                imagenes_info = f"\n\n--- EVIDENCIA MULTIMEDIA ---\nImágenes adjuntas: {', '.join(imagenes_guardadas)}\n"
 
---- ACTIVIDADES REALIZADAS ---
-{actividades}
-
---- ACTIVIDADES ESPECÍFICAS ---
-Siembra: {siembra if siembra else 'N/A'}
-Riego: {riego if riego else 'N/A'}
-Fertilización: {fertilizacion if fertilizacion else 'N/A'}
-Insumos utilizados: {insumos if insumos else 'N/A'}
-
---- CONDICIONES AMBIENTALES ---
-Temperatura (°C): {temperatura if temperatura else 'N/A'}
-Humedad (%): {humedad if humedad else 'N/A'}
-Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
-
---- OBSERVACIONES ADICIONALES ---
-{observaciones if observaciones else 'Sin observaciones'}
-
-=== FIN DEL REGISTRO ==="""
-        
         # Construir el registro detallado en observaciones
         registro_detallado = f"""=== REGISTRO DE ACTIVIDADES AGRÍCOLAS ===
 Fecha: {fecha}
@@ -305,7 +257,7 @@ Humedad (%): {humedad if humedad else 'N/A'}
 Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
 
 --- OBSERVACIONES ADICIONALES ---
-{observaciones if observaciones else 'Sin observaciones'}
+{observaciones if observaciones else 'Sin observaciones'}{imagenes_info}
 
 === FIN DEL REGISTRO ==="""
         
