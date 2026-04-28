@@ -49,6 +49,8 @@ def lista():
         BitacoraCultivo, 
         Lote.numero_lote,
         Finca.nombre_finca,
+        Finca.departamento,
+        Finca.municipio,
         User.nombre_completo
     ).join(Lote, Lote.id == BitacoraCultivo.lote_id)\
      .join(Finca, Finca.id == Lote.finca_id)\

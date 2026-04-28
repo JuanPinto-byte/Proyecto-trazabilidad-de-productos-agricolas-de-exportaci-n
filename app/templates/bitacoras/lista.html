@@ -171,10 +171,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for bitacora, numero_lote, nombre_finca, agronomo in bitacoras %}
+              {% for bitacora, numero_lote, nombre_finca, departamento, municipio, agronomo in bitacoras %}
                 <tr>
                   <td><strong>{{ numero_lote }}</strong></td>
-                  <td>{{ nombre_finca }}</td>
+                  <td>{{ nombre_finca }} - {{ municipio }}, {{ departamento }}</td>
                   <td>{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</td>
                   <td>{{ agronomo if agronomo else '—' }}</td>
                   <td style="font-size: 0.9em; color: #666;">

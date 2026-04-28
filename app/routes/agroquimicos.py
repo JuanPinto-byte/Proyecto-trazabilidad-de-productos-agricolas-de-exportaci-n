@@ -282,12 +282,12 @@ def validar_dosis():
     
     if dosis_limite and dosis_por_hectarea > dosis_limite:
         valido = False
-        mensajes.append(f"⚠️ La dosis excede el límite de {dosis_limite} {agroquimico.unidad_dosis}/ha")
+        mensajes.append(f"⚠️ La dosis excede el límite de {dosis_limite} {agroquimico.unidad_dosis}")
     
     if dosis_recomendada and dosis_por_hectarea < dosis_recomendada:
-        mensajes.append(f"⚠️ La dosis es menor a la recomendada ({dosis_recomendada} {agroquimico.unidad_dosis}/ha)")
+        mensajes.append(f"⚠️ La dosis es menor a la recomendada ({dosis_recomendada} {agroquimico.unidad_dosis})")
     elif dosis_recomendada and dosis_por_hectarea == dosis_recomendada:
-        mensajes.append(f"✓ Dosis igual a la recomendada ({dosis_recomendada} {agroquimico.unidad_dosis}/ha)")
+        mensajes.append(f"✓ Dosis igual a la recomendada ({dosis_recomendada} {agroquimico.unidad_dosis})")
     
     periodo_carencia = agroquimico.periodo_carencia_dias
     if periodo_carencia:
