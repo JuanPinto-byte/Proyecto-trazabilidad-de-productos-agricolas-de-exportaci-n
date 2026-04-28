@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — Producción Est. vs Real</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Inicio
+        </a>
+
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras de cultivo
+        </a>
+
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="14" cy="13" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M15.8 15.8l1.5 1.5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Trazabilidad
+        </a>
+        <a href="{{ url_for('agroquimicos.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="6" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M3 10c0-2 1.5-4 3-5M12 10c0-2-1.5-4-3-5M5 10l-2 6a2 2 0 0 0 1.8 2.3h8.4a2 2 0 0 0 1.8-2.3l-2-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Agroquímicos
+        </a>
+        
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>Todos los reportes</a>
+        <a href="{{ url_for('reportes.produccion') }}" class="sidebar-item active"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 15V9l4-4 4 4 4-6" stroke="#3a7c22" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Producción</a>
+        <a href="{{ url_for('reportes.normativo') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M6 9l2 2 4-4" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>Normativo</a>
+        <a href="{{ url_for('reportes.almacenamiento') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="8" width="14" height="8" rx="1.5" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 8V6a4 4 0 0 1 8 0v2" stroke="#4a4640" stroke-width="1.3"/></svg>Almacenamiento</a>
+        <a href="{{ url_for('reportes.agroquimicos') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="6" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M3 10c0-2 1.5-4 3-5M12 10c0-2-1.5-4-3-5M5 10l-2 6a2 2 0 0 0 1.8 2.3h8.4a2 2 0 0 0 1.8-2.3l-2-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Agroquímicos
+        </a>
+        <a href="{{ url_for('reportes.despachos') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M2 12l4-8h6l4 8H2z" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>Despachos</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Cerrar sesión</a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Producción Estimada vs Real</div>
+          <div class="page-subtitle">Temporada activa · Generado: {{ now.strftime('%d/%m/%Y %H:%M') }}</div>
+        </div>
+        <a href="{{ url_for('reportes.index') }}" class="btn-secondary">← Volver a reportes</a>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card green">
+          <div class="kpi-label">Producción estimada</div>
+          <div class="kpi-value">{{ "{:,.0f}".format(total_estimado) }}</div>
+          <div class="kpi-meta">kg totales estimados</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-label">Producción real</div>
+          <div class="kpi-value">{{ "{:,.0f}".format(total_real) }}</div>
+          <div class="kpi-meta">kg cosechados registrados</div>
+        </div>
+        <div class="kpi-card {% if cumplimiento_global >= 80 %}green{% elif cumplimiento_global >= 50 %}amber{% else %}red{% endif %}">
+          <div class="kpi-label">Cumplimiento global</div>
+          <div class="kpi-value">{{ cumplimiento_global }}%</div>
+          <div class="kpi-meta {% if cumplimiento_global >= 80 %}up{% elif cumplimiento_global >= 50 %}warn{% else %}down{% endif %}">
+            {% if cumplimiento_global >= 80 %}Óptimo{% elif cumplimiento_global >= 50 %}Por mejorar{% else %}Bajo rendimiento{% endif %}
+          </div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">Fincas evaluadas</div>
+          <div class="kpi-value">{{ filas | length }}</div>
+          <div class="kpi-meta">con lotes registrados</div>
+        </div>
+      </div>
+
+      <!-- Gráfica de barras comparativa -->
+      {% if filas %}
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-header">
+          <span class="panel-title">Estimado vs Real por finca (kg)</span>
+          <div class="legend" style="margin:0;">
+            <div class="legend-item"><div class="legend-dot" style="background:#c8ddb8;"></div>Estimado</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3a7c22;"></div>Real</div>
+          </div>
+        </div>
+        <div class="chart-area" id="chart-prod" style="height:200px;"
+             data-fincas="{{ filas | map(attribute='finca') | list | tojson }}"
+             data-est="{{ filas | map(attribute='estimado_kg') | list | tojson }}"
+             data-real="{{ filas | map(attribute='real_kg') | list | tojson }}"
+             data-max="{{ ([filas | map(attribute='estimado_kg') | max, filas | map(attribute='real_kg') | max] | max) if filas else 1 }}">
+        </div>
+        <div class="chart-labels" id="chart-prod-labels"></div>
+      </div>
+      {% endif %}
+
+      <!-- Tabla detallada -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Detalle por finca</span>
+        </div>
+        {% if filas %}
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Finca</th>
+              <th>Área cultivable (ha)</th>
+              <th>Estimado (kg)</th>
+              <th>Real cosechado (kg)</th>
+              <th>Lotes</th>
+              <th>Cumplimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in filas %}
+            <tr>
+              <td>{{ f.finca }}</td>
+              <td>{{ "{:.2f}".format(f.area_ha) }}</td>
+              <td>{{ "{:,.0f}".format(f.estimado_kg) }}</td>
+              <td>{{ "{:,.0f}".format(f.real_kg) }}</td>
+              <td>{{ f.lotes }}</td>
+              <td>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="temp-bar-track" style="width:80px;">
+                    <div class="temp-bar-fill {% if f.cumplimiento >= 80 %}ok{% else %}warn{% endif %}"
+                         style="width:{{ [f.cumplimiento, 100] | min }}%"></div>
+                  </div>
+                  <span class="{% if f.cumplimiento >= 80 %}kpi-meta up{% elif f.cumplimiento >= 50 %}kpi-meta warn{% else %}kpi-meta down{% endif %}">
+                    {{ f.cumplimiento }}%
+                  </span>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No hay datos de cosecha registrados para generar este reporte.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var container = document.getElementById('chart-prod');
+  var labelsDiv  = document.getElementById('chart-prod-labels');
+  if (!container || !labelsDiv) return;
+  var fincas = JSON.parse(container.dataset.fincas || '[]');
+  var est    = JSON.parse(container.dataset.est   || '[]');
+  var real   = JSON.parse(container.dataset.real  || '[]');
+  var maxVal = parseFloat(container.dataset.max)  || 1;
+
+  fincas.forEach(function (nombre, i) {
+    var pctEst  = Math.max(Math.round((est[i]  / maxVal) * 100), 2);
+    var pctReal = Math.max(Math.round((real[i] / maxVal) * 100), 2);
+
+    var group = document.createElement('div');
+    group.className = 'bar-group';
+    group.title = nombre + ' — Est: ' + est[i] + ' kg | Real: ' + real[i] + ' kg';
+
+    var b1 = document.createElement('div');
+    b1.className = 'bar est';
+    b1.style.height = pctEst + '%';
+
+    var b2 = document.createElement('div');
+    b2.className = 'bar real';
+    b2.style.height = pctReal + '%';
+
+    group.appendChild(b1);
+    group.appendChild(b2);
+    container.appendChild(group);
+
+    var label = document.createElement('div');
+    label.className = 'chart-label-item';
+    label.textContent = nombre.substring(0, 7);
+    labelsDiv.appendChild(label);
+  });
+})();
+</script>
+</body>
+</html>
