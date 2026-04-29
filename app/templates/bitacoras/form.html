@@ -7,123 +7,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <style>
-    .form-section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #e8e6e1;
-    }
-
-    .form-section:last-child {
-      border-bottom: none;
-    }
-
-    .form-section-title {
-      font-size: 1.1em;
-      font-weight: 600;
-      color: #3a7c22;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .form-section-icon {
-      font-size: 1.2em;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .form-full {
-      grid-column: 1 / -1;
-    }
-
-    .form-textarea {
-      resize: vertical;
-      min-height: 100px;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .file-input-wrapper {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .file-input-wrapper input[type=file] {
-      position: absolute;
-      left: -9999px;
-    }
-
-    .file-input-label {
-      display: block;
-      padding: 10px;
-      background: #f5f3f0;
-      border: 2px dashed #3a7c22;
-      border-radius: 4px;
-      cursor: pointer;
-      text-align: center;
-      font-size: 0.9em;
-      color: #3a7c22;
-      transition: 0.2s;
-    }
-
-    .file-input-label:hover {
-      background: #eee;
-    }
-
-    .file-list {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .file-tag {
-      background: #3a7c22;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .file-tag button {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 1.1em;
-      padding: 0;
-    }
-
-    .info-box {
-      background: #f0f8ff;
-      border-left: 4px solid #2196F3;
-      padding: 12px;
-      border-radius: 4px;
-      font-size: 0.9em;
-      color: #1976D2;
-      margin-bottom: 15px;
-    }
-  </style>
 </head>
 <body>
 <div class="dash-root">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark">🌿</div>
-      <div class="logo-text">Traza<span>Agro</span></div>
-    </div>
+    <div class="logo"><div class="logo-mark">🌿</div><div class="logo-text">Traza<span>Agro</span></div></div>
     <div class="topbar-right">
       <div class="user-chip">
         <div class="user-avatar">{{ session.username[:2].upper() }}</div>
@@ -131,10 +19,7 @@
       </div>
     </div>
   </div>
-
   <div class="layout">
-
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Gestión</div>
@@ -183,32 +68,24 @@
           </svg>
           Agroquímicos
         </a>
-              <div class="sidebar-section">
-        <div class="sidebar-label">Reportes</div>
-
-        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-            <path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-          Reportes gerenciales
-        </a>
       </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Reportes
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Sistema</div>
         <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Cerrar sesión
         </a>
       </div>
     </div>
 
-    <!-- CONTENIDO -->
     <div class="main-content">
-
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
           <div class="flash flash-{{ category }}">{{ message }}</div>
@@ -218,9 +95,7 @@
       <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
         <div>
           <div class="page-title">{{ 'Editar bitácora' if bitacora else 'Nueva bitácora' }}</div>
-          <div class="page-subtitle">
-            {{ 'Modifica el registro de actividades' if bitacora else 'Crea un nuevo registro de actividades y observaciones' }}
-          </div>
+          <div class="page-subtitle">{{ 'Modifica el registro de actividades' if bitacora else 'Crea un nuevo registro de actividades y observaciones' }}</div>
         </div>
         <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">← Volver</a>
       </div>
@@ -228,44 +103,33 @@
       <div class="panel">
         <form method="POST" enctype="multipart/form-data">
 
-          <!-- SECCIÓN 1: DATOS BÁSICOS DEL CULTIVO -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">🌾</span>
-              Datos básicos del cultivo
-            </div>
-            <div class="info-box">
-              ℹ️ Completa la información principal del lote y la fecha del registro.
-            </div>
+          <!-- Datos básicos -->
+          <div style="border-bottom:1px solid #ece9e4; margin-bottom:22px; padding-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px;">Datos básicos</div>
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label">Lote *</label>
                 <select name="lote_id" class="form-input" required>
                   <option value="">— Seleccionar lote —</option>
                   {% for lote in lotes %}
-                    <option value="{{ lote.id }}"
-                      {{ 'selected' if bitacora and bitacora.lote_id == lote.id else '' }}>
-                      {{ lote.numero_lote }} — {{ lote.finca.nombre_finca if lote.finca else '—' }} ({{ (lote.finca.municipio_ref.nombre if lote.finca and lote.finca.municipio_ref else (lote.finca.municipio if lote.finca else None)) or '—' }}, {{ (lote.finca.departamento_ref.nombre if lote.finca and lote.finca.departamento_ref else (lote.finca.departamento if lote.finca else None)) or '—' }})
+                    <option value="{{ lote.id }}" {{ 'selected' if bitacora and bitacora.lote_id == lote.id else '' }}>
+                      {{ lote.numero_lote }} — {{ lote.finca.nombre_finca if lote.finca else '—' }}
                     </option>
                   {% endfor %}
                 </select>
               </div>
-
               <div class="form-group">
                 <label class="form-label">Fecha * (máximo hoy)</label>
                 <input type="date" name="fecha" class="form-input" required
                   value="{{ bitacora.fecha.strftime('%Y-%m-%d') if bitacora and bitacora.fecha else '' }}"
-                  max="{{ now.strftime('%Y-%m-%d') if now else '' }}"
-                  onchange="var hoy = new Date().toISOString().split('T')[0]; if(this.value > hoy) {this.value = hoy; alert('No se pueden registrar fechas futuras.');}">
+                  max="{{ now.strftime('%Y-%m-%d') if now else '' }}">
               </div>
-
               <div class="form-group">
                 <label class="form-label">Agrólogo asignado *</label>
                 <select name="agronomo_id" class="form-input" required>
                   <option value="">— Seleccionar agrólogo —</option>
                   {% for usuario in usuarios %}
-                    <option value="{{ usuario.id }}"
-                      {{ 'selected' if bitacora and bitacora.agronomo_id == usuario.id else '' }}>
+                    <option value="{{ usuario.id }}" {{ 'selected' if bitacora and bitacora.agronomo_id == usuario.id else '' }}>
                       {{ usuario.nombre_completo or usuario.nombre_usuario }}
                     </option>
                   {% endfor %}
@@ -274,203 +138,123 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 2: ACTIVIDADES REALIZADAS -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">📝</span>
-              Actividades realizadas
-            </div>
-            <div class="info-box">
-              ℹ️ Describe las actividades principales del día. Los detalles específicos se registran en la siguiente sección.
-            </div>
-            <div class="form-grid form-full">
-              <div class="form-group form-full">
-                <label class="form-label">Resumen de actividades *</label>
-                <textarea name="actividades_realizadas" class="form-input form-textarea" required
-                  placeholder="Ej: Control de maleza, aplicación de fertilizante, revisión de plagas...">{{ bitacora.actividades_realizadas if bitacora else '' }}</textarea>
-              </div>
+          <!-- Actividades -->
+          <div style="border-bottom:1px solid #ece9e4; margin-bottom:22px; padding-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px;">RESUMEN DE ACTIVIDADES</div>
+            <div class="form-group">
+              <label class="form-label">Todas las actividades resumidas*</label>
+              <textarea name="actividades_realizadas" class="form-input" rows="3" required
+                placeholder="Ej: Control de maleza, aplicación de fertilizante, revisión de plagas...">{{ bitacora.actividades_realizadas if bitacora else '' }}</textarea>
             </div>
           </div>
 
-          <!-- SECCIÓN 3: ACTIVIDADES ESPECÍFICAS -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">🔧</span>
-              Registro detallado de labores
-            </div>
-            <div class="info-box">
-              ℹ️ Especifica qué se hizo en cada labor. Si no aplica, deja en blanco.
-            </div>
+          <!-- Registro detallado -->
+          <div style="border-bottom:1px solid #ece9e4; margin-bottom:22px; padding-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Registro detallado de labores</div>
+            <div style="font-size:12px; color:#9a9282; margin-bottom:16px;">Si no aplica, deja en blanco.</div>
             <div class="form-grid">
               <div class="form-group form-full">
                 <label class="form-label">Siembra</label>
-                <textarea name="siembra" class="form-input form-textarea"
-                  placeholder="Ej: Sembrados 500m² con variedad X, profundidad 5cm, distancia 30x30cm">{{ siembra_value if siembra_value else (bitacora.siembra if bitacora and bitacora.siembra else '') }}</textarea>
+                <textarea name="siembra" class="form-input" rows="2"
+                  placeholder="Ej: Sembrados 500m² con variedad X, profundidad 5cm">{{ siembra_value if siembra_value else (bitacora.siembra if bitacora and bitacora.siembra else '') }}</textarea>
               </div>
-
               <div class="form-group form-full">
                 <label class="form-label">Riego</label>
-                <textarea name="riego" class="form-input form-textarea"
-                  placeholder="Ej: Riego por goteo, 25mm, duración 2 horas, cobertura 80%">{{ riego_value if riego_value else (bitacora.riego if bitacora and bitacora.riego else '') }}</textarea>
+                <textarea name="riego" class="form-input" rows="2"
+                  placeholder="Ej: Riego por goteo, 25mm, duración 2 horas">{{ riego_value if riego_value else (bitacora.riego if bitacora and bitacora.riego else '') }}</textarea>
               </div>
-
               <div class="form-group form-full">
                 <label class="form-label">Fertilización</label>
-                <textarea name="fertilizacion" class="form-input form-textarea"
+                <textarea name="fertilizacion" class="form-input" rows="2"
                   placeholder="Ej: Aplicado N-P-K (10-10-10), dosis 20kg/ha, método foliar">{{ fertilizacion_value if fertilizacion_value else (bitacora.fertilizacion if bitacora and bitacora.fertilizacion else '') }}</textarea>
               </div>
-
               <div class="form-group form-full">
                 <label class="form-label">Insumos utilizados</label>
-                <textarea name="insumos" class="form-input form-textarea"
-                  placeholder="Ej: Fungicida X (0.5L/ha), Insecticida Y (2ml/L), Cal (500kg)">{{ insumos_value if insumos_value else (bitacora.insumos_utilizados if bitacora and bitacora.insumos_utilizados else '') }}</textarea>
+                <textarea name="insumos" class="form-input" rows="2"
+                  placeholder="Ej: Fungicida X (0.5L/ha), Insecticida Y (2ml/L)">{{ insumos_value if insumos_value else (bitacora.insumos_utilizados if bitacora and bitacora.insumos_utilizados else '') }}</textarea>
               </div>
             </div>
           </div>
 
-          <!-- SECCIÓN 4: CONDICIONES AMBIENTALES -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">🌤️</span>
-              Condiciones ambientales
-            </div>
-            <div class="info-box">
-              ℹ️ Registra los datos meteorológicos y ambientales del día.
-            </div>
+          <!-- Condiciones ambientales -->
+          <div style="border-bottom:1px solid #ece9e4; margin-bottom:22px; padding-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px;">Condiciones ambientales</div>
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label">Temperatura (°C) *</label>
-                <input type="number" name="temperatura" class="form-input" step="0.1" required
-                  min="0" max="30"
+                <input type="number" name="temperatura" class="form-input" step="0.1" required min="0" max="30"
                   value="{{ temperatura_value if temperatura_value else (bitacora.temperatura_c if bitacora and bitacora.temperatura_c else '') }}"
-                  placeholder="Ej: 28.5 (máximo 30°C)"
-                  onchange="if(this.value > 30) {this.value = 30; alert('La temperatura máxima permitida es 30°C.');}">
+                  placeholder="Ej: 28.5">
+                <small style="color:#9a9282; font-size:11px;">Máximo 30 °C</small>
               </div>
-
               <div class="form-group">
                 <label class="form-label">Humedad relativa (%)</label>
                 <input type="number" name="humedad" class="form-input" min="0" max="100" step="0.1"
                   value="{{ humedad_value if humedad_value else (bitacora.humedad_pct if bitacora and bitacora.humedad_pct else '') }}"
                   placeholder="Ej: 65">
               </div>
-
               <div class="form-group">
                 <label class="form-label">Precipitación (mm) *</label>
-                <input type="number" name="precipitacion" class="form-input" step="0.1" required
-                  min="0" max="15"
+                <input type="number" name="precipitacion" class="form-input" step="0.1" required min="0" max="15"
                   value="{{ precipitacion_value if precipitacion_value else (bitacora.precipitacion_mm if bitacora and bitacora.precipitacion_mm else '') }}"
-                  placeholder="Ej: 5.2 (máximo 15mm - riesgo muy alto)"
-                  onchange="if(this.value > 15) {this.value = 15; alert('La precipitación máxima permitida es 15mm (límite de riesgo muy alto).');}">
+                  placeholder="Ej: 5.2">
+                <small style="color:#9a9282; font-size:11px;">Máximo 15 mm</small>
               </div>
             </div>
           </div>
 
-          <!-- SECCIÓN 5: OBSERVACIONES ADICIONALES -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">📌</span>
-              Observaciones y notas
-            </div>
-            <div class="info-box">
-              ℹ️ Espacio libre para anotar cualquier observación relevante.
-            </div>
-            <div class="form-grid form-full">
-              <div class="form-group form-full">
-                <label class="form-label">Observaciones</label>
-                <textarea name="observaciones" class="form-input form-textarea"
-                  placeholder="Ej: Se observó presencia de plagas, requiere tratamiento. Drenaje en buen estado. Próxima cosecha estimada para 15 días.">{{ observaciones_value if observaciones_value else (bitacora.observaciones if bitacora and bitacora.observaciones else '') }}</textarea>
-              </div>
+          <!-- Observaciones -->
+          <div style="border-bottom:1px solid #ece9e4; margin-bottom:22px; padding-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:16px;">Observaciones</div>
+            <div class="form-group">
+              <label class="form-label">Notas adicionales</label>
+              <textarea name="observaciones" class="form-input" rows="3"
+                placeholder="Ej: Se observó presencia de plagas, requiere tratamiento...">{{ observaciones_value if observaciones_value else (bitacora.observaciones if bitacora and bitacora.observaciones else '') }}</textarea>
             </div>
           </div>
 
-          <!-- SECCIÓN 6: EVIDENCIA MULTIMEDIA -->
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="form-section-icon">📸</span>
-              Evidencia multimedia
+          <!-- Evidencia -->
+          <!--<div style="margin-bottom:22px;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Evidencia multimedia</div>
+            <div style="font-size:12px; color:#9a9282; margin-bottom:12px;">PNG, JPG, GIF, WebP. Máximo 10 MB por imagen.</div>
+            <div style="border:1px dashed #c8c4bc; border-radius:7px; padding:16px; text-align:center; cursor:pointer;" onclick="document.getElementById('imagenes').click()">
+              <div style="font-size:13px; color:#6b6560;">Haz clic para seleccionar imágenes</div>
+              <div style="font-size:11px; color:#9a9282; margin-top:4px;">Puedes seleccionar varias a la vez</div>
+              <input type="file" id="imagenes" name="imagenes" multiple accept=".png,.jpg,.jpeg,.gif,.webp" style="display:none;">
             </div>
-            <div class="info-box">
-              ℹ️ Carga imágenes como evidencia de las actividades (PNG, JPG, GIF, WebP). Máximo 10MB por imagen.
-            </div>
-            <div class="form-grid form-full">
-              <div class="file-input-wrapper">
-                <label for="imagenes" class="file-input-label">
-                  📁 Selecciona imágenes (puedes seleccionar varias)
-                </label>
-                <input type="file" id="imagenes" name="imagenes" multiple accept=".png,.jpg,.jpeg,.gif,.webp">
-              </div>
-              <div id="file-list" class="file-list"></div>
-            </div>
-          </div>
+            <div id="file-list" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+          </div>-->
 
-          <!-- BOTONES DE ACCIÓN -->
-          <div style="display:flex; gap:10px; margin-top:30px; padding-top:20px; border-top: 2px solid #e8e6e1;">
-            <button type="submit" class="btn-primary">
-              {{ 'Guardar cambios' if bitacora else 'Crear bitácora' }}
-            </button>
+          <div style="display:flex; gap:10px; padding-top:4px;">
+            <button type="submit" class="btn-primary">{{ 'Guardar cambios' if bitacora else 'Crear bitácora' }}</button>
             <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">Cancelar</a>
           </div>
 
-        </form>
+        <!--</form>
       </div>
-
     </div>
-
   </div>
-
-</div>
+</div>-->
 
 <script>
-  // Mostrar archivos seleccionados
-  document.getElementById('imagenes').addEventListener('change', function(e) {
-    const fileList = document.getElementById('file-list');
-    fileList.innerHTML = '';
-
-    Array.from(this.files).forEach((file, index) => {
-      const tag = document.createElement('div');
-      tag.className = 'file-tag';
-      tag.innerHTML = `
-        <span>🖼️ ${file.name}</span>
-        <button type="button" onclick="removeFile(${index})">✕</button>
-      `;
-      fileList.appendChild(tag);
+  document.getElementById('imagenes').addEventListener('change', function() {
+    const list = document.getElementById('file-list');
+    list.innerHTML = '';
+    Array.from(this.files).forEach(function(file) {
+      const tag = document.createElement('span');
+      tag.style.cssText = 'background:#f1f3f0; border:1px solid #d8d4cc; border-radius:4px; padding:4px 10px; font-size:12px; color:#4a4640;';
+      tag.textContent = file.name;
+      list.appendChild(tag);
     });
   });
-
-  function removeFile(index) {
-    const input = document.getElementById('imagenes');
-    const dt = new DataTransfer();
-
-    <script>
-      (function () {
-        function isBackForward() {
-          try {
-            const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
-            return nav && nav.length && nav[0].type === 'back_forward';
-          } catch (e) {
-            return false;
-          }
-        }
-
-        window.addEventListener('pageshow', function (event) {
-          if (event.persisted || isBackForward()) {
-            window.location.replace("{{ url_for('auth.confirm_logout') }}");
-          }
-        });
-      })();
-    </script>
-    const files = input.files;
-
-    for (let i = 0; i < files.length; i++) {
-      if (i !== index) {
-        dt.items.add(files[i]);
-      }
+  (function () {
+    function isBackForward() {
+      try { const nav = performance.getEntriesByType && performance.getEntriesByType('navigation'); return nav && nav.length && nav[0].type === 'back_forward'; } catch (e) { return false; }
     }
-
-    input.files = dt.files;
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-  }
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || isBackForward()) window.location.replace("{{ url_for('auth.confirm_logout') }}");
+    });
+  })();
 </script>
-
 </body>
 </html>

@@ -7,225 +7,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <style>
-    .detail-header {
-      background: linear-gradient(135deg, #3a7c22 0%, #2d6319 100%);
-      color: white;
-      padding: 30px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-
-    .detail-header h1 {
-      margin: 0;
-      font-size: 1.8em;
-    }
-
-    .detail-header p {
-      margin: 5px 0 0 0;
-      opacity: 0.9;
-      font-size: 0.95em;
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .detail-card {
-      background: white;
-      border: 1px solid #e8e6e1;
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .detail-card-title {
-      font-size: 1.1em;
-      font-weight: 600;
-      color: #3a7c22;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .detail-value {
-      color: #333;
-      font-size: 0.95em;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .detail-label {
-      font-weight: 500;
-      color: #666;
-      font-size: 0.85em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px;
-    }
-
-    .section-box {
-      background: #f8f7f5;
-      border-left: 4px solid #3a7c22;
-      padding: 20px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-size: 1.15em;
-      font-weight: 600;
-      color: #3a7c22;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-icon {
-      font-size: 1.3em;
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .gallery-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .gallery-item:hover {
-      transform: scale(1.05);
-    }
-
-    .gallery-item img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.8);
-    }
-
-    .modal-content {
-      margin: auto;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 90%;
-      max-height: 90%;
-    }
-
-    .modal-content img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      right: 40px;
-      color: white;
-      font-size: 2em;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .modal-close:hover {
-      color: #ccc;
-    }
-
-    .no-images {
-      text-align: center;
-      padding: 40px;
-      color: #999;
-      background: #f8f7f5;
-      border-radius: 4px;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 2px solid #e8e6e1;
-    }
-
-    .btn-secondary {
-      padding: 12px 24px;
-      background: #f0f0f0;
-      color: #333;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.95em;
-      text-decoration: none;
-      display: inline-block;
-      transition: 0.2s;
-    }
-
-    .btn-secondary:hover {
-      background: #e0e0e0;
-    }
-
-    .btn-warning {
-      padding: 12px 24px;
-      background: #FF9800;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.95em;
-      text-decoration: none;
-      display: inline-block;
-      transition: 0.2s;
-    }
-
-    .btn-warning:hover {
-      background: #F57C00;
-    }
-
-    .info-box {
-      background: #e8f5e9;
-      border-left: 4px solid #3a7c22;
-      padding: 15px;
-      border-radius: 4px;
-      font-size: 0.9em;
-      margin-bottom: 20px;
-    }
-  </style>
 </head>
 <body>
 <div class="dash-root">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark">🌿</div>
-      <div class="logo-text">Traza<span>Agro</span></div>
-    </div>
+    <div class="logo"><div class="logo-mark">🌿</div><div class="logo-text">Traza<span>Agro</span></div></div>
     <div class="topbar-right">
       <div class="user-chip">
         <div class="user-avatar">{{ session.username[:2].upper() }}</div>
@@ -233,14 +19,11 @@
       </div>
     </div>
   </div>
-
   <div class="layout">
-
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Gestión</div>
-        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+<a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
             <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
             <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
@@ -285,181 +68,244 @@
           </svg>
           Agroquímicos
         </a>
-              <div class="sidebar-section">
-        <div class="sidebar-label">Reportes</div>
-
-        
-        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-            <path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-          Reportes gerenciales
-        </a>
       </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Reportes
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Sistema</div>
         <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Cerrar sesión
         </a>
       </div>
     </div>
 
-    <!-- CONTENIDO -->
     <div class="main-content">
-
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
           <div class="flash flash-{{ category }}">{{ message }}</div>
         {% endfor %}
       {% endwith %}
 
-      <!-- ENCABEZADO -->
-      <div class="detail-header">
-        <h1>📋 Bitácora del Lote {{ numero_lote }}</h1>
-        <p>{{ nombre_finca }} — {{ bitacora.fecha.strftime('%d de %B de %Y') if bitacora.fecha else '—' }}</p>
-      </div>
+      {#
+        El campo observaciones guarda todo el registro como texto concatenado.
+        Parseamos cada sección para mostrarla ordenada.
+        Formato: "Clave: valor\n" dentro de bloques "--- NOMBRE ---"
+      #}
+      {% set obs_raw = bitacora.observaciones or '' %}
+      {% set is_legacy = '=== REGISTRO DE ACTIVIDADES' in obs_raw %}
 
-      <!-- INFORMACIÓN BÁSICA -->
-      <div class="detail-grid">
-        <div class="detail-card">
-          <div class="detail-label">Lote</div>
-          <div class="detail-value"><strong>{{ numero_lote }}</strong></div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Finca</div>
-          <div class="detail-value"><strong>{{ nombre_finca }}</strong></div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Fecha del registro</div>
-          <div class="detail-value"><strong>{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</strong></div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Agrólogo asignado</div>
-          <div class="detail-value"><strong>{{ agronomo if agronomo else '—' }}</strong></div>
-        </div>
-        <div class="detail-card">
-          <div class="detail-label">Registrado el</div>
-          <div class="detail-value"><strong>{{ bitacora.fecha_creacion.strftime('%d/%m/%Y %H:%M') if bitacora.fecha_creacion else '—' }}</strong></div>
-        </div>
-      </div>
+      {# Macro para extraer el valor de una línea "Clave: valor" dentro de una sección #}
+      {% macro extraer_linea(texto, clave) %}
+        {%- if clave in texto -%}
+          {%- set partes = texto.split(clave) -%}
+          {%- if partes|length > 1 -%}
+            {%- set linea = partes[1].split('\n')[0] | trim -%}
+            {%- if linea and linea != 'N/A' -%}{{ linea }}{%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {% endmacro %}
 
-      <!-- ACTIVIDADES REALIZADAS -->
-      <div class="section-box">
-        <div class="section-title">
-          <span class="section-icon">📝</span>
-          Actividades realizadas
-        </div>
-        <div class="detail-value">{{ bitacora.actividades_realizadas if bitacora.actividades_realizadas else 'No registradas' }}</div>
-      </div>
-
-      <!-- REGISTRO DETALLADO (desde observaciones) -->
-      {% if bitacora.observaciones %}
-        <div class="section-box">
-          <div class="section-title">
-            <span class="section-icon">📊</span>
-            Registro detallado completo
-          </div>
-          <div class="detail-value">{{ bitacora.observaciones }}</div>
-        </div>
+      {# Extraer sección ACTIVIDADES ESPECÍFICAS #}
+      {% set sec_especificas = '' %}
+      {% if is_legacy and '--- ACTIVIDADES ESPECÍFICAS ---' in obs_raw %}
+        {% set sec_especificas = obs_raw.split('--- ACTIVIDADES ESPECÍFICAS ---')[1].split('---')[0] %}
       {% endif %}
 
-      <!-- GALERÍA DE IMÁGENES -->
-      {% if imagenes %}
-        <div class="section-box">
-          <div class="section-title">
-            <span class="section-icon">📸</span>
-            Evidencia multimedia
+      {# Extraer cada labor #}
+      {% set val_siembra       = extraer_linea(sec_especificas, 'Siembra: ')       | trim %}
+      {% set val_riego         = extraer_linea(sec_especificas, 'Riego: ')         | trim %}
+      {% set val_fertilizacion = extraer_linea(sec_especificas, 'Fertilización: ') | trim %}
+      {% set val_insumos       = extraer_linea(sec_especificas, 'Insumos utilizados: ') | trim %}
+
+      {# Usar columnas de BD si existen, si no usar el parseado del texto #}
+      {% set siembra_final       = bitacora.siembra            or val_siembra %}
+      {% set riego_final         = bitacora.riego              or val_riego %}
+      {% set fertilizacion_final = bitacora.fertilizacion      or val_fertilizacion %}
+      {% set insumos_final       = bitacora.insumos_utilizados or val_insumos %}
+
+      {# Extraer observaciones limpias #}
+      {% set obs_limpia = '' %}
+      {% if is_legacy and '--- OBSERVACIONES ADICIONALES ---' in obs_raw %}
+        {% set obs_limpia = obs_raw.split('--- OBSERVACIONES ADICIONALES ---')[1].split('=== FIN DEL REGISTRO')[0] | trim %}
+        {% if obs_limpia == 'Sin observaciones' %}{% set obs_limpia = '' %}{% endif %}
+      {% elif not is_legacy %}
+        {% set obs_limpia = obs_raw %}
+      {% endif %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Bitácora — Lote {{ numero_lote }}</div>
+          <div class="page-subtitle">{{ nombre_finca }}&nbsp;·&nbsp;{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</div>
+        </div>
+        <a href="{{ url_for('bitacoras.lista') }}" class="btn-sm btn-edit">← Volver</a>
+      </div>
+
+      <!-- Encabezado datos generales -->
+      <div class="panel" style="margin-top:0; display:flex; gap:32px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">Lote</div>
+          <div style="font-size:14px; font-weight:600; font-family:monospace;">{{ numero_lote }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">Finca</div>
+          <div style="font-size:14px; font-weight:600;">{{ nombre_finca }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">Agrólogo</div>
+          <div style="font-size:14px; font-weight:600;">{{ agronomo if agronomo else '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">Fecha</div>
+          <div style="font-size:14px; font-weight:600;">{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px;">Creado</div>
+          <div style="font-size:14px; font-weight:600;">{{ bitacora.fecha_creacion.strftime('%d/%m/%Y %H:%M') if bitacora.fecha_creacion else '—' }}</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px;">
+
+        <!-- Columna izquierda -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+
+          <div class="panel" style="margin-top:0;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px;">RESUMEN DE ACTIVIDADES</div>
+            <div style="font-size:14px; color:#2a2a20; line-height:1.7;">{{ bitacora.actividades_realizadas if bitacora.actividades_realizadas else '—' }}</div>
           </div>
-          <div class="info-box">
-            💡 Haz clic en cualquier imagen para ampliarla
-          </div>
-          <div class="gallery">
-            {% for imagen in imagenes %}
-              {% if imagen.strip() %}
-                <div class="gallery-item" onclick="abrirModal('{{ url_for('static', filename='uploads/bitacoras/' + imagen) }}')">
-                  <img src="{{ url_for('static', filename='uploads/bitacoras/' + imagen) }}" alt="{{ imagen }}" 
-                       onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2214%22%3EImagen no encontrada%3C/text%3E%3C/svg%3E'">
+
+          <div class="panel" style="margin-top:0;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px;">Condiciones ambientales</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+              <div>
+                <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Temperatura</div>
+                <div style="font-size:22px; font-weight:600; color:#1a1a17;">
+                  {{ "%.2f"|format(bitacora.temperatura_c) if bitacora.temperatura_c is not none else '—' }}
+                  <span style="font-size:12px; color:#9a9282; font-weight:400;">°C</span>
                 </div>
-              {% endif %}
-            {% endfor %}
+              </div>
+              <div>
+                <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Humedad</div>
+                <div style="font-size:22px; font-weight:600; color:#1a1a17;">
+                  {{ "%.2f"|format(bitacora.humedad_pct) if bitacora.humedad_pct is not none else '—' }}
+                  <span style="font-size:12px; color:#9a9282; font-weight:400;">%</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Precipitación</div>
+                <div style="font-size:22px; font-weight:600; color:#1a1a17;">
+                  {{ "%.2f"|format(bitacora.precipitacion_mm) if bitacora.precipitacion_mm is not none else '—' }}
+                  <span style="font-size:12px; color:#9a9282; font-weight:400;">mm</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      {% else %}
-        <div class="section-box">
-          <div class="section-title">
-            <span class="section-icon">📸</span>
-            Evidencia multimedia
-          </div>
-          <div class="no-images">
-            📷 No hay imágenes adjuntas a esta bitácora
-          </div>
-        </div>
-      {% endif %}
 
-      <!-- ACCIONES -->
-      <div class="action-buttons">
-        <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">← Volver a listado</a>
-        <a href="{{ url_for('bitacoras.editar', id=bitacora.id) }}" class="btn-warning">✏ Editar bitácora</a>
+          {% if obs_limpia %}
+          <div class="panel" style="margin-top:0;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px;">Observaciones</div>
+            <div style="font-size:14px; color:#2a2a20; line-height:1.7;">{{ obs_limpia }}</div>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <!-- Columna derecha -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+
+          <div class="panel" style="margin-top:0;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px;">Registro de labores</div>
+
+            {% if siembra_final %}
+            <div style="margin-bottom:16px;">
+              <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;">Siembra</div>
+              <div style="font-size:13px; color:#2a2a20; line-height:1.6;">{{ siembra_final }}</div>
+            </div>
+            {% endif %}
+
+            {% if riego_final %}
+            <div style="margin-bottom:16px;">
+              <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;">Riego</div>
+              <div style="font-size:13px; color:#2a2a20; line-height:1.6;">{{ riego_final }}</div>
+            </div>
+            {% endif %}
+
+            {% if fertilizacion_final %}
+            <div style="margin-bottom:16px;">
+              <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;">Fertilización</div>
+              <div style="font-size:13px; color:#2a2a20; line-height:1.6;">{{ fertilizacion_final }}</div>
+            </div>
+            {% endif %}
+
+            {% if insumos_final %}
+            <div>
+              <div style="font-size:11px; color:#9a9282; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;">Insumos utilizados</div>
+              <div style="font-size:13px; color:#2a2a20; line-height:1.6;">{{ insumos_final }}</div>
+            </div>
+            {% endif %}
+
+            {% if not siembra_final and not riego_final and not fertilizacion_final and not insumos_final %}
+            <div style="color:#9a9282; font-size:13px;">Sin detalle de labores registrado.</div>
+            {% endif %}
+          </div>
+
+          <!--<div class="panel" style="margin-top:0;">
+            <div style="font-size:13px; font-weight:600; color:#3a7c22; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px;">Evidencia multimedia</div>
+            {% if imagenes %}
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:10px;">
+              {% for imagen in imagenes %}
+                {% if imagen.strip() %}
+                <div style="border-radius:6px; overflow:hidden; cursor:pointer;" onclick="abrirModal('{{ url_for('static', filename='uploads/bitacoras/' + imagen) }}')">
+                  <img src="{{ url_for('static', filename='uploads/bitacoras/' + imagen) }}" alt="{{ imagen }}"
+                       style="width:100%; height:110px; object-fit:cover; display:block;"
+                       onerror="this.parentElement.style.display='none'">
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div style="font-size:11px; color:#9a9282; margin-top:10px;">Clic en una imagen para ampliar.</div>
+            {% else %}
+            <div style="color:#9a9282; font-size:13px;">Sin imágenes adjuntas.</div>
+            {% endif %}
+          </div>-->
+
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px; padding-top:20px; border-top:1px solid #ece9e4;">
+        <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary">← Volver al listado</a>
+        <a href="{{ url_for('bitacoras.editar', id=bitacora.id) }}" class="btn-primary">Editar bitácora</a>
       </div>
 
     </div>
-
   </div>
-
 </div>
 
-<!-- MODAL PARA IMÁGENES -->
-<div id="imageModal" class="modal" onclick="cerrarModal()">
-  <span class="modal-close" onclick="cerrarModal()">&times;</span>
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <img id="modalImage" src="" alt="">
+<div id="imageModal" style="display:none; position:fixed; z-index:999; inset:0; background:rgba(0,0,0,.75);" onclick="cerrarModal()">
+  <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); max-width:90%; max-height:90%;" onclick="event.stopPropagation()">
+    <img id="modalImage" src="" alt="" style="max-width:100%; max-height:85vh; border-radius:6px; display:block;">
   </div>
+  <span style="position:absolute; top:20px; right:32px; color:#fff; font-size:28px; cursor:pointer; font-weight:600;" onclick="cerrarModal()">×</span>
 </div>
 
 <script>
+  function abrirModal(src) { document.getElementById('imageModal').style.display='block'; document.getElementById('modalImage').src=src; }
+  function cerrarModal() { document.getElementById('imageModal').style.display='none'; }
+  document.addEventListener('keydown', function(e) { if (e.key==='Escape') cerrarModal(); });
   (function () {
     function isBackForward() {
-      try {
-        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
-        return nav && nav.length && nav[0].type === 'back_forward';
-      } catch (e) {
-        return false;
-      }
+      try { const nav = performance.getEntriesByType && performance.getEntriesByType('navigation'); return nav && nav.length && nav[0].type === 'back_forward'; } catch (e) { return false; }
     }
-
     window.addEventListener('pageshow', function (event) {
-      if (event.persisted || isBackForward()) {
-        window.location.replace("{{ url_for('auth.confirm_logout') }}");
-      }
+      if (event.persisted || isBackForward()) window.location.replace("{{ url_for('auth.confirm_logout') }}");
     });
   })();
 </script>
-
-<script>
-  function abrirModal(src) {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    modal.style.display = 'block';
-    modalImg.src = src;
-  }
-
-  function cerrarModal() {
-    const modal = document.getElementById('imageModal');
-    modal.style.display = 'none';
-  }
-
-  // Cerrar modal con tecla ESC
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      cerrarModal();
-    }
-  });
-</script>
-
 </body>
 </html>

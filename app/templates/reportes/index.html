@@ -31,7 +31,7 @@
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Gestión</div>
-      <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item active">
+      <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
             <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
             <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
@@ -127,7 +127,7 @@
           <div class="panel" style="cursor:pointer; transition: box-shadow 0.2s, transform 0.15s;" onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.09)'; this.style.transform='translateY(-2px)'" onmouseleave="this.style.boxShadow=''; this.style.transform=''">
             <div style="font-size:26px; margin-bottom:12px;">🌡️</div>
             <div class="panel-title" style="margin-bottom:6px;">Monitor de Almacenamiento</div>
-            <div style="font-size:12.5px; color:#7a7060; line-height:1.5;">Historial de temperaturas y ocupación de cada bodega. Alertas por desviación de setpoint.</div>
+            <div style="font-size:12.5px; color:#7a7060; line-height:1.5;">Historial de temperaturas y ocupación de cada bodega. Alertas por desviación de temperatura ideal.</div>
             <div style="margin-top:14px; font-size:12px; color:#5a8c3c; font-weight:500;">Ver reporte →</div>
           </div>
         </a>

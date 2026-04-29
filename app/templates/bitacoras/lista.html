@@ -10,8 +10,6 @@
 </head>
 <body>
 <div class="dash-root">
-
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="logo">
       <div class="logo-mark">🌿</div>
@@ -24,10 +22,7 @@
       </div>
     </div>
   </div>
-
   <div class="layout">
-
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Gestión</div>
@@ -61,7 +56,7 @@
           </svg>
           Bitácoras de cultivo
         </a>
-                <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
             <path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
             <circle cx="14" cy="13" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
@@ -69,39 +64,31 @@
           </svg>
           Trazabilidad
         </a>
-        <a href="{{ url_for('agroquimicos.lista') }}" class="sidebar-item">
+                <a href="{{ url_for('agroquimicos.lista') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
             <circle cx="9" cy="6" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
             <path d="M3 10c0-2 1.5-4 3-5M12 10c0-2-1.5-4-3-5M5 10l-2 6a2 2 0 0 0 1.8 2.3h8.4a2 2 0 0 0 1.8-2.3l-2-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
           </svg>
           Agroquímicos
         </a>
-              <div class="sidebar-section">
-        <div class="sidebar-label">Reportes</div>
-
-        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
-            <path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-          Reportes gerenciales
-        </a>
       </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Reportes
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Sistema</div>
         <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Cerrar sesión
         </a>
       </div>
     </div>
 
-    <!-- CONTENIDO -->
     <div class="main-content">
-
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
           <div class="flash flash-{{ category }}">{{ message }}</div>
@@ -116,156 +103,95 @@
         <a href="{{ url_for('bitacoras.crear') }}" class="btn-primary">+ Nueva bitácora</a>
       </div>
 
-      <!-- PANEL DE FILTROS -->
-      <div class="panel" style="margin-top:0; margin-bottom:20px; background: #f8f7f5;">
-        <form method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
-          
-          <div style="flex: 1; min-width: 200px;">
-            <label class="form-label">Buscar por lote</label>
+      <div class="panel" style="margin-bottom:16px;">
+        <form method="GET" style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px;">
+            <label class="form-label">Lote</label>
             <select name="lote" class="form-input" style="margin:0;">
               <option value="">— Todos los lotes —</option>
               {% for lote in lotes_disponibles %}
-                <option value="{{ lote.numero_lote }}"
-                  {{ 'selected' if busqueda_lote == lote.numero_lote else '' }}>
-                  {{ lote.numero_lote }} — {{ lote.finca.nombre_finca if lote.finca else '—' }} ({{ (lote.finca.municipio_ref.nombre if lote.finca and lote.finca.municipio_ref else (lote.finca.municipio if lote.finca else None)) or '—' }}, {{ (lote.finca.departamento_ref.nombre if lote.finca and lote.finca.departamento_ref else (lote.finca.departamento if lote.finca else None)) or '—' }})
+                <option value="{{ lote.numero_lote }}" {{ 'selected' if busqueda_lote == lote.numero_lote else '' }}>
+                  {{ lote.numero_lote }} — {{ lote.finca.nombre_finca if lote.finca else '—' }}
                 </option>
               {% endfor %}
             </select>
           </div>
-
-          <div style="flex: 0 1 180px;">
+          <div style="flex:0 1 170px;">
             <label class="form-label">Desde</label>
-            <input type="date" name="fecha_desde" class="form-input" style="margin:0;"
-              value="{{ fecha_desde }}">
+            <input type="date" name="fecha_desde" class="form-input" style="margin:0;" value="{{ fecha_desde }}">
           </div>
-
-          <div style="flex: 0 1 180px;">
+          <div style="flex:0 1 170px;">
             <label class="form-label">Hasta</label>
-            <input type="date" name="fecha_hasta" class="form-input" style="margin:0;"
-              value="{{ fecha_hasta }}">
+            <input type="date" name="fecha_hasta" class="form-input" style="margin:0;" value="{{ fecha_hasta }}">
           </div>
-
-          <button type="submit" class="btn-primary" style="align-self: flex-end;">
-            Filtrar
-          </button>
-          
-          <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary" style="align-self: flex-end;">
-            Limpiar
-          </a>
-
+          <button type="submit" class="btn-primary" style="align-self:flex-end;">Filtrar</button>
+          <a href="{{ url_for('bitacoras.lista') }}" class="btn-secondary" style="align-self:flex-end;">Limpiar</a>
         </form>
       </div>
 
-      <!-- TABLA DE BITÁCORAS -->
       <div class="panel" style="margin-top:0;">
+        <div class="panel-header">
+          <span class="panel-title">Registros</span>
+          <span style="font-size:12px; color:#9a9282;">{{ bitacoras | length }} registro(s)</span>
+        </div>
         {% if bitacoras %}
-          <table class="lote-table">
-            <thead>
-              <tr>
-                <th>Lote</th>
-                <th>Finca</th>
-                <th>Fecha</th>
-                <th>Agrólogo</th>
-                <th>Actividad</th>
-                <th style="text-align: center;">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for bitacora, numero_lote, nombre_finca, departamento, municipio, agronomo in bitacoras %}
-                <tr>
-                  <td><strong>{{ numero_lote }}</strong></td>
-                  <td>{{ nombre_finca }} - {{ municipio }}, {{ departamento }}</td>
-                  <td>{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</td>
-                  <td>{{ agronomo if agronomo else '—' }}</td>
-                  <td style="font-size: 0.9em; color: #666;">
-                    {{ bitacora.actividades_realizadas[:60] if bitacora.actividades_realizadas else '—' }}...
-                  </td>
-                  <td style="text-align: center; white-space: nowrap;">
-                    <a href="{{ url_for('bitacoras.ver', id=bitacora.id) }}" class="btn-small btn-info">👁 Ver</a>
-                    <a href="{{ url_for('bitacoras.editar', id=bitacora.id) }}" class="btn-small btn-warning">✏ Editar</a>
-                    <form method="POST" action="{{ url_for('bitacoras.eliminar', id=bitacora.id) }}" 
-                          style="display:inline;" 
-                          onsubmit="return confirm('¿Eliminar esta bitácora?');">
-                      <button type="submit" class="btn-small btn-danger">🗑 Eliminar</button>
-                    </form>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Finca</th>
+              <th>Fecha</th>
+              <th>Agrólogo</th>
+              <th>Actividades</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in bitacoras %}
+            {% set bitacora = row[0] %}
+            {% set numero_lote = row[1] %}
+            {% set nombre_finca = row[2] %}
+            {% set agronomo = row[3] %}
+            <tr>
+              <td class="lote-code">{{ numero_lote }}</td>
+              <td>{{ nombre_finca }}</td>
+              <td>{{ bitacora.fecha.strftime('%d/%m/%Y') if bitacora.fecha else '—' }}</td>
+              <td>{{ agronomo if agronomo else '—' }}</td>
+              <td style="font-size:13px; color:#6b6560; max-width:280px;">
+                {{ (bitacora.actividades_realizadas[:70] + '…') if bitacora.actividades_realizadas and bitacora.actividades_realizadas|length > 70 else (bitacora.actividades_realizadas or '—') }}
+              </td>
+              <td>
+                <div style="display:flex; gap:6px;">
+                  <a href="{{ url_for('bitacoras.ver', id=bitacora.id) }}" class="btn-sm btn-edit">Ver</a>
+                  <a href="{{ url_for('bitacoras.editar', id=bitacora.id) }}" class="btn-sm btn-edit">Editar</a>
+                  <form method="POST" action="{{ url_for('bitacoras.eliminar', id=bitacora.id) }}"
+                        style="margin:0;" onsubmit="return confirm('¿Eliminar esta bitácora?');">
+                    <button type="submit" class="btn-sm btn-delete">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
         {% else %}
-          <div style="text-align: center; padding: 40px; color: #999;">
-            <p style="font-size: 1.1em; margin-bottom: 10px;">📋 No hay bitácoras registradas</p>
-            <p>Crea una nueva bitácora para comenzar a registrar actividades.</p>
-          </div>
+        <div class="empty-state">
+          No hay bitácoras registradas. <a href="{{ url_for('bitacoras.crear') }}">Crear la primera</a>
+        </div>
         {% endif %}
       </div>
-
     </div>
-
   </div>
-
 </div>
-
-<style>
-  .btn-small {
-    padding: 6px 12px;
-    font-size: 0.85em;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: 0.2s;
-    margin: 0 4px;
-  }
-
-  .btn-info {
-    background: #2196F3;
-    color: white;
-  }
-
-  .btn-info:hover {
-    background: #1976D2;
-  }
-
-  .btn-warning {
-    background: #FF9800;
-    color: white;
-  }
-
-  .btn-warning:hover {
-    background: #F57C00;
-  }
-
-  .btn-danger {
-    background: #f44336;
-    color: white;
-  }
-
-  .btn-danger:hover {
-    background: #da190b;
-  }
-</style>
-
 <script>
   (function () {
     function isBackForward() {
-      try {
-        const nav = performance.getEntriesByType && performance.getEntriesByType('navigation');
-        return nav && nav.length && nav[0].type === 'back_forward';
-      } catch (e) {
-        return false;
-      }
+      try { const nav = performance.getEntriesByType && performance.getEntriesByType('navigation'); return nav && nav.length && nav[0].type === 'back_forward'; } catch (e) { return false; }
     }
-
     window.addEventListener('pageshow', function (event) {
-      if (event.persisted || isBackForward()) {
-        window.location.replace("{{ url_for('auth.confirm_logout') }}");
-      }
+      if (event.persisted || isBackForward()) window.location.replace("{{ url_for('auth.confirm_logout') }}");
     });
   })();
 </script>
-
 </body>
 </html>
