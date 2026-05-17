@@ -1,0 +1,19 @@
+<form method="POST" class="logout-container fade-in">
+    <h2>Confirmar</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/logout.css') }}">
+    <p>
+        Actualmente has iniciado sesión como 
+        <strong>{{ usuario }}</strong>.<br>
+        ¿Qué deseas hacer?
+    </p>
+
+    <div class="actions">
+        <button type="submit" name="accion" value="volver" class="btn-secondary">
+            Volver
+        </button>
+
+        <button type="submit" name="accion" value="logout" class="btn-danger">
+            Cerrar sesión
+        </button>
+    </div>
+</form>

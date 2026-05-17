@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — Uso de Agroquímicos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+  <div class="topbar">
+    <div class="logo"><div class="logo-mark">🌿</div><div class="logo-text">Traza<span>Agro</span></div></div>
+    <div class="topbar-right"><div class="user-chip"><div class="user-avatar">{{ session.username[:2].upper() }}</div><span class="user-name">{{ session.rol | capitalize }}</span></div></div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+                <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/>
+          </svg>
+          Inicio
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+          </svg>
+          Fincas
+        </a>
+
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/>
+            <path d="M5 9h8M5 12h5" stroke="#4a4640" stroke-width="1.2"/>
+          </svg>
+          Lotes de producción
+        </a>
+
+        <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M9 5v4l3 2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Bitácoras de cultivo
+        </a>
+
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="14" cy="13" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M15.8 15.8l1.5 1.5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Trazabilidad
+        </a>
+        <a href="{{ url_for('agroquimicos.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="6" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M3 10c0-2 1.5-4 3-5M12 10c0-2-1.5-4-3-5M5 10l-2 6a2 2 0 0 0 1.8 2.3h8.4a2 2 0 0 0 1.8-2.3l-2-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Agroquímicos
+        </a>
+        
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>Todos los reportes</a>
+        <a href="{{ url_for('reportes.produccion') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 15V9l4-4 4 4 4-6" stroke="#3a7c22" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Producción</a>
+        <a href="{{ url_for('reportes.normativo') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M6 9l2 2 4-4" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>Normativo</a>
+        <a href="{{ url_for('reportes.almacenamiento') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="8" width="14" height="8" rx="1.5" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 8V6a4 4 0 0 1 8 0v2" stroke="#4a4640" stroke-width="1.3"/></svg>Almacenamiento</a>
+        <a href="{{ url_for('reportes.agroquimicos') }}" class="sidebar-item active"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="6" r="2.5" stroke="#4a4640" stroke-width="1.3" fill="none"/>
+            <path d="M3 10c0-2 1.5-4 3-5M12 10c0-2-1.5-4-3-5M5 10l-2 6a2 2 0 0 0 1.8 2.3h8.4a2 2 0 0 0 1.8-2.3l-2-6" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Agroquímicos
+        </a>
+        <a href="{{ url_for('reportes.despachos') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M2 12l4-8h6l4 8H2z" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>Despachos</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item"><svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Cerrar sesión</a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Uso de Agroquímicos</div>
+          <div class="page-subtitle">Análisis de dosis por hectárea y detección de excesos · {{ now.strftime('%d/%m/%Y %H:%M') }}</div>
+        </div>
+        <a href="{{ url_for('reportes.index') }}" class="btn-secondary">← Volver</a>
+      </div>
+
+      <!-- Resumen por producto -->
+      {% if resumen %}
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-header">
+          <span class="panel-title">Resumen por producto</span>
+        </div>
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Tipo</th>
+              <th>Aplicaciones</th>
+              <th>Lotes afectados</th>
+              <th>Dosis total</th>
+              <th>Límite/ha</th>
+              <th>Unidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in resumen %}
+            <tr>
+              <td>{{ r.nombre_producto }}</td>
+              <td>
+                {% if r.tipo == 'FERTILIZANTE' %}<span class="status-pill ok">Fertilizante</span>
+                {% elif r.tipo == 'PESTICIDA' %}<span class="status-pill warn">Pesticida</span>
+                {% elif r.tipo == 'FUNGICIDA' %}<span class="status-pill warn">Fungicida</span>
+                {% else %}<span class="status-pill ok">{{ r.tipo or '—' }}</span>{% endif %}
+              </td>
+              <td>{{ r.num_aplicaciones }}</td>
+              <td>{{ r.num_lotes }}</td>
+              <td>{{ "{:,.2f}".format(r.total_dosis | float) if r.total_dosis else '0' }}</td>
+              <td>{{ r.dosis_limite_hectarea or '—' }}</td>
+              <td>{{ r.unidad_dosis or '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Detalle de aplicaciones -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Últimas 50 aplicaciones (dosis por hectárea)</span>
+          {% if filas_detalle | selectattr('excede') | list | length > 0 %}
+            <span class="status-pill block">⚠ {{ filas_detalle | selectattr('excede') | list | length }} exceden límite</span>
+          {% endif %}
+        </div>
+        {% if filas_detalle %}
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Tipo</th>
+              <th>Lote</th>
+              <th>Finca</th>
+              <th>Dosis/ha</th>
+              <th>Límite/ha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in filas_detalle %}
+            <tr {% if f.excede %}style="background:#fff8f8;"{% endif %}>
+              <td>{{ f.ap.fecha_aplicacion.strftime('%d/%m/%Y') if f.ap.fecha_aplicacion else '—' }}</td>
+              <td>{{ f.nombre }}</td>
+              <td><span class="status-pill {% if f.tipo == 'FERTILIZANTE' %}ok{% else %}warn{% endif %}">{{ f.tipo or '—' }}</span></td>
+              <td class="lote-code">{{ f.numero_lote }}</td>
+              <td>{{ f.finca }}</td>
+              <td>{{ f.dosis_por_ha }}</td>
+              <td>{{ f.limite if f.limite > 0 else '—' }}</td>
+              <td>
+                {% if f.excede %}
+                  <span class="status-pill block">⚠ Excede</span>
+                {% else %}
+                  <span class="status-pill ok">OK</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No hay aplicaciones de agroquímicos registradas.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrazaAgro — Despachos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dash-root">
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">Traza<span>Agro</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">{{ session.username[:2].upper() }}</div>
+        <span class="user-name">{{ session.rol | capitalize }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <a href="{{ url_for('auth.dashboard') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="11" y="1" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="1" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="#3a7c22"/></svg>
+          Inicio
+        </a>
+        <a href="{{ url_for('fincas.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2L3 5v4c0 3.3 2.5 6.4 6 7.2C13.5 15.4 15 12.3 15 9V5L9 2z" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>
+          Fincas
+        </a>
+        <a href="{{ url_for('lotes.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#4a4640" stroke-width="1.3"/></svg>
+          Lotes
+        </a>
+        <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 4h12M3 9h8M3 14h5" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Trazabilidad
+        </a>
+        <a href="{{ url_for('despachos.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M2 12l4-8h6l4 8H2z" stroke="#3a7c22" stroke-width="1.3" fill="none"/><path d="M2 12h14" stroke="#3a7c22" stroke-width="1.3"/></svg>
+          Despachos
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Reportes</div>
+        <a href="{{ url_for('reportes.index') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/><path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Reportes
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sistema</div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M12 6l3 3-3 3" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+
+    <div class="main-content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div class="page-title">Despachos</div>
+          <div class="page-subtitle">Registro y seguimiento de contenedores de exportación</div>
+        </div>
+        <a href="{{ url_for('despachos.crear') }}" class="btn-primary">+ Nuevo despacho</a>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        {% set conteos = {} %}
+        {% for despacho, _, _, _ in filas %}
+          {% set est = despacho.estado or 'PROGRAMADO' %}
+          {% if est not in conteos %}{% set _ = conteos.update({est: 0}) %}{% endif %}
+        {% endfor %}
+
+        <div class="kpi-card amber">
+          <div class="kpi-label">Programados</div>
+          <div class="kpi-value">{{ filas | selectattr('0.estado', 'equalto', 'PROGRAMADO') | list | length }}</div>
+          <div class="kpi-meta">Pendientes de salida</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-label">En tránsito</div>
+          <div class="kpi-value">{{ filas | selectattr('0.estado', 'equalto', 'EN_TRANSITO') | list | length }}</div>
+          <div class="kpi-meta">Viajando al destino</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">En puerto</div>
+          <div class="kpi-value">{{ filas | selectattr('0.estado', 'equalto', 'EN_PUERTO') | list | length }}</div>
+          <div class="kpi-meta">Esperando embarque</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-label">Entregados</div>
+          <div class="kpi-value">{{ filas | selectattr('0.estado', 'equalto', 'ENTREGADO') | list | length }}</div>
+          <div class="kpi-meta up">Completados</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Todos los despachos</span>
+          <span style="font-size:12px; color:#9a9282;">{{ filas | length }} registro(s)</span>
+        </div>
+
+        {% if filas %}
+        <table class="lote-table">
+          <thead>
+            <tr>
+              <th>Contenedor</th>
+              <th>Código trazabilidad</th>
+              <th>Lote</th>
+              <th>Finca</th>
+              <th>Fecha despacho</th>
+              <th>Puerto destino</th>
+              <th>País</th>
+              <th>Ubicación actual</th>
+              <th>Est. llegada</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for despacho, numero_lote, nombre_finca, codigo_traza in filas %}
+            <tr>
+              <td style="font-family:monospace; font-size:12px; color:#2e6fa8;">
+                {{ despacho.codigo_contenedor or '—' }}
+              </td>
+              <td class="lote-code">{{ codigo_traza or '—' }}</td>
+              <td class="lote-code">{{ numero_lote }}</td>
+              <td>{{ nombre_finca }}</td>
+              <td>{{ despacho.fecha_despacho.strftime('%d/%m/%Y') if despacho.fecha_despacho else '—' }}</td>
+              <td>{{ despacho.puerto_destino or '—' }}</td>
+              <td>{{ despacho.pais_destino or '—' }}</td>
+              <td>{{ despacho.ubicacion_actual or '—' }}</td>
+              <td>{{ despacho.fecha_estimada_llegada.strftime('%d/%m/%Y') if despacho.fecha_estimada_llegada else '—' }}</td>
+              <td>
+                {% set est = despacho.estado or 'PROGRAMADO' %}
+                {% if est == 'ENTREGADO' %}<span class="status-pill ok">Entregado</span>
+                {% elif est == 'EN_TRANSITO' %}<span class="status-pill ok" style="background:#e0eeff;color:#1d4a8a;">En tránsito</span>
+                {% elif est == 'EN_PUERTO' %}<span class="status-pill warn">En puerto</span>
+                {% elif est == 'CANCELADO' %}<span class="status-pill block">Cancelado</span>
+                {% else %}<span class="status-pill warn">Programado</span>{% endif %}
+              </td>
+              <td>
+                <div style="display:flex; gap:6px;">
+                  <a href="{{ url_for('despachos.editar', despacho_id=despacho.id) }}" class="btn-sm btn-edit">Editar</a>
+                  <form method="POST" action="{{ url_for('despachos.eliminar', despacho_id=despacho.id) }}"
+                        onsubmit="return confirm('¿Eliminar este despacho?');" style="margin:0;">
+                    <button type="submit" class="btn-sm btn-delete">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          No hay despachos registrados. <a href="{{ url_for('despachos.crear') }}">Registrar el primero</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
