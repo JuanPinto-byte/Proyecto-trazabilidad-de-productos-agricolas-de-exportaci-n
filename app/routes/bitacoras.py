@@ -1,10 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.extensions import db
+<<<<<<< HEAD
 from app.models.seguimiento.bitacora import BitacoraCultivo, CondicionMeteorologica
 from app.models.produccion.lote import Lote
 from app.models.produccion.finca import Finca
 from app.models.usuarios.user import User
 from app.decorators import login_required, require_permiso
+=======
+from app.models.seguimiento.bitacora import BitacoraCultivo
+from app.models.produccion.lote import Lote
+from app.models.produccion.finca import Finca
+from app.models.usuarios.user import User
+from functools import wraps
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
@@ -23,12 +31,26 @@ def allowed_file(filename):
 
 
 # ── Protección de sesión ──────────────────────────────────────────────────────
+<<<<<<< HEAD
+=======
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 # ── LISTAR CON FILTRADO ───────────────────────────────────────────────────────
 @bitacoras_bp.route("/bitacoras")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "bitacoras_cultivo")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     """Lista bitácoras con filtrado por lote y fecha"""
     
@@ -80,7 +102,10 @@ def lista():
 # ── CREAR BITÁCORA ────────────────────────────────────────────────────────────
 @bitacoras_bp.route("/bitacoras/crear", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("crear", "bitacoras_cultivo")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def crear():
     """Crear nueva bitácora con registro de actividades, clima e imágenes"""
     
@@ -274,6 +299,7 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
             
             db.session.add(nueva_bitacora)
             db.session.commit()
+<<<<<<< HEAD
 
             # Guardar condición climática en condiciones_meteorologicas
             if temperatura or humedad or precipitacion:
@@ -288,6 +314,9 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
                 db.session.add(condicion)
                 db.session.commit()
 
+=======
+            
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
             flash("Bitácora creada correctamente.", "success")
             return redirect(url_for("bitacoras.lista"))
         except Exception as e:
@@ -313,7 +342,10 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
 # ── EDITAR BITÁCORA ───────────────────────────────────────────────────────────
 @bitacoras_bp.route("/bitacoras/editar/<int:id>", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("editar", "bitacoras_cultivo")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def editar(id):
     """Editar bitácora existente"""
     
@@ -525,6 +557,7 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
         
         try:
             db.session.commit()
+<<<<<<< HEAD
 
             # Actualizar o crear condición climática en condiciones_meteorologicas
             if temperatura or humedad or precipitacion:
@@ -549,6 +582,8 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
                     db.session.add(condicion)
                 db.session.commit()
 
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
             flash("Bitácora actualizada correctamente.", "success")
             return redirect(url_for("bitacoras.lista"))
         except Exception as e:
@@ -580,7 +615,10 @@ Precipitación (mm): {precipitacion if precipitacion else 'N/A'}
 # ── VER DETALLE DE BITÁCORA ──────────────────────────────────────────────────
 @bitacoras_bp.route("/bitacoras/ver/<int:id>")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "bitacoras_cultivo")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def ver(id):
     """Ver detalle de una bitácora con galería de imágenes"""
     
@@ -618,7 +656,10 @@ def ver(id):
 # ── ELIMINAR BITÁCORA ─────────────────────────────────────────────────────────
 @bitacoras_bp.route("/bitacoras/eliminar/<int:id>", methods=["POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("eliminar", "bitacoras_cultivo")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def eliminar(id):
     """Eliminar una bitácora"""
     

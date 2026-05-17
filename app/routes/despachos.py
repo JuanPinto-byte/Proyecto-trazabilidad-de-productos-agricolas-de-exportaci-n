@@ -1,5 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
+=======
+from functools import wraps
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 from datetime import datetime, date
 
 from app.extensions import db
@@ -12,11 +16,25 @@ despachos_bp = Blueprint("despachos", __name__, url_prefix="/despachos")
 ESTADOS = ["PROGRAMADO", "EN_TRANSITO", "EN_PUERTO", "ENTREGADO", "CANCELADO"]
 
 
+<<<<<<< HEAD
+=======
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 @despachos_bp.route("/")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "despachos")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     filas = (
         db.session.query(Despacho, Lote.numero_lote, Finca.nombre_finca, Trazabilidad.codigo_trazabilidad)
@@ -31,7 +49,10 @@ def lista():
 
 @despachos_bp.route("/nuevo", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("crear", "despachos")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def crear():
     # Solo lotes cosechados o despachados pueden tener despacho
     lotes = (
@@ -110,7 +131,10 @@ def crear():
 
 @despachos_bp.route("/<int:despacho_id>/editar", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("editar", "despachos")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def editar(despacho_id):
     despacho = Despacho.query.get_or_404(despacho_id)
     lotes = (
@@ -163,7 +187,10 @@ def editar(despacho_id):
 
 @despachos_bp.route("/<int:despacho_id>/eliminar", methods=["POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("eliminar", "despachos")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def eliminar(despacho_id):
     despacho = Despacho.query.get_or_404(despacho_id)
     db.session.delete(despacho)

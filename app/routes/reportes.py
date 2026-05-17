@@ -1,5 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
+=======
+from functools import wraps
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 from sqlalchemy import func
 from datetime import datetime, timedelta
 
@@ -14,18 +18,35 @@ from app.models.trazabilidad.trazabilidad import Trazabilidad, Despacho
 reportes_bp = Blueprint("reportes", __name__)
 
 
+<<<<<<< HEAD
+=======
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 @reportes_bp.route("/reportes")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def index():
     return render_template("reportes/index.html")
 
 
 @reportes_bp.route("/reportes/produccion")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def produccion():
     datos = (
         db.session.query(
@@ -76,7 +97,10 @@ def produccion():
 
 @reportes_bp.route("/reportes/normativo")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def normativo():
     lotes_data = (
         db.session.query(
@@ -148,7 +172,10 @@ def normativo():
 
 @reportes_bp.route("/reportes/almacenamiento")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def almacenamiento():
     bodegas = Bodega.query.order_by(Bodega.nombre).all()
     bodegas_data = []
@@ -195,7 +222,10 @@ def almacenamiento():
 
 @reportes_bp.route("/reportes/agroquimicos")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def agroquimicos():
     resumen = (
         db.session.query(
@@ -265,7 +295,10 @@ def agroquimicos():
 
 @reportes_bp.route("/reportes/despachos")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "reportes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def despachos():
     estado_filtro = request.args.get("estado", "")
 

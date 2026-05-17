@@ -1,5 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
+=======
+from functools import wraps
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 import re
 from decimal import Decimal, InvalidOperation
 
@@ -57,12 +61,26 @@ def _to_decimal(value) -> Decimal:
 
 
 # ── Protección de sesión ──────────────────────────────────────────────────────
+<<<<<<< HEAD
+=======
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 # ── LISTAR ────────────────────────────────────────────────────────────────────
 @lotes_bp.route("/lotes")
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     lotes = db.session.query(
     Lote,
@@ -79,7 +97,10 @@ def lista():
 # ── CREAR ─────────────────────────────────────────────────────────────────────
 @lotes_bp.route("/lotes/crear", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("crear", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def crear():
     fincas = (
         Finca.query.options(joinedload(Finca.departamento_ref), joinedload(Finca.municipio_ref))
@@ -190,7 +211,10 @@ def crear():
 # ── EDITAR ────────────────────────────────────────────────────────────────────
 @lotes_bp.route("/lotes/editar/<int:id>", methods=["GET", "POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("editar", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def editar(id):
     lote   = Lote.query.get_or_404(id)
     fincas = (
@@ -298,7 +322,10 @@ def editar(id):
 # ── BLOQUEAR / DESBLOQUEAR ────────────────────────────────────────────────────
 @lotes_bp.route("/lotes/bloquear/<int:id>", methods=["POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("editar", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def bloquear(id):
     lote = Lote.query.get_or_404(id)
     lote.estado = "BLOQUEADO"
@@ -309,7 +336,10 @@ def bloquear(id):
 
 @lotes_bp.route("/lotes/desbloquear/<int:id>", methods=["POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("editar", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def desbloquear(id):
     lote = Lote.query.get_or_404(id)
     finca = lote.finca
@@ -356,7 +386,10 @@ def desbloquear(id):
 # ── ELIMINAR ──────────────────────────────────────────────────────────────────
 @lotes_bp.route("/lotes/eliminar/<int:id>", methods=["POST"])
 @login_required
+<<<<<<< HEAD
 @require_permiso("eliminar", "lotes")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def eliminar(id):
     lote = Lote.query.get_or_404(id)
 

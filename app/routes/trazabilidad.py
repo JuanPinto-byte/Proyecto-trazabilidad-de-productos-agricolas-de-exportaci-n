@@ -6,16 +6,34 @@ from app.extensions import db
 from datetime import datetime
 import pytz
 import uuid
+<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
+=======
+from functools import wraps
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 trazabilidad_bp = Blueprint('trazabilidad', __name__, url_prefix='/trazabilidad')
 
 
+<<<<<<< HEAD
+=======
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 @trazabilidad_bp.route('/', endpoint='lista')
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "trazabilidad")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     lotes = db.session.query(
         Lote,
@@ -78,7 +96,10 @@ def create_trazabilidad(lote_id):
 
 @trazabilidad_bp.route('/<int:lote_id>', methods=['GET', 'POST'])
 @login_required
+<<<<<<< HEAD
 @require_permiso("ver", "trazabilidad")
+=======
+>>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def ver_trazabilidad(lote_id):
     lote = Lote.query.get_or_404(lote_id)
     traza = Trazabilidad.query.filter_by(lote_id=lote_id).first()
