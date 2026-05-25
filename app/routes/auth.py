@@ -2,34 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.extensions import db
 from app.models.usuarios.user import User
 from app.models.usuarios.rol import Rol
-<<<<<<< HEAD
 from app.decorators import login_required
 from sqlalchemy import func
 from datetime import datetime
-=======
-from sqlalchemy import func
-from datetime import datetime
-from functools import wraps
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 auth_bp = Blueprint("auth", __name__)
 
 
-<<<<<<< HEAD
-=======
-# ── Decorador: protege rutas que requieren sesión activa ──────────────────────
-
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "user_id" not in session:
-            flash("Debes iniciar sesión primero.", "warning")
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-    return decorated
-
-
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 # ── LOGIN ─────────────────────────────────────────────────────────────────────
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -86,13 +65,8 @@ def register():
             flash("El correo electrónico ya está registrado", "email_error")
             return redirect(url_for("auth.register"))
 
-<<<<<<< HEAD
         # Rol por defecto: AGRONOMO (el menos privilegiado con acceso operativo)
         rol_defecto = Rol.query.filter_by(nombre='AGRONOMO').first() or Rol.query.order_by(Rol.id.desc()).first()
-=======
-        # Rol por defecto: buscar el primer rol disponible (puedes cambiarlo)
-        rol_defecto = Rol.query.first()
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
         nuevo_usuario = User(
             nombre_usuario  = username,
@@ -224,23 +198,17 @@ def dashboard():
         .order_by(Anomalia.fecha_deteccion.desc())\
         .limit(5).all()
 
-<<<<<<< HEAD
     # ── Permisos del usuario actual (para filtrar el menú) ────────────────────
     permisos_usuario = {
         (p.accion, p.recurso)
         for p in usuario_actual.rol.permisos
     } if usuario_actual and usuario_actual.rol else set()
 
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
     return render_template(
         "dashboard/dashboard.html",
         # Usuario
         usuario         = usuario_actual,
-<<<<<<< HEAD
         permisos        = permisos_usuario,
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
         # KPIs
         total_lotes     = total_lotes,
         total_fincas    = total_fincas,

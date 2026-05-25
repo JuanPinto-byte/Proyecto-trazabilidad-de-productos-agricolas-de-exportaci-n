@@ -1,9 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
-<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
-=======
-from functools import wraps
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 from decimal import Decimal, InvalidOperation
 
 from app.extensions import db
@@ -19,17 +15,6 @@ UNIDADES_DOSIS = ["kg/ha", "L/ha", "ml/ha", "g/ha", "dosis/ha"]
 MAX_DOSIS_HECTAREA = Decimal("1000.00")
 
 
-<<<<<<< HEAD
-=======
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "user_id" not in session:
-            flash("Debes iniciar sesión primero.", "warning")
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-    return decorated
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 def _parse_decimal(
@@ -67,10 +52,7 @@ def _parse_decimal(
 
 @agroquimicos_bp.route("/agroquimicos")
 @login_required
-<<<<<<< HEAD
 @require_permiso("ver", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     """Listar todos los agroquímicos registrados"""
     agroquimicos = Agroquimico.query.order_by(Agroquimico.fecha_creacion.desc()).all()
@@ -79,10 +61,7 @@ def lista():
 
 @agroquimicos_bp.route("/agroquimicos/crear", methods=["GET", "POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("crear", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def crear():
     """Crear un nuevo agroquímico"""
     
@@ -153,10 +132,7 @@ def crear():
 
 @agroquimicos_bp.route("/agroquimicos/editar/<int:id>", methods=["GET", "POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("editar", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def editar(id):
     """Editar un agroquímico existente"""
     agroquimico = Agroquimico.query.get_or_404(id)
@@ -223,10 +199,7 @@ def editar(id):
 
 @agroquimicos_bp.route("/agroquimicos/eliminar/<int:id>", methods=["POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("eliminar", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def eliminar(id):
     """Eliminar un agroquímico (soft delete - marcar como inactivo)"""
     agroquimico = Agroquimico.query.get_or_404(id)
@@ -246,10 +219,7 @@ def eliminar(id):
 
 @agroquimicos_bp.route("/agroquimicos/<int:id>/desactivar", methods=["POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("editar", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def desactivar(id):
     """Desactivar un agroquímico"""
     agroquimico = Agroquimico.query.get_or_404(id)
@@ -262,10 +232,7 @@ def desactivar(id):
 
 @agroquimicos_bp.route("/agroquimicos/<int:id>/activar", methods=["POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("editar", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def activar(id):
     """Activar un agroquímico desactivado"""
     agroquimico = Agroquimico.query.get_or_404(id)
@@ -278,10 +245,7 @@ def activar(id):
 
 @agroquimicos_bp.route("/agroquimicos/validar-dosis", methods=["POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("crear", "aplicaciones_agroquimicos")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def validar_dosis():
     """Validar si una dosis aplicada cumple con normativas (AJAX)"""
     agroquimico_id = request.form.get("agroquimico_id", type=int)

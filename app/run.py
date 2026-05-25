@@ -9,10 +9,7 @@ from app.routes.trazabilidad import trazabilidad_bp
 from app.routes.agroquimicos import agroquimicos_bp
 from app.routes.reportes import reportes_bp
 from app.routes.despachos import despachos_bp
-<<<<<<< HEAD
 from app.routes.usuarios import usuarios_bp
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 # Cargar todos los modelos (import side-effect) para evitar errores por relaciones string
 import app.models  # noqa: F401
 
@@ -41,10 +38,7 @@ app.register_blueprint(trazabilidad_bp)
 app.register_blueprint(agroquimicos_bp)
 app.register_blueprint(reportes_bp)
 app.register_blueprint(despachos_bp)
-<<<<<<< HEAD
 app.register_blueprint(usuarios_bp)
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 # Ruta raíz → redirige al login
 @app.route("/")
 def index():

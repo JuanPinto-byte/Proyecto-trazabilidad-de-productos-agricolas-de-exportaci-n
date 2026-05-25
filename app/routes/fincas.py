@@ -1,9 +1,5 @@
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash, session
-<<<<<<< HEAD
 from app.decorators import login_required, require_permiso
-=======
-from functools import wraps
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
@@ -20,18 +16,6 @@ fincas_bp = Blueprint("fincas", __name__)
 ESTADOS_FINCAS_VALIDOS = {"ACTIVO", "INACTIVO"}
 
 
-<<<<<<< HEAD
-=======
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "user_id" not in session:
-            flash("Debes iniciar sesión primero.", "warning")
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-
-    return decorated
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 
 
 def _normalize_name(value: str) -> str:
@@ -83,10 +67,7 @@ def municipios_por_departamento():
 
 @fincas_bp.route("/fincas")
 @login_required
-<<<<<<< HEAD
 @require_permiso("ver", "fincas")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def lista():
     fincas = (
         db.session.query(Finca, Agricultor.nombre.label("agricultor_nombre"))
@@ -100,10 +81,7 @@ def lista():
 
 @fincas_bp.route("/fincas/crear", methods=["GET", "POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("crear", "fincas")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def crear():
     agricultores = Agricultor.query.order_by(Agricultor.nombre).all()
     usuarios = User.query.filter_by(activo=True).order_by(User.nombre_completo).all()
@@ -286,10 +264,7 @@ def crear():
 
 @fincas_bp.route("/fincas/editar/<int:id>", methods=["GET", "POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("editar", "fincas")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def editar(id):
     finca = Finca.query.get_or_404(id)
     agricultores = Agricultor.query.order_by(Agricultor.nombre).all()
@@ -490,10 +465,7 @@ def editar(id):
 
 @fincas_bp.route("/fincas/eliminar/<int:id>", methods=["POST"])
 @login_required
-<<<<<<< HEAD
 @require_permiso("eliminar", "fincas")
-=======
->>>>>>> 311916a345a82cf451ae514491b67ac269ba207a
 def eliminar(id):
     finca = Finca.query.get_or_404(id)
 
