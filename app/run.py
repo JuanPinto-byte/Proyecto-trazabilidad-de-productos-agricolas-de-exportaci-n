@@ -12,6 +12,7 @@ from app.routes.despachos import despachos_bp
 from app.routes.recepciones import recepciones_bp
 from app.routes.siembras import siembras_bp
 from app.routes.usuarios import usuarios_bp
+from app.routes.cosechas import cosechas_bp
 # Cargar todos los modelos (import side-effect) para evitar errores por relaciones string
 import app.models  # noqa: F401
 
@@ -43,6 +44,7 @@ app.register_blueprint(despachos_bp)
 app.register_blueprint(recepciones_bp)
 app.register_blueprint(siembras_bp)
 app.register_blueprint(usuarios_bp)
+app.register_blueprint(cosechas_bp)
 # Ruta raíz → redirige al login
 @app.route("/")
 def index():

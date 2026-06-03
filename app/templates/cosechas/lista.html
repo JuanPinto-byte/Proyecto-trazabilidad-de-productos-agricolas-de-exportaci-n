@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrazaAgro — Siembras</title>
+  <title>TrazaAgro — Cosechas</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -40,12 +40,12 @@
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>
           Lotes
         </a>
-        <a href="{{ url_for('siembras.lista') }}" class="sidebar-item active">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2c1 0 2 1 2 2v2H7V4c0-1 1-2 2-2zM5 8h8v7c0 1-1 2-2 2H7c-1 0-2-1-2-2v-7z" stroke="#3a7c22" stroke-width="1.3" fill="none"/></svg>
+        <a href="{{ url_for('siembras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2c1 0 2 1 2 2v2H7V4c0-1 1-2 2-2zM5 8h8v7c0 1-1 2-2 2H7c-1 0-2-1-2-2v-7z" stroke="#4a4640" stroke-width="1.3" fill="none"/></svg>
           Siembras
         </a>
-        <a href="{{ url_for('cosechas.lista') }}" class="sidebar-item">
-          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M4 14c0-4 2-7 5-9m0 0c1 2 3 5 3 9M9 5V2" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <a href="{{ url_for('cosechas.lista') }}" class="sidebar-item active">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M4 14c0-4 2-7 5-9m0 0c1 2 3 5 3 9M9 5V2" stroke="#3a7c22" stroke-width="1.3" stroke-linecap="round"/></svg>
           Cosechas
         </a>
         <a href="{{ url_for('trazabilidad.lista') }}" class="sidebar-item">
@@ -87,113 +87,78 @@
 
       <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
         <div>
-          <div class="page-title">Siembras registradas</div>
-          <div class="page-subtitle">Gestión de siembras y fechas estimadas de cosecha</div>
+          <div class="page-title">Cosechas registradas</div>
+          <div class="page-subtitle">Registro de producción cosechada por lote</div>
         </div>
-        <a href="{{ url_for('siembras.nueva') }}" class="btn-primary">+ Nueva siembra</a>
+        <a href="{{ url_for('cosechas.nueva') }}" class="btn-primary">+ Nueva cosecha</a>
       </div>
 
       <!-- KPIs -->
       <div class="kpi-grid" style="margin-bottom:16px;">
         <div class="kpi-card green">
-          <div class="kpi-label">Total siembras</div>
-          <div class="kpi-value">{{ siembras | length }}</div>
-          <div class="kpi-meta">Siembras registradas</div>
+          <div class="kpi-label">Total cosechas</div>
+          <div class="kpi-value">{{ cosechas | length }}</div>
+          <div class="kpi-meta">Cosechas registradas</div>
         </div>
         <div class="kpi-card blue">
-          <div class="kpi-label">Próximas cosechas</div>
+          <div class="kpi-label">Producción total (kg)</div>
           <div class="kpi-value">
-            {#
-              BUG FIX: La condición anterior usaba (fecha_cosecha_estimada <= today)
-              lo que contaba siembras ya vencidas, no las próximas.
-              Corrección: contar las que tienen fecha entre hoy y hoy+30 días.
-              Se usa (today + 30) calculado en la ruta y pasado como 'fecha_limite'.
-            #}
-            {% set proximas = namespace(v=0) %}
-            {% for siembra in siembras %}
-              {% if siembra.fecha_cosecha_estimada %}
-                {% set dias = (siembra.fecha_cosecha_estimada - today).days %}
-                {% if dias >= 0 and dias <= 30 %}
-                  {% set proximas.v = proximas.v + 1 %}
-                {% endif %}
+            {% set total_kg = namespace(v=0) %}
+            {% for cosecha, numero_lote in cosechas %}
+              {% if cosecha.cantidad_total_kg %}
+                {% set total_kg.v = total_kg.v + cosecha.cantidad_total_kg %}
               {% endif %}
             {% endfor %}
-            {{ proximas.v }}
+            {{ "%.1f" | format(total_kg.v) }}
           </div>
-          <div class="kpi-meta">En los próximos 30 días</div>
+          <div class="kpi-meta">Kilogramos acumulados</div>
         </div>
         <div class="kpi-card amber">
-          <div class="kpi-label">Cosechas vencidas</div>
+          <div class="kpi-label">Lotes cosechados</div>
           <div class="kpi-value">
-            {% set vencidas = namespace(v=0) %}
-            {% for siembra in siembras %}
-              {% if siembra.fecha_cosecha_estimada %}
-                {% set dias = (siembra.fecha_cosecha_estimada - today).days %}
-                {% if dias < 0 %}
-                  {% set vencidas.v = vencidas.v + 1 %}
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-            {{ vencidas.v }}
+            {{ cosechas | map(attribute='1') | list | unique | list | length }}
           </div>
-          <div class="kpi-meta">Fecha estimada superada</div>
+          <div class="kpi-meta">Lotes distintos</div>
         </div>
       </div>
 
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">Historial de siembras</span>
-          <span style="font-size:12px; color:#9a9282;">{{ siembras | length }} registro(s)</span>
+          <span class="panel-title">Historial de cosechas</span>
+          <span style="font-size:12px; color:#9a9282;">{{ cosechas | length }} registro(s)</span>
         </div>
 
-        {% if siembras %}
+        {% if cosechas %}
         <table class="lote-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>Lote</th>
-              <th>Cultivo</th>
-              <th>Fecha siembra</th>
-              <th>Fecha estimada cosecha</th>
-              <th>Días restantes</th>
+              <th>Fecha cosecha</th>
+              <th>Cantidad (kg)</th>
               <th>Observaciones</th>
+              <th>Registrado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {% for siembra in siembras %}
+            {% for cosecha, numero_lote in cosechas %}
             <tr>
-              <td class="lote-code"><strong>{{ siembra.lote.numero_lote }}</strong></td>
-              <td>{{ siembra.cultivo.nombre }}</td>
-              <td>{{ siembra.fecha_siembra.strftime('%d/%m/%Y') if siembra.fecha_siembra else '—' }}</td>
+              <td style="color:#9a9282; font-size:12px;">{{ cosecha.id }}</td>
+              <td class="lote-code"><strong>{{ numero_lote }}</strong></td>
+              <td>{{ cosecha.fecha_cosecha.strftime('%d/%m/%Y') if cosecha.fecha_cosecha else '—' }}</td>
               <td style="font-weight:600; color:#2d6a1e;">
-                {{ siembra.fecha_cosecha_estimada.strftime('%d/%m/%Y') if siembra.fecha_cosecha_estimada else '—' }}
+                {{ "%.2f" | format(cosecha.cantidad_total_kg) if cosecha.cantidad_total_kg else '—' }}
               </td>
-              <td style="text-align:center;">
-                {% if siembra.fecha_cosecha_estimada %}
-                  {# BUG FIX: calcular dias como (fecha_cosecha_estimada - today).days
-                     El template original tenía el mismo operador invertido en el KPI.
-                     Aquí ya estaba correcto pero se verifica que today sea un objeto date. #}
-                  {% set dias = (siembra.fecha_cosecha_estimada - today).days %}
-                  {% if dias < 0 %}
-                    <span style="color:#c0392b; font-weight:600;">Vencida ({{ -dias }} días)</span>
-                  {% elif dias == 0 %}
-                    <span style="color:#e67e22; font-weight:700;">¡Hoy!</span>
-                  {% elif dias <= 7 %}
-                    <span style="color:#f39c12; font-weight:600;">{{ dias }} días</span>
-                  {% else %}
-                    {{ dias }} días
-                  {% endif %}
-                {% else %}
-                  <span style="color:#9a9282;">Sin calcular</span>
-                {% endif %}
+              <td style="font-size:13px; color:#6b6560; max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                {{ cosecha.observaciones or '—' }}
               </td>
-              <td style="font-size:13px; color:#6b6560; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                {{ siembra.observaciones or '—' }}
+              <td style="font-size:12px; color:#9a9282;">
+                {{ cosecha.fecha_creacion.strftime('%d/%m/%Y %H:%M') if cosecha.fecha_creacion else '—' }}
               </td>
               <td style="text-align:center; font-size:12px;">
-                <a href="{{ url_for('siembras.editar', id=siembra.id) }}" style="color:#3a7c22;">Editar</a> |
-                <a href="{{ url_for('cosechas.nueva', siembra_id=siembra.id) }}" style="color:#2980b9;" title="Registrar cosecha de este lote">Cosechar</a> |
-                <form method="POST" action="{{ url_for('siembras.eliminar', id=siembra.id) }}" style="display:inline;" onsubmit="return confirm('¿Eliminar esta siembra?');">
+                <a href="{{ url_for('cosechas.editar', id=cosecha.id) }}" style="color:#3a7c22;">Editar</a> |
+                <form method="POST" action="{{ url_for('cosechas.eliminar', id=cosecha.id) }}" style="display:inline;" onsubmit="return confirm('¿Eliminar esta cosecha?');">
                   <button type="submit" style="background:none; border:none; color:#c0392b; cursor:pointer; text-decoration:underline; padding:0;">Eliminar</button>
                 </form>
               </td>
@@ -203,7 +168,7 @@
         </table>
         {% else %}
         <div class="empty-state">
-          No hay siembras registradas. <a href="{{ url_for('siembras.nueva') }}">Registrar la primera</a>
+          No hay cosechas registradas. <a href="{{ url_for('cosechas.nueva') }}">Registrar la primera</a>
         </div>
         {% endif %}
       </div>
