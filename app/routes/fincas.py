@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash
 from app.decorators import login_required, require_permiso
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -29,6 +29,7 @@ def _parse_float(value: str, *, field_label: str, required: bool = False, min_va
             flash(f"{field_label} es obligatorio.", "error")
             return None, False
         return None, True
+    raw = raw.replace(",", ".")
     try:
         parsed = float(raw)
     except ValueError:

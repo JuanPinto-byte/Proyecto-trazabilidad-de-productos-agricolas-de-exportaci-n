@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from flask_cors import CORS
 from app.config import config
 from app.extensions import db, jwt, migrate
@@ -12,6 +12,60 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
+
+    all_menu_items = {
+        "dashboard",
+        "fincas",
+        "lotes",
+        "siembras",
+        "bitacoras",
+        "trazabilidad",
+        "agroquimicos",
+        "recepciones",
+        "clima",
+        "despachos",
+        "reportes",
+        "usuarios",
+    }
+
+    role_menu_map = {
+        "COORDINADOR": set(all_menu_items),
+        "AGRONOMO": {
+            "dashboard",
+            "siembras",
+            "bitacoras",
+            "agroquimicos",
+            "trazabilidad",
+            "reportes",
+        },
+        "OPERARIO": {
+            "dashboard",
+            "recepciones",
+            "reportes",
+        },
+        "INSPECTOR": {
+            "dashboard",
+            "agroquimicos",
+            "trazabilidad",
+            "reportes",
+        },
+        "INSPECTOS": {
+            "dashboard",
+            "agroquimicos",
+            "trazabilidad",
+            "reportes",
+        },
+    }
+
+    @app.context_processor
+    def inject_menu_by_role():
+        rol = (session.get("rol") or "").upper()
+        allowed = role_menu_map.get(rol, all_menu_items)
+        menu = {key: key in allowed for key in all_menu_items}
+        return {
+            "menu": menu,
+            "rol_actual": rol,
+        }
 
     # Asegura que todos los modelos se registren (evita errores de relaciones por strings)
     # Nota: usar `from app import models` evita pisar la variable local `app` (Flask).

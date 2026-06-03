@@ -68,7 +68,7 @@
         </a>
         {% endif %}
 
-        {% if ('ver', 'siembras') in permisos %}
+        {% if permisos is defined and ('ver', 'siembras') in permisos %}
         <a href="{{ url_for('siembras.lista') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
             <path d="M9 2c1 0 2 1 2 2v2H7V4c0-1 1-2 2-2zM5 8h8v7c0 1-1 2-2 2H7c-1 0-2-1-2-2v-7z" stroke="#3a7c22" stroke-width="1.3" fill="none"/>
@@ -125,7 +125,7 @@
             <rect x="2" y="2" width="14" height="14" rx="2" stroke="#4a4640" stroke-width="1.3" fill="none"/>
             <path d="M5 13V9M8 13V7M11 13V5M14 13V9" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round"/>
           </svg>
-          Reportes gerenciales
+          Reportes
         </a>
       </div>
       {% endif %}
@@ -406,16 +406,38 @@
   var labelsDiv  = document.getElementById('chart-labels');
   if (!container || !labelsDiv) return;
 
-  var fincas = JSON.parse(container.dataset.fincas || '[]');
-  var real   = JSON.parse(container.dataset.real   || '[]');
-  var maxVal = parseFloat(container.dataset.max)   || 1;
+  function safeJson(raw) {
+    try {
+      return JSON.parse(raw || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function asNumber(value) {
+    var num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  }
+
+  var fincas = safeJson(container.dataset.fincas);
+  var real   = safeJson(container.dataset.real);
+  var maxVal = asNumber(container.dataset.max);
+
+  if (maxVal <= 0) {
+    maxVal = 1;
+    for (var m = 0; m < real.length; m++) {
+      maxVal = Math.max(maxVal, asNumber(real[m]));
+    }
+  }
 
   fincas.forEach(function (nombre, i) {
-    var pct = Math.max(Math.round((real[i] / maxVal) * 100), 2);
+    var realVal = asNumber(real[i]);
+    var pct = maxVal > 0 ? Math.round((realVal / maxVal) * 100) : 0;
+    pct = Math.max(pct, realVal > 0 ? 2 : 0);
 
     var group = document.createElement('div');
     group.className = 'bar-group';
-    group.title = nombre + ': ' + real[i] + ' kg';
+    group.title = String(nombre) + ': ' + realVal + ' kg';
 
     var bar = document.createElement('div');
     bar.className = 'bar real';
@@ -426,7 +448,8 @@
 
     var label = document.createElement('div');
     label.className = 'chart-label-item';
-    label.textContent = nombre.substring(0, 5);
+    label.textContent = String(nombre).substring(0, 7);
+    label.title = String(nombre);
     labelsDiv.appendChild(label);
   });
 })();
