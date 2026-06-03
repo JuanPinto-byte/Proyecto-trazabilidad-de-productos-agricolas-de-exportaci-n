@@ -13,20 +13,30 @@ trazabilidad_bp = Blueprint('trazabilidad', __name__, url_prefix='/trazabilidad'
 
 
 
+from sqlalchemy.orm import joinedload
+
 @trazabilidad_bp.route('/', endpoint='lista')
 @login_required
 @require_permiso("ver", "trazabilidad")
 def lista():
-    lotes = db.session.query(
-    Lote,
-    Finca.nombre_finca,
-    Finca.departamento_id,
-    Finca.municipio_id
-    )\
-        .join(Finca, Finca.id == Lote.finca_id)\
-        .order_by(Lote.fecha_creacion.desc())\
+
+    lotes = (
+        Lote.query
+        .options(
+            joinedload(Lote.finca)
+            .joinedload(Finca.departamento_ref),
+
+            joinedload(Lote.finca)
+            .joinedload(Finca.municipio_ref)
+        )
+        .order_by(Lote.fecha_creacion.desc())
         .all()
-    return render_template('trazabilidad/lista.html', lotes=lotes)
+    )
+
+    return render_template(
+        'trazabilidad/lista.html',
+        lotes=lotes
+    )
 
 def get_colombia_time():
     """Obtiene la hora actual de Colombia sin depender de APIs externas"""
