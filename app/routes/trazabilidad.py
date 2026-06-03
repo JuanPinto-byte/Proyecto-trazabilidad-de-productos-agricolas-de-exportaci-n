@@ -13,20 +13,30 @@ trazabilidad_bp = Blueprint('trazabilidad', __name__, url_prefix='/trazabilidad'
 
 
 
+from sqlalchemy.orm import joinedload
+
 @trazabilidad_bp.route('/', endpoint='lista')
 @login_required
 @require_permiso("ver", "trazabilidad")
 def lista():
-    lotes = db.session.query(
-        Lote,
-        Finca.nombre_finca,
-        Finca.departamento,
-        Finca.municipio
-        )\
-        .join(Finca, Finca.id == Lote.finca_id)\
-        .order_by(Lote.fecha_creacion.desc())\
+
+    lotes = (
+        Lote.query
+        .options(
+            joinedload(Lote.finca)
+            .joinedload(Finca.departamento_ref),
+
+            joinedload(Lote.finca)
+            .joinedload(Finca.municipio_ref)
+        )
+        .order_by(Lote.fecha_creacion.desc())
         .all()
-    return render_template('trazabilidad/lista.html', lotes=lotes)
+    )
+
+    return render_template(
+        'trazabilidad/lista.html',
+        lotes=lotes
+    )
 
 def get_colombia_time():
     """Obtiene la hora actual de Colombia sin depender de APIs externas"""
@@ -49,7 +59,15 @@ def create_trazabilidad(lote_id):
     
     # Obtener la ubicación de la finca
     finca = lote.finca
-    ubicacion_finca = finca.municipio or finca.departamento or finca.nombre_finca or "Finca"
+    ubicacion_finca = (
+    finca.municipio_ref.nombre
+    if finca.municipio_ref
+    else (
+        finca.departamento_ref.nombre
+        if finca.departamento_ref
+        else finca.nombre_finca
+    )
+)
     
     # Crear nuevo registro de trazabilidad
     nueva_traza = Trazabilidad(

@@ -7,8 +7,6 @@ class Finca(db.Model):
 
     id                        = db.Column(db.Integer, primary_key=True)
     nombre_finca              = db.Column(db.String(100), nullable=False)
-    municipio                 = db.Column(db.String(100))
-    departamento              = db.Column(db.String(100))
     coordenadas_gps           = db.Column(db.String(100))
     area_total_hectareas      = db.Column(db.Numeric(10, 2))
     area_cultivable_hectareas = db.Column(db.Numeric(10, 2))
@@ -16,8 +14,9 @@ class Finca(db.Model):
     agricultor_id  = db.Column(db.Integer, db.ForeignKey('agricultores.id'), nullable=False)
     responsable_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
 
+    # INT UNSIGNED en la BD
     departamento_id = db.Column(db.Integer, db.ForeignKey('departamentos.id'), nullable=True)
-    municipio_id = db.Column(db.Integer, db.ForeignKey('municipios.id'), nullable=True)
+    municipio_id    = db.Column(db.Integer, db.ForeignKey('municipios.id'),    nullable=True)
 
     estado              = db.Column(db.String(30))
     fecha_creacion = db.Column(
@@ -28,7 +27,7 @@ class Finca(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, nullable=True)
 
     departamento_ref = db.relationship('Departamento', foreign_keys=[departamento_id])
-    municipio_ref = db.relationship('Municipio', foreign_keys=[municipio_id])
+    municipio_ref    = db.relationship('Municipio',    foreign_keys=[municipio_id])
 
     lotes = db.relationship('Lote', backref='finca', lazy=True)
 

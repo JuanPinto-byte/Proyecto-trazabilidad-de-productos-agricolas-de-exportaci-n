@@ -1,5 +1,4 @@
 from app.extensions import db
-from datetime import datetime
 
 
 class Bodega(db.Model):
@@ -7,8 +6,6 @@ class Bodega(db.Model):
 
     id                   = db.Column(db.Integer, primary_key=True)
     nombre               = db.Column(db.String(100), nullable=False)
-    municipio            = db.Column(db.String(100))
-    departamento         = db.Column(db.String(100))
     capacidad_maxima_kg  = db.Column(db.Numeric(10, 2))
     tipo_almacenamiento  = db.Column(db.String(50))
     temperatura_setpoint = db.Column(db.Numeric(5, 2))
@@ -21,18 +18,19 @@ class Bodega(db.Model):
         nullable=True,
     )
 
+    # INT UNSIGNED en la BD
     departamento_id = db.Column(db.Integer, db.ForeignKey('departamentos.id'), nullable=True)
-    municipio_id = db.Column(db.Integer, db.ForeignKey('municipios.id'), nullable=True)
+    municipio_id    = db.Column(db.Integer, db.ForeignKey('municipios.id'),    nullable=True)
 
     departamento_ref = db.relationship('Departamento', foreign_keys=[departamento_id])
-    municipio_ref = db.relationship('Municipio', foreign_keys=[municipio_id])
+    municipio_ref    = db.relationship('Municipio',    foreign_keys=[municipio_id])
 
     registros_temperatura = db.relationship('ControlTemperatura', backref='bodega', lazy=True)
-    almacenamientos       = db.relationship('Almacenamiento', backref='bodega', lazy=True)
+    almacenamientos       = db.relationship('Almacenamiento',     backref='bodega', lazy=True)
 
     def __repr__(self):
         return f'<Bodega {self.nombre}>'
-    
+
     def ultimo_registro(self):
         """Devuelve el registro de temperatura más reciente de esta bodega."""
         return (ControlTemperatura.query
@@ -40,11 +38,12 @@ class Bodega(db.Model):
                 .order_by(ControlTemperatura.fecha_hora.desc())
                 .first())
 
+
 class ControlTemperatura(db.Model):
     __tablename__ = 'control_temperaturas'
 
-    id          = db.Column(db.Integer, primary_key=True)
-    bodega_id   = db.Column(db.Integer, db.ForeignKey('bodegas.id'), nullable=False)
+    id         = db.Column(db.Integer, primary_key=True)
+    bodega_id  = db.Column(db.Integer, db.ForeignKey('bodegas.id'), nullable=False)
     fecha_hora = db.Column(
         db.DateTime,
         nullable=False,
@@ -61,7 +60,7 @@ class Almacenamiento(db.Model):
     __tablename__ = 'almacenamiento'
 
     id                  = db.Column(db.Integer, primary_key=True)
-    lote_id             = db.Column(db.Integer, db.ForeignKey('lotes.id'), nullable=False)
+    lote_id             = db.Column(db.Integer, db.ForeignKey('lotes.id'),   nullable=False)
     bodega_id           = db.Column(db.Integer, db.ForeignKey('bodegas.id'), nullable=False)
     cantidad_kg         = db.Column(db.Numeric(10, 2))
     estado              = db.Column(db.String(30))

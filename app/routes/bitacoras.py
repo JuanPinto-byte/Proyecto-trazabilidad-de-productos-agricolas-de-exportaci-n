@@ -39,11 +39,9 @@ def lista():
     
     # Query base
     query = db.session.query(
-        BitacoraCultivo, 
+        BitacoraCultivo,
         Lote.numero_lote,
         Finca.nombre_finca,
-        Finca.departamento,
-        Finca.municipio,
         User.nombre_completo
     ).join(Lote, Lote.id == BitacoraCultivo.lote_id)\
      .join(Finca, Finca.id == Lote.finca_id)\
@@ -99,9 +97,9 @@ def crear():
         riego = request.form.get("riego", "").strip()
         fertilizacion = request.form.get("fertilizacion", "").strip()
         insumos = request.form.get("insumos", "").strip()
-        temperatura = request.form.get("temperatura", "").strip()
-        humedad = request.form.get("humedad", "").strip()
-        precipitacion = request.form.get("precipitacion", "").strip()
+        temperatura = (request.form.get("temperatura") or "").strip()
+        humedad = (request.form.get("humedad") or "").strip()
+        precipitacion = (request.form.get("precipitacion") or "").strip()
         
         # Validaciones básicas
         if not lote_id:
@@ -158,7 +156,7 @@ def crear():
         
         # Validación de agrónomo (obligatorio)
         if not agronomo_id:
-            flash("Debes asignar un agrólogo obligatoriamente.", "error")
+            flash("Debes asignar un agrónomo obligatoriamente.", "error")
             return render_template(
                 "bitacoras/form.html",
                 lotes=lotes,
@@ -169,6 +167,7 @@ def crear():
         
         # Validación de temperatura (máximo 30°C)
         if temperatura:
+            temperatura = temperatura.replace(",", ".")
             try:
                 temp_valor = float(temperatura)
                 if temp_valor > 30:
@@ -189,9 +188,33 @@ def crear():
                     bitacora=None,
                     now=datetime.now()
                 )
+
+        if humedad:
+            humedad = humedad.replace(",", ".")
+            try:
+                hum_valor = float(humedad)
+                if hum_valor < 0 or hum_valor > 100:
+                    flash("La humedad debe estar entre 0 y 100%.", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=None,
+                        now=datetime.now()
+                    )
+            except ValueError:
+                flash("Humedad inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=None,
+                    now=datetime.now()
+                )
         
         # Validación de precipitación (máximo 15mm)
         if precipitacion:
+            precipitacion = precipitacion.replace(",", ".")
             try:
                 precip_valor = float(precipitacion)
                 if precip_valor > 15:
@@ -395,9 +418,9 @@ def editar(id):
         riego = request.form.get("riego", "").strip()
         fertilizacion = request.form.get("fertilizacion", "").strip()
         insumos = request.form.get("insumos", "").strip()
-        temperatura = request.form.get("temperatura", "").strip()
-        humedad = request.form.get("humedad", "").strip()
-        precipitacion = request.form.get("precipitacion", "").strip()
+        temperatura = (request.form.get("temperatura") or "").strip()
+        humedad = (request.form.get("humedad") or "").strip()
+        precipitacion = (request.form.get("precipitacion") or "").strip()
         
         # Validaciones
         if not actividades:
@@ -433,7 +456,7 @@ def editar(id):
         
         # Validación de agrónomo (obligatorio)
         if not agronomo_id:
-            flash("Debes asignar un agrólogo obligatoriamente.", "error")
+            flash("Debes asignar un agrónomo obligatoriamente.", "error")
             return render_template(
                 "bitacoras/form.html",
                 lotes=lotes,
@@ -444,6 +467,7 @@ def editar(id):
         
         # Validación de temperatura (máximo 30°C)
         if temperatura:
+            temperatura = temperatura.replace(",", ".")
             try:
                 temp_valor = float(temperatura)
                 if temp_valor > 30:
@@ -464,9 +488,33 @@ def editar(id):
                     bitacora=bitacora,
                     now=datetime.now()
                 )
+
+        if humedad:
+            humedad = humedad.replace(",", ".")
+            try:
+                hum_valor = float(humedad)
+                if hum_valor < 0 or hum_valor > 100:
+                    flash("La humedad debe estar entre 0 y 100%.", "error")
+                    return render_template(
+                        "bitacoras/form.html",
+                        lotes=lotes,
+                        usuarios=usuarios,
+                        bitacora=bitacora,
+                        now=datetime.now()
+                    )
+            except ValueError:
+                flash("Humedad inválida. Debe ser un número.", "error")
+                return render_template(
+                    "bitacoras/form.html",
+                    lotes=lotes,
+                    usuarios=usuarios,
+                    bitacora=bitacora,
+                    now=datetime.now()
+                )
         
         # Validación de precipitación (máximo 15mm)
         if precipitacion:
+            precipitacion = precipitacion.replace(",", ".")
             try:
                 precip_valor = float(precipitacion)
                 if precip_valor > 15:

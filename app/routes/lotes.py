@@ -64,17 +64,19 @@ def _to_decimal(value) -> Decimal:
 @login_required
 @require_permiso("ver", "lotes")
 def lista():
-    lotes = db.session.query(
-    Lote,
-    Finca.nombre_finca,
-    Finca.departamento,
-    Finca.municipio
-    )\
-    .join(Finca, Finca.id == Lote.finca_id)\
-    .order_by(Lote.fecha_creacion.desc())\
-    .all()
+    lotes = (
+        Lote.query
+        .options(
+            joinedload(Lote.finca)
+            .joinedload(Finca.departamento_ref),
+            joinedload(Lote.finca)
+            .joinedload(Finca.municipio_ref)
+        )
+        .order_by(Lote.fecha_creacion.desc())
+        .all()
+    )
+
     return render_template("lotes/lista.html", lotes=lotes)
-    
 
 # ── CREAR ─────────────────────────────────────────────────────────────────────
 @lotes_bp.route("/lotes/crear", methods=["GET", "POST"])

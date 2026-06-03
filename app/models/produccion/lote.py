@@ -1,5 +1,4 @@
 from app.extensions import db
-from datetime import datetime
 
 
 class Lote(db.Model):
@@ -23,18 +22,19 @@ class Lote(db.Model):
         server_default=db.func.current_timestamp(),
         nullable=True,
     )
-    fecha_actualizacion = db.Column(db.DateTime, onupdate=datetime.utcnow, nullable=True)
+    # Se actualiza manualmente en el código al hacer cambios
+    fecha_actualizacion = db.Column(db.DateTime, nullable=True)
 
     # FK → usuario que creó el lote
     usuario_creacion_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
 
     # Relaciones
-    siembras        = db.relationship('Siembra',       backref='lote', lazy=True)
-    cosechas        = db.relationship('Cosecha',       backref='lote', lazy=True)
-    anomalias       = db.relationship('Anomalia',      backref='lote', lazy=True)
-    bitacoras       = db.relationship('BitacoraCultivo', backref='lote', lazy=True)
-    almacenamientos = db.relationship('Almacenamiento', backref='lote', lazy=True)
-    trazabilidad    = db.relationship('Trazabilidad',  backref='lote', uselist=False, lazy=True)
+    siembras        = db.relationship('Siembra',            backref='lote', lazy=True)
+    cosechas        = db.relationship('Cosecha',            backref='lote', lazy=True)
+    anomalias       = db.relationship('Anomalia',           backref='lote', lazy=True)
+    bitacoras       = db.relationship('BitacoraCultivo',    backref='lote', lazy=True)
+    almacenamientos = db.relationship('Almacenamiento',     backref='lote', lazy=True)
+    trazabilidad    = db.relationship('Trazabilidad',       backref='lote', uselist=False, lazy=True)
 
     def __repr__(self):
         return f'<Lote {self.numero_lote} — {self.estado}>'

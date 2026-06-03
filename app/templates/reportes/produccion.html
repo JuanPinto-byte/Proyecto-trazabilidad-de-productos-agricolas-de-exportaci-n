@@ -210,18 +210,42 @@
   var container = document.getElementById('chart-prod');
   var labelsDiv  = document.getElementById('chart-prod-labels');
   if (!container || !labelsDiv) return;
-  var fincas = JSON.parse(container.dataset.fincas || '[]');
-  var est    = JSON.parse(container.dataset.est   || '[]');
-  var real   = JSON.parse(container.dataset.real  || '[]');
-  var maxVal = parseFloat(container.dataset.max)  || 1;
+  function safeJson(raw) {
+    try {
+      return JSON.parse(raw || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function asNumber(value) {
+    var num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  }
+
+  var fincas = safeJson(container.dataset.fincas);
+  var est    = safeJson(container.dataset.est);
+  var real   = safeJson(container.dataset.real);
+  var maxVal = asNumber(container.dataset.max);
+
+  if (maxVal <= 0) {
+    maxVal = 1;
+    for (var m = 0; m < Math.max(est.length, real.length); m++) {
+      maxVal = Math.max(maxVal, asNumber(est[m]), asNumber(real[m]));
+    }
+  }
 
   fincas.forEach(function (nombre, i) {
-    var pctEst  = Math.max(Math.round((est[i]  / maxVal) * 100), 2);
-    var pctReal = Math.max(Math.round((real[i] / maxVal) * 100), 2);
+    var estVal  = asNumber(est[i]);
+    var realVal = asNumber(real[i]);
+    var pctEst  = maxVal > 0 ? Math.round((estVal  / maxVal) * 100) : 0;
+    var pctReal = maxVal > 0 ? Math.round((realVal / maxVal) * 100) : 0;
+    pctEst = Math.max(pctEst, estVal > 0 ? 2 : 0);
+    pctReal = Math.max(pctReal, realVal > 0 ? 2 : 0);
 
     var group = document.createElement('div');
     group.className = 'bar-group';
-    group.title = nombre + ' — Est: ' + est[i] + ' kg | Real: ' + real[i] + ' kg';
+    group.title = String(nombre) + ' — Est: ' + estVal + ' kg | Real: ' + realVal + ' kg';
 
     var b1 = document.createElement('div');
     b1.className = 'bar est';
@@ -237,7 +261,8 @@
 
     var label = document.createElement('div');
     label.className = 'chart-label-item';
-    label.textContent = nombre.substring(0, 7);
+    label.textContent = String(nombre).substring(0, 7);
+    label.title = String(nombre);
     labelsDiv.appendChild(label);
   });
 })();

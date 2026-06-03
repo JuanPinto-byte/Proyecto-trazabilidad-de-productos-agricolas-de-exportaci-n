@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from flask_cors import CORS
 from app.config import config
 from app.extensions import db, jwt, migrate
@@ -13,8 +13,55 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    # Asegura que todos los modelos se registren (evita errores de relaciones por strings)
-    # Nota: usar `from app import models` evita pisar la variable local `app` (Flask).
+    all_menu_items = {
+        "dashboard",
+        "fincas",
+        "lotes",
+        "siembras",
+        "bitacoras",
+        "trazabilidad",
+        "agroquimicos",
+        "recepciones",
+        "clima",
+        "despachos",
+        "reportes",
+        "usuarios",
+    }
+
+    role_menu_map = {
+        "COORDINADOR": set(all_menu_items),
+        "AGRONOMO": {
+            "dashboard",
+            "siembras",
+            "bitacoras",
+            "agroquimicos",
+            "trazabilidad",
+            "reportes",
+        },
+        "OPERARIO": {
+            "dashboard",
+            "recepciones",
+            "reportes",
+        },
+        "INSPECTOR": {
+            "dashboard",
+            "agroquimicos",
+            "trazabilidad",
+            "reportes",
+        },
+    }
+
+    @app.context_processor
+    def inject_menu_by_role():
+        rol = (session.get("rol") or "").upper()
+        allowed = role_menu_map.get(rol, all_menu_items)
+        menu = {key: key in allowed for key in all_menu_items}
+        return {
+            "menu": menu,
+            "rol_actual": rol,
+        }
+
+    # Asegura que todos los modelos se registren antes de las rutas
     from app import models  # noqa: F401
 
     # Registrar blueprints
@@ -28,7 +75,12 @@ def create_app():
     from app.routes.usuarios import usuarios_bp
     from app.routes.recepciones import recepciones_bp
     from app.routes.siembras import siembras_bp
+<<<<<<< HEAD
     from app.routes.cosechas import cosechas_bp
+=======
+    from app.routes.despachos import despachos_bp
+    from app.routes.clima import clima_bp
+>>>>>>> ad1d9ff02af2d859a660ef8bfd42fc0d34e10802
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(fincas_bp)
@@ -40,6 +92,11 @@ def create_app():
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(recepciones_bp)
     app.register_blueprint(siembras_bp)
+<<<<<<< HEAD
     app.register_blueprint(cosechas_bp)
+=======
+    app.register_blueprint(despachos_bp)
+    app.register_blueprint(clima_bp)
+>>>>>>> ad1d9ff02af2d859a660ef8bfd42fc0d34e10802
 
     return app
