@@ -49,12 +49,6 @@ def create_app():
             "trazabilidad",
             "reportes",
         },
-        "INSPECTOS": {
-            "dashboard",
-            "agroquimicos",
-            "trazabilidad",
-            "reportes",
-        },
     }
 
     @app.context_processor
@@ -67,8 +61,7 @@ def create_app():
             "rol_actual": rol,
         }
 
-    # Asegura que todos los modelos se registren (evita errores de relaciones por strings)
-    # Nota: usar `from app import models` evita pisar la variable local `app` (Flask).
+    # Asegura que todos los modelos se registren antes de las rutas
     from app import models  # noqa: F401
 
     # Registrar blueprints
@@ -82,6 +75,8 @@ def create_app():
     from app.routes.usuarios import usuarios_bp
     from app.routes.recepciones import recepciones_bp
     from app.routes.siembras import siembras_bp
+    from app.routes.despachos import despachos_bp
+    from app.routes.clima import clima_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(fincas_bp)
@@ -93,5 +88,7 @@ def create_app():
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(recepciones_bp)
     app.register_blueprint(siembras_bp)
+    app.register_blueprint(despachos_bp)
+    app.register_blueprint(clima_bp)
 
     return app

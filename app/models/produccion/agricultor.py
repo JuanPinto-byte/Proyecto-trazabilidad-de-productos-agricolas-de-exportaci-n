@@ -10,6 +10,7 @@ class Agricultor(db.Model):
     cedula = db.Column(db.String(30), unique=True, nullable=True)
     telefono = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(100), nullable=True)
+    # Columna legacy de texto (aún existe en la BD)
     departamento = db.Column(db.String(100), nullable=True)
 
     fecha_creacion = db.Column(
@@ -18,7 +19,12 @@ class Agricultor(db.Model):
         nullable=True,
     )
 
-    municipio_id = db.Column(db.Integer, db.ForeignKey('municipios.id'), nullable=True)
+    # FK a municipios (INT UNSIGNED en la BD)
+    municipio_id = db.Column(
+        db.Integer,
+        db.ForeignKey('municipios.id'),
+        nullable=True,
+    )
 
     municipio_ref = db.relationship('Municipio', foreign_keys=[municipio_id])
 

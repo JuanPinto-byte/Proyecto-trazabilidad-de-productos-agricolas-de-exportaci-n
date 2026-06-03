@@ -18,11 +18,11 @@ trazabilidad_bp = Blueprint('trazabilidad', __name__, url_prefix='/trazabilidad'
 @require_permiso("ver", "trazabilidad")
 def lista():
     lotes = db.session.query(
-        Lote,
-        Finca.nombre_finca,
-        Finca.departamento,
-        Finca.municipio
-        )\
+    Lote,
+    Finca.nombre_finca,
+    Finca.departamento_id,
+    Finca.municipio_id
+    )\
         .join(Finca, Finca.id == Lote.finca_id)\
         .order_by(Lote.fecha_creacion.desc())\
         .all()
@@ -49,7 +49,15 @@ def create_trazabilidad(lote_id):
     
     # Obtener la ubicación de la finca
     finca = lote.finca
-    ubicacion_finca = finca.municipio or finca.departamento or finca.nombre_finca or "Finca"
+    ubicacion_finca = (
+    finca.municipio_ref.nombre
+    if finca.municipio_ref
+    else (
+        finca.departamento_ref.nombre
+        if finca.departamento_ref
+        else finca.nombre_finca
+    )
+)
     
     # Crear nuevo registro de trazabilidad
     nueva_traza = Trazabilidad(
