@@ -787,6 +787,7 @@ DROP TABLE IF EXISTS `recepcion_acopio`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `recepcion_acopio` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `finca_id` int NOT NULL,
   `lote_id` int NOT NULL,
   `fecha_recepcion` date NOT NULL,
   `cantidad_kg` decimal(10,2) DEFAULT NULL,
@@ -798,6 +799,8 @@ CREATE TABLE `recepcion_acopio` (
   PRIMARY KEY (`id`),
   KEY `fk_acopio_lote` (`lote_id`),
   KEY `fk_acopio_operario` (`operario_id`),
+  KEY `fk_acopio_finca` (`finca_id`),
+  CONSTRAINT `fk_acopio_finca` FOREIGN KEY (`finca_id`) REFERENCES `fincas` (`id`),
   CONSTRAINT `fk_acopio_lote` FOREIGN KEY (`lote_id`) REFERENCES `lotes` (`id`),
   CONSTRAINT `fk_acopio_operario` FOREIGN KEY (`operario_id`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

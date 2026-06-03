@@ -39,6 +39,8 @@ class RecepcionAcopio(db.Model):
         nullable=True,
     )
 
+    lote  = db.relationship('Lote',  backref='recepciones', lazy=True)
+
     def __repr__(self):
         return f'<RecepcionAcopio lote={self.lote_id} kg={self.cantidad_kg}>'
 

@@ -68,6 +68,15 @@
         </a>
         {% endif %}
 
+        {% if ('ver', 'siembras') in permisos %}
+        <a href="{{ url_for('siembras.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2c1 0 2 1 2 2v2H7V4c0-1 1-2 2-2zM5 8h8v7c0 1-1 2-2 2H7c-1 0-2-1-2-2v-7z" stroke="#3a7c22" stroke-width="1.3" fill="none"/>
+          </svg>
+          Siembras
+        </a>
+        {% endif %}
+
         {% if ('ver', 'bitacoras_cultivo') in permisos %}
         <a href="{{ url_for('bitacoras.lista') }}" class="sidebar-item">
           <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none">
@@ -98,6 +107,14 @@
           Agroquímicos
         </a>
         {% endif %}
+
+        {% if ('ver', 'recepcion_acopio') in permisos %}
+        <a href="{{ url_for('recepciones.lista') }}" class="sidebar-item">
+          <svg class="sidebar-icon" viewBox="0 0 18 18" fill="none"><path d="M3 3h12v2H3zM3 7h12v2H3zM3 11h7v2H3z" stroke="#4a4640" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
+          Recepciones
+        </a>
+        {% endif %}
+
       </div>
 
       {% if ('ver', 'reportes') in permisos %}
@@ -219,6 +236,15 @@
           <div class="kpi-value">{{ despachos_transito }}</div>
           <div class="kpi-meta">{{ despachos_puerto }} próximos al puerto</div>
         </div>
+        {% if ('ver', 'siembras') in permisos %}
+        <div class="kpi-card" style="background:linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%); border:1px solid #81c784;">
+          <div class="kpi-label" style="color:#2e7d32;">Siembras activas</div>
+          <div class="kpi-value" style="color:#1b5e20;">{{ total_siembras }}</div>
+          <div class="kpi-meta" style="color:#558b2f;">
+            <a href="{{ url_for('siembras.lista') }}" style="color:#1b5e20; text-decoration:underline;">Ver siembras →</a>
+          </div>
+        </div>
+        {% endif %}
       </div>
 
       <!-- ── Gráfica + Actividad ─────────────────── -->

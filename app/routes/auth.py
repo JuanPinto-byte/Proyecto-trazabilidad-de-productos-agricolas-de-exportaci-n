@@ -119,6 +119,7 @@ def dashboard():
     # Importar modelos aquí para evitar importaciones circulares
     from app.models.produccion.finca    import Finca
     from app.models.produccion.lote     import Lote
+    from app.models.produccion.siembra  import Siembra
     from app.models.seguimiento.anomalia import Anomalia
     from app.models.trazabilidad import Trazabilidad
     from app.models.almacenamiento.bodega   import Bodega, ControlTemperatura
@@ -133,6 +134,8 @@ def dashboard():
     ).count()
 
     total_fincas = Finca.query.count()
+
+    total_siembras = Siembra.query.count()
 
     alertas_activas = Anomalia.query.filter(
         Anomalia.estado.in_(['PENDIENTE', 'EN_REVISION'])
@@ -212,6 +215,7 @@ def dashboard():
         # KPIs
         total_lotes     = total_lotes,
         total_fincas    = total_fincas,
+        total_siembras  = total_siembras,
         alertas_activas = alertas_activas,
         despachos_transito = despachos_transito,
         despachos_puerto   = despachos_puerto,

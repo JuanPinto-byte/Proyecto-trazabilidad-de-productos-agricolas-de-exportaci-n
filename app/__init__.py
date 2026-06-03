@@ -26,6 +26,8 @@ def create_app():
     from app.routes.agroquimicos import agroquimicos_bp
     from app.routes.reportes import reportes_bp
     from app.routes.usuarios import usuarios_bp
+    from app.routes.recepciones import recepciones_bp
+    from app.routes.siembras import siembras_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(fincas_bp)
@@ -35,5 +37,7 @@ def create_app():
     app.register_blueprint(agroquimicos_bp)
     app.register_blueprint(reportes_bp)
     app.register_blueprint(usuarios_bp)
+    app.register_blueprint(recepciones_bp)
+    app.register_blueprint(siembras_bp)
 
     return app
